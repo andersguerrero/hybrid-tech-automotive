@@ -161,6 +161,13 @@ export default function AdminPage() {
       color: 'bg-cyan-500 hover:bg-cyan-600'
     },
     {
+      title: 'Export/Import Batteries',
+      description: 'Sync batteries between localhost and production',
+      icon: Settings,
+      href: '/admin/export-batteries',
+      color: 'bg-purple-500 hover:bg-purple-600'
+    },
+    {
       title: t.admin.images,
       description: t.admin.imagesDesc,
       icon: ImageIcon,
