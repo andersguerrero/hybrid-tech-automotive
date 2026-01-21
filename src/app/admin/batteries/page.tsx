@@ -83,33 +83,62 @@ export default function BatteriesAdminPage() {
       setIsAuthenticated(true)
     }
 
-    // Cargar baterías guardadas desde localStorage
-    const savedBatteries = localStorage.getItem('admin_batteries')
-    if (savedBatteries) {
+    // Cargar baterías desde el servidor primero
+    const loadBatteriesFromServer = async () => {
       try {
-        const parsed = JSON.parse(savedBatteries)
-        console.log('Loading saved batteries from localStorage:', parsed)
-        setBatteriesData(parsed)
+        const response = await fetch('/api/batteries')
+        const data = await response.json()
+        if (data.success && data.batteries && data.batteries.length > 0) {
+          console.log('Loading batteries from server:', data.batteries.length)
+          setBatteriesData(data.batteries)
+          // También guardar en localStorage para compatibilidad
+          localStorage.setItem('admin_batteries', JSON.stringify(data.batteries))
+          localStorage.setItem('batteries_edited_by_admin', 'true')
+          return
+        }
       } catch (error) {
-        console.error('Error loading saved batteries:', error)
-        // Si hay error, usar las iniciales
+        console.error('Error loading batteries from server:', error)
+      }
+      
+      // Si no hay en servidor, cargar desde localStorage
+      const savedBatteries = localStorage.getItem('admin_batteries')
+      if (savedBatteries) {
+        try {
+          const parsed = JSON.parse(savedBatteries)
+          console.log('Loading saved batteries from localStorage:', parsed)
+          setBatteriesData(parsed)
+        } catch (error) {
+          console.error('Error loading saved batteries:', error)
+          setBatteriesData(initialBatteries)
+        }
+      } else {
+        console.log('No saved batteries found, using initial batteries')
         setBatteriesData(initialBatteries)
       }
-    } else {
-      // Si no hay baterías guardadas, usar las iniciales
-      console.log('No saved batteries found, using initial batteries')
-      setBatteriesData(initialBatteries)
     }
+    
+    loadBatteriesFromServer()
   }, [])
 
-  // Guardar baterías en localStorage cuando cambien
+  // Guardar baterías en localStorage y servidor cuando cambien
   useEffect(() => {
     if (isAuthenticated && batteriesData.length > 0) {
-      console.log('Saving batteries to localStorage:', batteriesData)
+      console.log('Saving batteries to localStorage and server:', batteriesData)
       localStorage.setItem('admin_batteries', JSON.stringify(batteriesData))
       localStorage.setItem('batteries_edited_by_admin', 'true')
       // Disparar evento personalizado para actualizar otros componentes
       window.dispatchEvent(new CustomEvent('batteriesUpdated'))
+      
+      // Guardar también en el servidor
+      fetch('/api/batteries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ batteries: batteriesData }),
+      }).catch(error => {
+        console.error('Error saving batteries to server:', error)
+      })
     }
   }, [batteriesData, isAuthenticated])
 

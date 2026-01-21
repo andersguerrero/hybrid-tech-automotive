@@ -1,0 +1,3 @@
+Vercel CLI 50.4.8
+Loading scopes…
+Error: The specified token is not valid. Use `vercel login` to generate a new token.
