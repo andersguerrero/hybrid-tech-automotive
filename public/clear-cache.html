@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Cache</title>
+</head>
+<body>
+    <h1>Limpieza de cache</h1>
+    <button onclick="clear()">Limpiar</button>
+    <script>
+        function clear() {
+            localStorage.removeItem('admin_batteries');
+            localStorage.removeItem('batteries_edited_by_admin');
+            alert('Cache limpiado! Redirigiendo...');
+            window.location.href = '/batteries';
+        }
+    </script>
+</body>
+</html>

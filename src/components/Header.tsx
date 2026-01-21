@@ -1,0 +1,236 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { Menu, X, Phone, Calendar, ShoppingCart } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useSiteImages } from '@/hooks/useData'
+import { useCart } from '@/contexts/CartContext'
+import Cart from '@/components/Cart'
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { locale, setLocale, t } = useLanguage()
+  const siteImages = useSiteImages()
+  const { getTotalItems } = useCart()
+  const cartItemsCount = getTotalItems()
+
+  const navigation = [
+    { name: t.nav.home, href: '/' },
+    { name: t.nav.services, href: '/services' },
+    { name: t.nav.batteries, href: '/batteries' },
+    { name: t.nav.reviews, href: '/reviews' },
+    { name: t.nav.blog, href: '/blog' },
+    { name: t.nav.contact, href: '/contact' },
+  ]
+
+  return (
+    <header className="bg-white shadow-md sticky top-0 z-50">
+      <div className="container-custom">
+        <div className="flex justify-between items-center py-3">
+          {/* Logo */}
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <div className="h-16 w-auto">
+              <Image
+                src={siteImages.logo || "/logo.jpg"}
+                alt="Hybrid Tech Auto Logo"
+                width={180}
+                height={64}
+                className="h-full w-auto object-contain"
+              />
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-6 mx-6 flex-1">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-gray-700 hover:text-primary-500 font-medium transition-colors text-sm"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex items-center space-x-3">
+            {/* Shopping Cart */}
+            {cartItemsCount > 0 ? (
+              <Link
+                href="/cart"
+                className="relative p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
+                title="Shopping Cart"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
+                title="Shopping Cart"
+              >
+                <ShoppingCart className="w-5 h-5" />
+              </button>
+            )}
+
+            {/* Phone - Icon only */}
+            <a
+              href="tel:+18327625299"
+              className="p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
+              title="Call (832) 762-5299"
+            >
+              <Phone className="w-5 h-5" />
+            </a>
+
+            {/* Language Switcher - Compact */}
+            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setLocale('en')}
+                className={`px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  locale === 'en'
+                    ? 'bg-primary-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLocale('es')}
+                className={`px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  locale === 'es'
+                    ? 'bg-primary-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                ES
+              </button>
+            </div>
+
+            {/* Primary CTA */}
+            <Link
+              href="/booking"
+              className="btn-primary flex items-center space-x-2 px-4 py-2 text-sm"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Book Now</span>
+            </Link>
+          </div>
+
+          {/* Mobile: Actions + Menu Button */}
+          <div className="flex lg:hidden items-center space-x-2">
+            {/* Mobile Cart */}
+            {cartItemsCount > 0 ? (
+              <Link
+                href="/cart"
+                className="relative p-2 text-gray-700"
+              >
+                <ShoppingCart className="w-6 h-6" />
+                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 text-gray-700"
+              >
+                <ShoppingCart className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* Mobile Menu Button */}
+          <button
+              className="p-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="lg:hidden py-4 border-t border-gray-200">
+            <nav className="flex flex-col space-y-1">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-gray-700 hover:text-primary-500 font-medium transition-colors py-2.5 px-4 rounded-lg hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              
+              {/* Mobile Actions */}
+              <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
+                {/* Primary CTA */}
+                <Link
+                  href="/booking"
+                  className="btn-primary flex items-center justify-center space-x-2 w-full py-3"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Book Now</span>
+                </Link>
+
+                {/* Utilities Row */}
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Phone */}
+                  <a
+                    href="tel:+18327625299"
+                    className="flex flex-col items-center justify-center p-3 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 border border-gray-200"
+                  >
+                    <Phone className="w-5 h-5 mb-1" />
+                    <span className="text-xs">Call</span>
+                  </a>
+
+                  {/* Language */}
+                  <div className="flex flex-col items-center justify-center p-3 border border-gray-200 rounded-lg">
+                    <span className="text-xs text-gray-600 mb-2">Language</span>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => setLocale('en')}
+                        className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                          locale === 'en'
+                            ? 'bg-primary-500 text-white'
+                            : 'text-gray-700 bg-gray-100'
+                        }`}
+                      >
+                        EN
+                      </button>
+                      <button
+                        onClick={() => setLocale('es')}
+                        className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                          locale === 'es'
+                            ? 'bg-primary-500 text-white'
+                            : 'text-gray-700 bg-gray-100'
+                        }`}
+                      >
+                        ES
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        )}
+      </div>
+      {/* Cart Component */}
+      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </header>
+  )
+}

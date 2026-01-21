@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurar Imágenes de Baterías</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: green;
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            border-radius: 5px;
+        }
+        .info {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Restaurar Imágenes de Baterías</h1>
+        <div class="info">
+            <p><strong>¿Qué hace esto?</strong></p>
+            <p>Restaura todas las imágenes de las baterías a sus valores originales del archivo <code>batteries.ts</code>. Esto limpia cualquier cambio guardado en localStorage y carga las imágenes desde el archivo fuente.</p>
+        </div>
+        <div class="warning">
+            <p><strong>⚠️ Advertencia:</strong></p>
+            <p>Esto eliminará todos los cambios que hayas hecho a las imágenes desde el módulo de administración. Las imágenes volverán a los valores originales del sistema.</p>
+        </div>
+        <button onclick="restoreImages()">🔄 Restaurar Imágenes</button>
+        <button onclick="checkStorage()">🔍 Verificar Estado</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function restoreImages() {
+            // Limpiar datos de baterías del localStorage
+            localStorage.removeItem('admin_batteries');
+            localStorage.removeItem('batteries_edited_by_admin');
+            
+            document.getElementById('result').innerHTML = 
+                '<div class="success">' +
+                '✅ <strong>Imágenes restauradas exitosamente!</strong><br><br>' +
+                'Las imágenes de las baterías ahora se cargarán desde el archivo original.<br><br>' +
+                '<strong>Próximos pasos:</strong><br>' +
+                '1. Ve a la página de baterías: <a href="/batteries">/batteries</a><br>' +
+                '2. Recarga la página (F5 o Cmd+R)<br>' +
+                '3. Las imágenes deberían estar restauradas<br>' +
+                '</div>';
+        }
+
+        function checkStorage() {
+            const hasBatteries = localStorage.getItem('admin_batteries');
+            const hasFlag = localStorage.getItem('batteries_edited_by_admin');
+            
+            let message = '<div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">';
+            message += '<strong>Estado actual del Storage:</strong><br><br>';
+            
+            if (hasBatteries) {
+                const batteries = JSON.parse(hasBatteries);
+                message += '📦 <strong>admin_batteries:</strong> ✅ Existe (' + batteries.length + ' baterías)<br>';
+                
+                // Contar imágenes únicas
+                const uniqueImages = new Set(batteries.map(b => b.image));
+                message += '🖼️ <strong>Imágenes únicas en storage:</strong> ' + uniqueImages.size + '<br>';
+                message += '📝 <strong>Primeras 5 imágenes:</strong><br>';
+                Array.from(uniqueImages).slice(0, 5).forEach(img => {
+                    message += '&nbsp;&nbsp;• ' + img + '<br>';
+                });
+            } else {
+                message += '📦 <strong>admin_batteries:</strong> ❌ No existe (usará archivo original)<br>';
+            }
+            
+            message += '<br>🏷️ <strong>batteries_edited_by_admin:</strong> ' + (hasFlag ? '✅ ' + hasFlag : '❌ No existe') + '<br>';
+            
+            if (hasBatteries || hasFlag) {
+                message += '<br><strong>💡 Recomendación:</strong> Haz clic en "Restaurar Imágenes" para limpiar y usar las imágenes del archivo original.';
+            } else {
+                message += '<br><strong>✅ Estado:</strong> Ya estás usando las imágenes del archivo original.';
+            }
+            
+            message += '</div>';
+            
+            document.getElementById('result').innerHTML = message;
+        }
+
+        // Auto-check on load
+        checkStorage();
+    </script>
+</body>
+</html>

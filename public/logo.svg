@@ -1,0 +1,30 @@
+<svg width="224" height="112" viewBox="0 0 224 112" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00B4DB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0083B0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D4AA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00A86B;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Car silhouette -->
+  <path d="M28 60 Q34 48 48 48 L60 48 Q72 48 78 54 L90 54 Q96 54 102 60 L102 66 Q102 72 96 72 L36 72 Q28 72 28 66 Z" fill="url(#blueGradient)" stroke="none" filter="url(#glow)"/>
+
+  <!-- Leaf integrated in car -->
+  <path d="M60 48 Q66 36 72 48 Q66 42 60 48" fill="url(#greenGradient)" stroke="none" filter="url(#glow)"/>
+  <path d="M63 42 Q66 39 69 42" fill="#00E6B8" stroke="none"/>
+
+  <!-- Text -->
+  <text x="112" y="42" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="url(#greenGradient)" text-anchor="middle">HYBRID TECH</text>
+  <text x="112" y="66" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="url(#blueGradient)" text-anchor="middle">AUTOMOTIVE</text>
+</svg>
