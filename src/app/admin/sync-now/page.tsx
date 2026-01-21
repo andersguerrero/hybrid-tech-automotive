@@ -55,9 +55,12 @@ export default function SyncNowPage() {
         setStatus('success')
         setMessage(`¡Éxito! ${batteries.length} baterías sincronizadas a producción.`)
         
-        // También guardar en localStorage de producción (simulado)
         // Disparar evento para actualizar
         window.dispatchEvent(new CustomEvent('batteriesUpdated'))
+        
+        // Abrir producción en nueva pestaña para que también se guarden allí
+        const prodUrl = `https://hybrid-tech-automotive.vercel.app/admin/import-batteries?data=${encodeURIComponent(JSON.stringify(batteries))}`
+        window.open(prodUrl, '_blank')
         
         // Redirigir después de 3 segundos
         setTimeout(() => {
