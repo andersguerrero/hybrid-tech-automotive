@@ -15,11 +15,34 @@ export function useBatteries() {
   const [batteries, setBatteries] = useState<Battery[]>(initialBatteries)
 
   useEffect(() => {
-    // Cargar desde localStorage solo si existen datos editados desde admin
-    const saved = localStorage.getItem('admin_batteries')
-    const hasAdminEdits = localStorage.getItem('batteries_edited_by_admin')
-    
-    if (saved && hasAdminEdits === 'true') {
+    // Primero intentar cargar desde el servidor
+    const loadFromServer = async () => {
+      try {
+        const response = await fetch('/api/batteries')
+        const data = await response.json()
+        if (data.success && data.batteries && data.batteries.length > 0) {
+          console.log('Loaded batteries from server:', data.batteries.length)
+          setBatteries(data.batteries)
+          // Guardar en localStorage para compatibilidad
+          localStorage.setItem('admin_batteries', JSON.stringify(data.batteries))
+          localStorage.setItem('batteries_edited_by_admin', 'true')
+          return true
+        }
+      } catch (error) {
+        console.error('Error loading from server:', error)
+      }
+      return false
+    }
+
+    // Intentar cargar desde servidor primero
+    loadFromServer().then(loadedFromServer => {
+      if (loadedFromServer) return
+
+      // Si no hay en servidor, cargar desde localStorage solo si existen datos editados desde admin
+      const saved = localStorage.getItem('admin_batteries')
+      const hasAdminEdits = localStorage.getItem('batteries_edited_by_admin')
+      
+      if (saved && hasAdminEdits === 'true') {
       try {
         const parsed = JSON.parse(saved)
         // Verificar si los datos son consistentes con el archivo (mismo número de baterías)
@@ -95,6 +118,7 @@ export function useBatteries() {
       }
       setBatteries(initialBatteries)
     }
+    })
   }, [])
 
   useEffect(() => {
