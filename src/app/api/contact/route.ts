@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send contact form:', emailResult.error)
       const errorMsg = process.env.NODE_ENV === 'production'
         ? 'No se pudo enviar el correo. Intenta nuevamente o llámanos al (123) 456-7890.'
-        : `SMTP error: ${emailResult.error?.message || emailResult.error}`
+        : `SMTP error: ${(emailResult.error as Error)?.message || emailResult.error || 'Unknown error'}`
       return NextResponse.json(
         { success: false, error: errorMsg },
         { status: 500 }

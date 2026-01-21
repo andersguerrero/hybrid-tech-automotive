@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send confirmation email:', emailResult.error)
       const errorMsg = process.env.NODE_ENV === 'production'
         ? 'No se pudo enviar el correo de confirmación. Intenta nuevamente o contáctanos.'
-        : `SMTP error: ${emailResult.error?.message || emailResult.error}`
+        : `SMTP error: ${(emailResult.error as Error)?.message || emailResult.error || 'Unknown error'}`
       return NextResponse.json(
         { success: false, error: errorMsg },
         { status: 500 }

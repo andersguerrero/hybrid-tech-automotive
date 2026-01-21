@@ -287,7 +287,7 @@ export default function BatteriesAdminPage() {
             {!isAdding && !editingId && (
               <button onClick={handleAdd} className="btn-secondary flex items-center space-x-2">
                 <Plus className="w-5 h-5" />
-                <span>{t.admin.add} {t.admin.batteries}</span>
+                <span>{t.admin.addNew} {t.admin.batteries}</span>
               </button>
             )}
           </div>
@@ -375,6 +375,8 @@ export default function BatteriesAdminPage() {
                       id="battery-image-upload"
                       uploading={uploading}
                       onUpload={handleImageUpload}
+                      uploadingText="Subiendo imagen..."
+                      selectFileText="Seleccionar Imagen"
                     />
                     {formData.image && (
                       <div className="text-sm text-gray-600">

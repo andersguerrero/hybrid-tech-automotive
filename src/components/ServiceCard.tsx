@@ -75,7 +75,8 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       case 'maintenance':
         return t.services.categoryMaintenance
       default:
-        return service.category.charAt(0).toUpperCase() + service.category.slice(1)
+        const categoryStr = String(service.category)
+        return categoryStr.charAt(0).toUpperCase() + categoryStr.slice(1)
     }
   }
   return (
