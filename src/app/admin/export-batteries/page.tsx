@@ -245,7 +245,7 @@ export default function ExportBatteriesPage() {
                 className="btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <CheckCircle className="w-5 h-5" />
-                <span>{loading ? 'Sincronizando...' : 'Sincronizar al Servidor'}</span>
+                <span>{loading ? 'Sincronizando a Producción...' : 'Sincronizar a Producción'}</span>
               </button>
             </div>
 
