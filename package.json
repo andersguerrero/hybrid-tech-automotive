@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync-batteries": "node scripts/sync-batteries-to-source.js"
+    "sync-batteries": "node scripts/sync-batteries-to-source.js",
+    "sync-images": "node scripts/sync-images-to-git.js",
+    "sync-all": "node scripts/auto-sync-and-deploy.js"
   },
   "dependencies": {
     "next": "14.0.4",
