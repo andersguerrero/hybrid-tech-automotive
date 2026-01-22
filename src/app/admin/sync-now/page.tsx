@@ -21,22 +21,57 @@ export default function SyncNowPage() {
 
     try {
       // Leer baterías desde localStorage
-      const saved = localStorage.getItem('admin_batteries')
+      let saved = localStorage.getItem('admin_batteries')
+      let batteries = []
       
-      if (!saved) {
+      if (saved) {
+        try {
+          batteries = JSON.parse(saved)
+        } catch (e) {
+          console.error('Error parsing localStorage:', e)
+        }
+      }
+      
+      // Si no hay en localStorage, cargar desde el servidor local
+      if (!batteries || batteries.length === 0) {
+        setMessage('No hay baterías en localStorage, cargando desde servidor...')
+        try {
+          const response = await fetch('/api/batteries')
+          const data = await response.json()
+          if (data.success && data.batteries && data.batteries.length > 0) {
+            batteries = data.batteries
+            setMessage(`Cargadas ${batteries.length} baterías desde servidor`)
+          }
+        } catch (e) {
+          console.error('Error loading from server:', e)
+        }
+      }
+      
+      // Si aún no hay, cargar desde el archivo inicial
+      if (!batteries || batteries.length === 0) {
+        setMessage('Cargando baterías iniciales...')
+        try {
+          const response = await fetch('/api/initial-batteries')
+          const data = await response.json()
+          if (data.success && data.batteries && data.batteries.length > 0) {
+            batteries = data.batteries
+            // Guardar en localStorage para futuras sincronizaciones
+            localStorage.setItem('admin_batteries', JSON.stringify(batteries))
+            localStorage.setItem('batteries_edited_by_admin', 'true')
+            setMessage(`Cargadas ${batteries.length} baterías iniciales`)
+          }
+        } catch (e) {
+          console.error('Error loading initial batteries:', e)
+        }
+      }
+      
+      if (!batteries || batteries.length === 0) {
         setStatus('error')
-        setMessage('No hay baterías guardadas en localStorage. Por favor, guarda algunas baterías primero en /admin/batteries')
+        setMessage('No se encontraron baterías. Por favor, ve a /admin/batteries y agrega algunas baterías primero.')
         return
       }
 
-      const batteries = JSON.parse(saved)
       setBatteriesCount(batteries.length)
-
-      if (batteries.length === 0) {
-        setStatus('error')
-        setMessage('No hay baterías para sincronizar')
-        return
-      }
 
       setMessage(`Sincronizando ${batteries.length} baterías a producción...`)
 
