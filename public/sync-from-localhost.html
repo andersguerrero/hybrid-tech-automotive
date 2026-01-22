@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sincronizar desde Localhost</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover { background: #1976d2; }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .success {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .error {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Sincronizar Baterías desde Localhost</h1>
+        <p>Esta herramienta lee las baterías desde localStorage y las sincroniza al archivo fuente.</p>
+        
+        <div class="info">
+            <strong>📋 Instrucciones:</strong><br>
+            1. Asegúrate de estar en <strong>localhost</strong> (http://localhost:3000)<br>
+            2. Haz clic en "Sincronizar desde LocalStorage"<br>
+            3. El sistema actualizará automáticamente el archivo fuente<br>
+            4. Luego ejecuta: <code>git add src/data/batteries.ts && git commit -m "Sync from localhost" && vercel --prod --yes</code>
+        </div>
+
+        <div id="status"></div>
+        
+        <button id="syncBtn" onclick="syncFromLocalStorage()">🔄 Sincronizar desde LocalStorage</button>
+        <button onclick="checkBatteries()">📊 Ver Baterías</button>
+    </div>
+
+    <script>
+        async function syncFromLocalStorage() {
+            const btn = document.getElementById('syncBtn');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Sincronizando...';
+            status.innerHTML = '';
+
+            try {
+                // Leer baterías desde localStorage
+                const savedBatteries = localStorage.getItem('admin_batteries');
+                
+                if (!savedBatteries) {
+                    status.innerHTML = '<div class="error">❌ No se encontraron baterías en localStorage. Ve al panel admin y guarda las baterías primero.</div>';
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Sincronizar desde LocalStorage';
+                    return;
+                }
+
+                const batteries = JSON.parse(savedBatteries);
+                
+                if (!Array.isArray(batteries) || batteries.length === 0) {
+                    status.innerHTML = '<div class="error">❌ No hay baterías válidas en localStorage.</div>';
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Sincronizar desde LocalStorage';
+                    return;
+                }
+
+                // Contar imágenes personalizadas
+                const customImages = batteries.filter(b => 
+                    b.image && b.image.includes('battery-')
+                ).length;
+
+                status.innerHTML = `<div class="info">📤 Enviando ${batteries.length} baterías al servidor...<br>${customImages} con imágenes personalizadas</div>`;
+
+                // Enviar al servidor para actualizar el archivo fuente
+                const response = await fetch('/api/save-batteries-to-source', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ batteries }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.savedToSource) {
+                        status.innerHTML = `
+                            <div class="success">
+                                ✅ <strong>¡Sincronización exitosa!</strong><br>
+                                Se actualizaron <strong>${data.count}</strong> baterías en el archivo fuente.<br>
+                                ${customImages > 0 ? `<br>📸 ${customImages} baterías con imágenes personalizadas incluidas.` : ''}<br><br>
+                                <strong>Próximos pasos:</strong><br>
+                                <pre>git add src/data/batteries.ts data/batteries-custom.json
+git commit -m "Sync batteries from localhost with custom images"
+vercel --prod --yes</pre>
+                            </div>
+                        `;
+                    } else {
+                        status.innerHTML = `
+                            <div class="error">
+                                ⚠️ <strong>Guardado en JSON</strong><br>
+                                Las baterías se guardaron pero no se pudo actualizar el archivo fuente.<br><br>
+                                <strong>Ejecuta localmente:</strong><br>
+                                <pre>npm run sync-batteries</pre>
+                            </div>
+                        `;
+                    }
+                } else {
+                    status.innerHTML = `<div class="error">❌ Error: ${data.error || 'Error desconocido'}</div>`;
+                }
+            } catch (error) {
+                status.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Sincronizar desde LocalStorage';
+            }
+        }
+
+        function checkBatteries() {
+            const savedBatteries = localStorage.getItem('admin_batteries');
+            const status = document.getElementById('status');
+            
+            if (!savedBatteries) {
+                status.innerHTML = '<div class="error">❌ No hay baterías en localStorage.</div>';
+                return;
+            }
+
+            try {
+                const batteries = JSON.parse(savedBatteries);
+                const customImages = batteries.filter(b => 
+                    b.image && b.image.includes('battery-')
+                );
+                
+                status.innerHTML = `
+                    <div class="info">
+                        <strong>📊 Baterías en localStorage:</strong><br>
+                        Total: <strong>${batteries.length}</strong><br>
+                        Con imágenes personalizadas: <strong>${customImages.length}</strong><br><br>
+                        <strong>Ejemplos de imágenes personalizadas:</strong><br>
+                        ${customImages.slice(0, 5).map(b => 
+                            `- ${b.vehicle}: ${b.image}`
+                        ).join('<br>')}
+                    </div>
+                `;
+            } catch (error) {
+                status.innerHTML = `<div class="error">❌ Error leyendo baterías: ${error.message}</div>`;
+            }
+        }
+
+        // Verificar baterías al cargar
+        window.onload = () => {
+            checkBatteries();
+        };
+    </script>
+</body>
+</html>
