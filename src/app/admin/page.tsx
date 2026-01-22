@@ -168,6 +168,13 @@ export default function AdminPage() {
       color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
+      title: 'Sync Now (Auto)',
+      description: 'Automatically sync batteries to production right now',
+      icon: Settings,
+      href: '/admin/sync-now',
+      color: 'bg-green-500 hover:bg-green-600'
+    },
+    {
       title: t.admin.images,
       description: t.admin.imagesDesc,
       icon: ImageIcon,

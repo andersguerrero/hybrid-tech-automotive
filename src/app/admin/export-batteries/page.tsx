@@ -109,9 +109,12 @@ export default function ExportBatteriesPage() {
 
     setLoading(true)
     setError('')
+    setImported(false)
 
     try {
-      const response = await fetch('/api/batteries', {
+      // Primero sincronizar a producción
+      const productionUrl = 'https://hybrid-tech-automotive.vercel.app'
+      const prodResponse = await fetch(`${productionUrl}/api/batteries`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -119,17 +122,43 @@ export default function ExportBatteriesPage() {
         body: JSON.stringify({ batteries }),
       })
 
-      const data = await response.json()
+      const prodData = await prodResponse.json()
 
-      if (data.success) {
+      if (!prodData.success) {
+        throw new Error(prodData.error || 'Error al sincronizar a producción')
+      }
+
+      // También guardar localmente
+      const localResponse = await fetch('/api/batteries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ batteries }),
+      })
+
+      const localData = await localResponse.json()
+
+      if (localData.success || prodData.success) {
         setImported(true)
-        setTimeout(() => setImported(false), 3000)
+        setError('')
+        setTimeout(() => setImported(false), 5000)
         window.dispatchEvent(new CustomEvent('batteriesUpdated'))
+        
+        // Verificar que se guardó correctamente
+        setTimeout(async () => {
+          const verifyResponse = await fetch(`${productionUrl}/api/batteries`)
+          const verifyData = await verifyResponse.json()
+          if (verifyData.success && verifyData.batteries) {
+            console.log('✅ Verificación: Baterías en producción:', verifyData.batteries.length)
+          }
+        }, 2000)
       } else {
-        throw new Error(data.error || 'Error al sincronizar')
+        throw new Error(localData.error || 'Error al sincronizar localmente')
       }
     } catch (err: any) {
       setError(err.message || 'Error al sincronizar con el servidor')
+      setImported(false)
     } finally {
       setLoading(false)
     }
