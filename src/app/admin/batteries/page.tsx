@@ -120,16 +120,16 @@ export default function BatteriesAdminPage() {
     loadBatteriesFromServer()
   }, [])
 
-  // Guardar baterías en localStorage y servidor cuando cambien
+  // Guardar baterías en localStorage, servidor Y archivo fuente cuando cambien
   useEffect(() => {
     if (isAuthenticated && batteriesData.length > 0) {
-      console.log('Saving batteries to localStorage and server:', batteriesData)
+      console.log('Saving batteries to localStorage, server, and source file:', batteriesData)
       localStorage.setItem('admin_batteries', JSON.stringify(batteriesData))
       localStorage.setItem('batteries_edited_by_admin', 'true')
       // Disparar evento personalizado para actualizar otros componentes
       window.dispatchEvent(new CustomEvent('batteriesUpdated'))
       
-      // Guardar también en el servidor
+      // Guardar en el servidor (para producción)
       fetch('/api/batteries', {
         method: 'POST',
         headers: {
@@ -139,6 +139,25 @@ export default function BatteriesAdminPage() {
       }).catch(error => {
         console.error('Error saving batteries to server:', error)
       })
+      
+      // IMPORTANTE: Guardar también en el archivo fuente para que se despliegue correctamente
+      fetch('/api/save-batteries-to-source', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ batteries: batteriesData }),
+      }).then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('✅ Baterías guardadas en el archivo fuente. Los cambios se reflejarán en el próximo despliegue.')
+          } else {
+            console.warn('⚠️ No se pudo guardar en el archivo fuente (normal en producción):', data.error)
+          }
+        })
+        .catch(error => {
+          console.warn('⚠️ Error guardando en archivo fuente (normal en producción):', error)
+        })
     }
   }, [batteriesData, isAuthenticated])
 
