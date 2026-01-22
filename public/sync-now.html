@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sync Batteries Now</title>
+    <style>
+        body { font-family: Arial; padding: 40px; max-width: 800px; margin: 0 auto; }
+        .status { padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .loading { background: #e3f2fd; border: 1px solid #2196f3; }
+        .success { background: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; }
+        .error { background: #ffebee; border: 1px solid #f44336; color: #c62828; }
+        button { padding: 12px 24px; font-size: 16px; cursor: pointer; margin: 10px 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Sincronización Automática de Baterías</h1>
+    <div id="status" class="status loading">Iniciando sincronización...</div>
+    <div id="result"></div>
+    
+    <script>
+        (async function() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                statusDiv.innerHTML = '📡 Leyendo baterías desde localStorage...';
+                
+                const saved = localStorage.getItem('admin_batteries');
+                if (!saved) {
+                    throw new Error('No hay baterías en localStorage. Ve a /admin/batteries y guarda algunas baterías primero.');
+                }
+                
+                const batteries = JSON.parse(saved);
+                statusDiv.innerHTML = `✅ Encontradas ${batteries.length} baterías. Sincronizando a producción...`;
+                
+                const response = await fetch('https://hybrid-tech-automotive.vercel.app/api/batteries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ batteries })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `✅ Sincronización Exitosa!<br>${batteries.length} baterías sincronizadas a producción.`;
+                    resultDiv.innerHTML = `
+                        <p><a href="https://hybrid-tech-automotive.vercel.app/batteries" target="_blank" style="color: #4caf50; font-weight: bold;">Ver Baterías en Producción →</a></p>
+                        <p><a href="/admin" style="color: #2196f3;">Volver al Panel de Admin</a></p>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `❌ Error: ${error.message}`;
+                resultDiv.innerHTML = `<button onclick="location.reload()">Intentar Nuevamente</button>`;
+            }
+        })();
+    </script>
+</body>
+</html>
