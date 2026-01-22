@@ -43,81 +43,23 @@ export function useBatteries() {
       const hasAdminEdits = localStorage.getItem('batteries_edited_by_admin')
       
       if (saved && hasAdminEdits === 'true') {
-      try {
-        const parsed = JSON.parse(saved)
-        // Verificar si los datos son consistentes con el archivo (mismo número de baterías)
-        // Si no coinciden, usar datos del archivo y limpiar localStorage
-        if (parsed.length !== initialBatteries.length) {
-          console.log('Inconsistent battery count, using fresh data from src/data/batteries.ts')
-          localStorage.removeItem('admin_batteries')
-          localStorage.removeItem('batteries_edited_by_admin')
-          setBatteries(initialBatteries)
-        } else {
-          // Verificar si hay diferencias en precios de baterías de Prius, Prius V, Lexus GS450h, HS250h y Toyota Highlander
-          // Comparar precios entre localStorage y archivo
-          const targetBatteriesInFile = initialBatteries.filter(
-            b => (
-              (b.vehicle.startsWith('Toyota Prius (') || b.vehicle.startsWith('Toyota Prius V (')) && b.condition === 'new'
-            ) || (
-              b.vehicle.startsWith('Lexus GS450h (') && (b.condition === 'new' || b.condition === 'refurbished')
-            ) || (
-              b.vehicle.startsWith('Lexus HS250h (') && (b.condition === 'new' || b.condition === 'refurbished')
-            ) || (
-              b.vehicle.startsWith('Toyota Highlander (') && (b.condition === 'new' || b.condition === 'refurbished')
-            )
-          )
-          const targetBatteriesInStorage = parsed.filter(
-            (b: Battery) => (
-              (b.vehicle.startsWith('Toyota Prius (') || b.vehicle.startsWith('Toyota Prius V (')) && b.condition === 'new'
-            ) || (
-              b.vehicle.startsWith('Lexus GS450h (') && (b.condition === 'new' || b.condition === 'refurbished')
-            ) || (
-              b.vehicle.startsWith('Lexus HS250h (') && (b.condition === 'new' || b.condition === 'refurbished')
-            ) || (
-              b.vehicle.startsWith('Toyota Highlander (') && (b.condition === 'new' || b.condition === 'refurbished')
-            )
-          )
-          
-          // Verificar si hay diferencias en precios
-          let hasPriceDifference = false
-          for (const fileBattery of targetBatteriesInFile) {
-            const storageBattery = targetBatteriesInStorage.find(
-              (b: Battery) => b.id === fileBattery.id
-            )
-            if (storageBattery && storageBattery.price !== fileBattery.price) {
-              hasPriceDifference = true
-              console.log(`Price mismatch for battery ${fileBattery.id} (${fileBattery.vehicle}): storage=${storageBattery.price}, file=${fileBattery.price}`)
-              break
-            }
-          }
-          
-          if (hasPriceDifference) {
-            console.log('Price differences detected, using fresh data from src/data/batteries.ts')
-            localStorage.removeItem('admin_batteries')
-            localStorage.removeItem('batteries_edited_by_admin')
-            setBatteries(initialBatteries)
-          } else {
+        try {
+          const parsed = JSON.parse(saved)
+          if (parsed && Array.isArray(parsed) && parsed.length > 0) {
             console.log('Loaded from localStorage (admin edited):', parsed.length, 'batteries')
             setBatteries(parsed)
+          } else {
+            console.log('Invalid localStorage data, using initial batteries')
+            setBatteries(initialBatteries)
           }
+        } catch (e) {
+          console.log('Error parsing localStorage, using initial:', initialBatteries.length, 'batteries')
+          setBatteries(initialBatteries)
         }
-      } catch (e) {
-        console.log('Error parsing localStorage, using initial:', initialBatteries.length, 'batteries')
-        localStorage.removeItem('admin_batteries')
-        localStorage.removeItem('batteries_edited_by_admin')
+      } else {
+        console.log('Using fresh data from src/data/batteries.ts:', initialBatteries.length, 'batteries')
         setBatteries(initialBatteries)
       }
-    } else {
-      console.log('Using fresh data from src/data/batteries.ts:', initialBatteries.length, 'batteries')
-      // Clear old localStorage data if no admin edits
-      if (saved) {
-        localStorage.removeItem('admin_batteries')
-      }
-      if (hasAdminEdits) {
-        localStorage.removeItem('batteries_edited_by_admin')
-      }
-      setBatteries(initialBatteries)
-    }
     })
   }, [])
 

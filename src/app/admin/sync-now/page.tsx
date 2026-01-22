@@ -13,6 +13,7 @@ export default function SyncNowPage() {
   useEffect(() => {
     // Sincronizar automáticamente al cargar la página
     syncBatteries()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const syncBatteries = async () => {
