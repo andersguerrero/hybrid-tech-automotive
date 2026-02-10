@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  experimental: {
+    serverComponentsExternalPackages: ['@vercel/blob'],
+  },
   images: {
     remotePatterns: [
       {
@@ -12,6 +15,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
         port: '',
         pathname: '/**',
       },

@@ -109,6 +109,17 @@ export default function BatteryImagesAdminPage() {
       localStorage.setItem('admin_batteries', JSON.stringify(updatedBatteries))
       localStorage.setItem('batteries_edited_by_admin', 'true')
       
+      // Guardar también en el servidor para que /batteries muestre los cambios
+      try {
+        await fetch('/api/batteries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ batteries: updatedBatteries }),
+        })
+      } catch (e) {
+        console.error('Error saving batteries to server:', e)
+      }
+      
       // Dispatch event
       window.dispatchEvent(new Event('batteriesUpdated'))
       
@@ -121,9 +132,18 @@ export default function BatteryImagesAdminPage() {
     }
   }
 
-  const handleSaveAll = () => {
+  const handleSaveAll = async () => {
     localStorage.setItem('admin_batteries', JSON.stringify(batteries))
     localStorage.setItem('batteries_edited_by_admin', 'true')
+    try {
+      await fetch('/api/batteries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batteries }),
+      })
+    } catch (e) {
+      console.error('Error saving batteries to server:', e)
+    }
     window.dispatchEvent(new Event('batteriesUpdated'))
     setImagesChanged(false)
     alert('All changes saved successfully!')
@@ -184,15 +204,17 @@ export default function BatteryImagesAdminPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            {imagesChanged && (
-              <button
-                onClick={handleSaveAll}
-                className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
-              >
-                <Save className="w-5 h-5" />
-                Save All Changes
-              </button>
-            )}
+            <button
+              onClick={handleSaveAll}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                imagesChanged
+                  ? 'bg-primary-500 text-white hover:bg-primary-600'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
+            >
+              <Save className="w-5 h-5" />
+              Save All Changes
+            </button>
             <Link
               href="/admin"
               className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"

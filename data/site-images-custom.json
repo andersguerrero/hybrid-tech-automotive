@@ -1,0 +1,26 @@
+{
+  "logo": "/logo.jpg",
+  "hero": "/images/home/hero-1770758460487.png",
+  "location": "/images/location.jpg",
+  "services": {
+    "suspension": "/images/services/suspension-inspection.jpg",
+    "brakeReplacement": "/images/services/brake-replacement.jpg",
+    "coolantFlush": "/images/services/coolant-flush.jpg",
+    "transmissionService": "/images/services/transmission-service.jpg",
+    "batteryDiagnostic": "/images/services/battery-diagnostic.jpg"
+  },
+  "batteries": {
+    "prius": "/images/batteries/prius-battery.jpg",
+    "camry": "/images/batteries/camry-battery.jpg",
+    "lexusRx": "/images/batteries/lexus-rx-battery.jpg",
+    "lexusCt": "/images/batteries/lexus-ct-battery.jpg"
+  },
+  "blog": {
+    "blog1": "/images/blog/blog-1.jpg",
+    "blog2": "/images/blog/blog-2.jpg",
+    "blog3": "/images/blog/blog-3.jpg",
+    "blog4": "/images/blog/blog-4.jpg",
+    "blog5": "/images/blog/blog-5.jpg",
+    "blog6": "/images/blog/blog-6.jpg"
+  }
+}

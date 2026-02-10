@@ -235,35 +235,44 @@ export function useBlogPosts() {
 export function useSiteImages() {
   const [siteImages, setSiteImages] = useState<SiteImages>(initialSiteImages)
 
-  useEffect(() => {
+  const loadSiteImages = async () => {
+    try {
+      const response = await fetch('/api/site-images')
+      const data = await response.json()
+      if (data.success && data.siteImages) {
+        setSiteImages(data.siteImages)
+        localStorage.setItem('admin_site_images', JSON.stringify(data.siteImages))
+        return
+      }
+    } catch (error) {
+      console.error('Error loading site images from API:', error)
+    }
+    // Fallback: localStorage o defaults
     const saved = localStorage.getItem('admin_site_images')
     if (saved) {
       try {
         setSiteImages(JSON.parse(saved))
-      } catch (e) {
+      } catch {
         setSiteImages(initialSiteImages)
       }
     }
+  }
+
+  useEffect(() => {
+    loadSiteImages()
   }, [])
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      const saved = localStorage.getItem('admin_site_images')
-      if (saved) {
-        try {
-          setSiteImages(JSON.parse(saved))
-        } catch (e) {
-          // Ignorar errores
-        }
-      }
+    const handleUpdate = () => {
+      loadSiteImages()
     }
 
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('siteImagesUpdated', handleStorageChange)
+    window.addEventListener('storage', handleUpdate)
+    window.addEventListener('siteImagesUpdated', handleUpdate)
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('siteImagesUpdated', handleStorageChange)
+      window.removeEventListener('storage', handleUpdate)
+      window.removeEventListener('siteImagesUpdated', handleUpdate)
     }
   }, [])
 

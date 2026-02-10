@@ -121,6 +121,17 @@ export default function ImagesAdminPage() {
       setIsAuthenticated(true)
     }
 
+    // Cargar imágenes del sitio guardadas desde localStorage
+    const savedSiteImages = localStorage.getItem('admin_site_images')
+    if (savedSiteImages) {
+      try {
+        const parsed = JSON.parse(savedSiteImages)
+        setImagesData(parsed)
+      } catch (error) {
+        console.error('Error loading saved site images:', error)
+      }
+    }
+
     // Cargar baterías guardadas desde localStorage
     const savedBatteries = localStorage.getItem('admin_batteries')
     if (savedBatteries) {
@@ -210,36 +221,71 @@ export default function ImagesAdminPage() {
         body: formData,
       })
 
-      const data = await response.json()
+      let data: { success?: boolean; url?: string; error?: string }
+      try {
+        data = await response.json()
+      } catch {
+        throw new Error('La respuesta del servidor no es válida. ¿Estás en producción? Las subidas solo funcionan en localhost.')
+      }
 
-      if (data.success) {
-        // Actualizar la URL de la imagen
+      if (response.ok && data.success && data.url) {
+        // Actualizar la URL de la imagen en el estado
         handleImageChange(section, subKey, data.url)
-        // Guardar y notificar cambios en imágenes del sitio
-        const updatedImages = { ...imagesData }
+        // Obtener el estado actual de localStorage (evita condiciones de carrera)
+        let baseImages: SiteImages
+        try {
+          const currentSaved = localStorage.getItem('admin_site_images')
+          baseImages = currentSaved ? JSON.parse(currentSaved) : { ...imagesData }
+        } catch {
+          baseImages = { ...imagesData }
+        }
+        const updatedImages = { ...baseImages }
         if (subKey && typeof updatedImages[section] === 'object') {
           (updatedImages[section] as any)[subKey] = data.url
         } else if (!subKey) {
           (updatedImages[section] as any) = data.url
         }
         localStorage.setItem('admin_site_images', JSON.stringify(updatedImages))
+        // Guardar en Vercel Blob para que todos los visitantes vean los cambios
+        try {
+          await fetch('/api/site-images', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ siteImages: updatedImages }),
+          })
+        } catch (e) {
+          console.error('Error saving to server:', e)
+        }
         window.dispatchEvent(new Event('siteImagesUpdated'))
         setSavedMessage('Imagen subida correctamente')
         setTimeout(() => setSavedMessage(''), 3000)
       } else {
-        alert('Error al subir la imagen: ' + data.error)
+        const errorMsg = data?.error || (response.status === 500 
+          ? 'Error del servidor. En producción, conecta un Blob Store en Vercel para habilitar subidas.' 
+          : `Error ${response.status}`)
+        alert('Error al subir la imagen: ' + errorMsg)
       }
     } catch (error) {
       console.error('Error uploading file:', error)
-      alert('Error al subir la imagen')
+      const msg = error instanceof Error ? error.message : 'Error al subir la imagen'
+      alert(msg)
     } finally {
       setUploading(null)
     }
   }
 
-  const handleSave = () => {
-    // Guardar imágenes del sitio
+  const handleSave = async () => {
+    // Guardar imágenes del sitio en localStorage y en Vercel Blob
     localStorage.setItem('admin_site_images', JSON.stringify(imagesData))
+    try {
+      await fetch('/api/site-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteImages: imagesData }),
+      })
+    } catch (e) {
+      console.error('Error saving to server:', e)
+    }
     window.dispatchEvent(new Event('siteImagesUpdated'))
     
     // Guardar baterías con sus imágenes actualizadas
@@ -409,7 +455,7 @@ export default function ImagesAdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <section className="bg-primary-500 text-white section-padding">
+      <section className="sticky top-0 z-10 bg-primary-500 text-white section-padding shadow-lg">
         <div className="container-custom">
           <Link href="/admin" className="inline-flex items-center text-blue-100 hover:text-white mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -417,6 +463,15 @@ export default function ImagesAdminPage() {
           </Link>
           <h1 className="text-4xl font-bold mb-2">Gestión de Imágenes</h1>
           <p className="text-xl text-blue-100">Administra todas las imágenes del sitio web</p>
+          <p className="mt-2 text-sm text-blue-200">
+            En producción (Vercel) las imágenes se guardan en Vercel Blob. Conecta un Blob Store en el proyecto para habilitarlo.
+          </p>
+          <div className="mt-4">
+            <button onClick={handleSave} className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-primary-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
+              <Save className="w-5 h-5" />
+              Guardar Cambios
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1125,7 +1180,7 @@ export default function ImagesAdminPage() {
             </div>
           </div>
 
-          {/* Save Button */}
+          {/* Save Button (también visible arriba en el header) */}
           <div className="flex justify-end">
             <button onClick={handleSave} className="btn-primary flex items-center space-x-2">
               <Save className="w-5 h-5" />

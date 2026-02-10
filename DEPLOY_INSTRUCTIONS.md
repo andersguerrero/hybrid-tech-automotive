@@ -75,6 +75,16 @@ NEXT_PUBLIC_BASE_URL=https://tu-dominio.vercel.app
 NEXT_PUBLIC_ADMIN_PASSWORD=Toyotaprius2024!
 ```
 
+### 📸 Imágenes en producción (Vercel Blob)
+
+Para que el panel de administración pueda subir imágenes en producción:
+
+1. Ve a tu proyecto en [Vercel Dashboard](https://vercel.com/dashboard)
+2. Pestaña **Storage** → **Connect Database** → **Create New** → **Blob**
+3. Crea un Blob Store y asígnelo a tu proyecto
+4. La variable `BLOB_READ_WRITE_TOKEN` se configurará automáticamente
+5. Las imágenes subidas desde el admin se guardarán en Vercel Blob y serán accesibles públicamente
+
 ## 🔄 Despliegue Automático con GitHub
 
 Si usas GitHub, el workflow `.github/workflows/deploy.yml` está configurado para desplegar automáticamente cuando hagas push.

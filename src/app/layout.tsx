@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import LanguageProviderWrapper from '@/providers/LanguageProviderWrapper'
 import CartProviderWrapper from '@/providers/CartProviderWrapper'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Hybrid Tech Auto - Hybrid Battery Replacement & Car Services',
@@ -33,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <LanguageProviderWrapper>
           <CartProviderWrapper>
             <Header />

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Download, Upload, CheckCircle, AlertCircle } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Download, Upload, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
@@ -11,21 +11,46 @@ export default function ExportBatteriesPage() {
   const [imported, setImported] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadStatus, setLoadStatus] = useState<'loading' | 'server' | 'local' | 'empty' | 'error'>('loading')
 
-  useEffect(() => {
-    // Cargar baterías desde localStorage
+  const loadBatteries = useCallback(async () => {
+    setLoadStatus('loading')
+    setError('')
+
+    try {
+      const response = await fetch('/api/batteries')
+      const data = await response.json()
+      if (data.success && data.batteries && data.batteries.length > 0) {
+        setBatteries(data.batteries)
+        localStorage.setItem('admin_batteries', JSON.stringify(data.batteries))
+        localStorage.setItem('batteries_edited_by_admin', 'true')
+        setLoadStatus('server')
+        return
+      }
+    } catch (e) {
+      console.warn('No se pudo cargar desde el servidor, usando localStorage:', e)
+    }
+
     const saved = localStorage.getItem('admin_batteries')
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
         setBatteries(parsed)
+        setLoadStatus(parsed.length > 0 ? 'local' : 'empty')
       } catch (e) {
         setError('Error al leer las baterías desde localStorage')
+        setLoadStatus('error')
       }
     } else {
-      setError('No hay baterías guardadas en localStorage')
+      setBatteries([])
+      setLoadStatus('empty')
+      setError('')
     }
   }, [])
+
+  useEffect(() => {
+    loadBatteries()
+  }, [loadBatteries])
 
   const handleExport = () => {
     if (batteries.length === 0) {
@@ -185,14 +210,36 @@ export default function ExportBatteriesPage() {
             {/* Estado actual */}
             <div>
               <h2 className="text-2xl font-bold mb-4">Estado Actual</h2>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700">
-                  <strong>Baterías en localStorage:</strong> {batteries.length}
-                </p>
-                {batteries.length > 0 && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    Última actualización: {new Date().toLocaleString()}
-                  </p>
+              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                {loadStatus === 'loading' && (
+                  <p className="text-gray-600">Cargando baterías...</p>
+                )}
+                {loadStatus !== 'loading' && (
+                  <>
+                    <p className="text-gray-700">
+                      <strong>Baterías cargadas:</strong> {batteries.length}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Origen: {loadStatus === 'server' && 'Servidor'}
+                      {loadStatus === 'local' && 'localStorage'}
+                      {loadStatus === 'empty' && 'Ninguna (vacío)'}
+                      {loadStatus === 'error' && 'Error'}
+                    </p>
+                    {batteries.length > 0 && (
+                      <p className="text-sm text-gray-600">
+                        Última actualización: {new Date().toLocaleString()}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={loadBatteries}
+                      disabled={loading}
+                      className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      Refrescar
+                    </button>
+                  </>
                 )}
               </div>
             </div>
