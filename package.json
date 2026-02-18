@@ -2,6 +2,7 @@
   "name": "hybrid-tech-automotive",
   "version": "0.1.0",
   "private": true,
+  "engines": { "node": ">=18.0.0 <25" },
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
@@ -22,6 +23,7 @@
     "react-datepicker": "^4.25.0",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
+    "resend": "^6.9.2",
     "stripe": "^14.9.0",
     "tailwind-merge": "^2.2.0"
   },

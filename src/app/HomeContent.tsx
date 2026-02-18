@@ -10,7 +10,7 @@ import { useBatteries, useServices, useSiteImages } from '@/hooks/useData'
 
 export default function HomeContent() {
   const { t } = useLanguage()
-  const batteries = useBatteries()
+  const { batteries, isReady: batteriesReady } = useBatteries()
   const services = useServices()
   const siteImages = useSiteImages()
 
@@ -124,9 +124,19 @@ export default function HomeContent() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            {batteries.slice(0, 2).map((battery) => (
-              <BatteryCard key={battery.id} battery={battery} />
-            ))}
+            {!batteriesReady ? (
+              [1, 2].map((i) => (
+                <div key={i} className="card animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-lg mb-4" />
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                </div>
+              ))
+            ) : (
+              batteries.slice(0, 2).map((battery) => (
+                <BatteryCard key={battery.id} battery={battery} />
+              ))
+            )}
           </div>
           <div className="text-center">
             <Link href="/batteries" className="btn-primary text-lg px-8 py-4 inline-flex items-center">

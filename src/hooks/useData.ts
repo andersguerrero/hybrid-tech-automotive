@@ -11,8 +11,8 @@ import type { SiteImages } from '@/data/images'
 import type { Review } from '@/types'
 
 export function useBatteries() {
-  // Initialize with initialBatteries to prevent empty array on first render
   const [batteries, setBatteries] = useState<Battery[]>(initialBatteries)
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     // Primero intentar cargar desde el servidor
@@ -36,7 +36,10 @@ export function useBatteries() {
 
     // Intentar cargar desde servidor primero
     loadFromServer().then(loadedFromServer => {
-      if (loadedFromServer) return
+      if (loadedFromServer) {
+        setIsReady(true)
+        return
+      }
 
       // Si no hay en servidor, cargar desde localStorage solo si existen datos editados desde admin
       const saved = localStorage.getItem('admin_batteries')
@@ -52,6 +55,7 @@ export function useBatteries() {
           localStorage.removeItem('admin_batteries')
           localStorage.removeItem('batteries_edited_by_admin')
           setBatteries(initialBatteries)
+          setIsReady(true)
         } else {
           // Verificar si hay diferencias en precios de baterías de Prius, Prius V, Lexus GS450h, HS250h y Toyota Highlander
           // Comparar precios entre localStorage y archivo
@@ -96,9 +100,11 @@ export function useBatteries() {
             localStorage.removeItem('admin_batteries')
             localStorage.removeItem('batteries_edited_by_admin')
             setBatteries(initialBatteries)
+            setIsReady(true)
           } else {
             console.log('Loaded from localStorage (admin edited):', parsed.length, 'batteries')
             setBatteries(parsed)
+            setIsReady(true)
           }
         }
       } catch (e) {
@@ -106,6 +112,7 @@ export function useBatteries() {
         localStorage.removeItem('admin_batteries')
         localStorage.removeItem('batteries_edited_by_admin')
         setBatteries(initialBatteries)
+        setIsReady(true)
       }
     } else {
       console.log('Using fresh data from src/data/batteries.ts:', initialBatteries.length, 'batteries')
@@ -117,6 +124,7 @@ export function useBatteries() {
         localStorage.removeItem('batteries_edited_by_admin')
       }
       setBatteries(initialBatteries)
+      setIsReady(true)
     }
     })
   }, [])
@@ -153,41 +161,49 @@ export function useBatteries() {
     }
   }, [])
 
-  return batteries
+  return { batteries, isReady }
 }
 
 export function useServices() {
   const [services, setServices] = useState<Service[]>(initialServices)
 
-  useEffect(() => {
+  const loadServices = async () => {
+    try {
+      const response = await fetch('/api/services')
+      const data = await response.json()
+      if (data.success && data.services && data.services.length > 0) {
+        setServices(data.services)
+        localStorage.setItem('admin_services', JSON.stringify(data.services))
+        return
+      }
+    } catch (error) {
+      console.error('Error loading services from API:', error)
+    }
     const saved = localStorage.getItem('admin_services')
     if (saved) {
       try {
         setServices(JSON.parse(saved))
-      } catch (e) {
+      } catch {
         setServices(initialServices)
       }
     }
+  }
+
+  useEffect(() => {
+    loadServices()
   }, [])
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      const saved = localStorage.getItem('admin_services')
-      if (saved) {
-        try {
-          setServices(JSON.parse(saved))
-        } catch (e) {
-          // Ignorar errores
-        }
-      }
+    const handleUpdate = () => {
+      loadServices()
     }
 
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('servicesUpdated', handleStorageChange)
+    window.addEventListener('storage', handleUpdate)
+    window.addEventListener('servicesUpdated', handleUpdate)
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('servicesUpdated', handleStorageChange)
+      window.removeEventListener('storage', handleUpdate)
+      window.removeEventListener('servicesUpdated', handleUpdate)
     }
   }, [])
 
@@ -197,35 +213,43 @@ export function useServices() {
 export function useBlogPosts() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPosts)
 
-  useEffect(() => {
+  const loadBlogPosts = async () => {
+    try {
+      const response = await fetch('/api/blog')
+      const data = await response.json()
+      if (data.success && data.blogPosts && data.blogPosts.length > 0) {
+        setBlogPosts(data.blogPosts)
+        localStorage.setItem('admin_blog', JSON.stringify(data.blogPosts))
+        return
+      }
+    } catch (error) {
+      console.error('Error loading blog posts from API:', error)
+    }
     const saved = localStorage.getItem('admin_blog')
     if (saved) {
       try {
         setBlogPosts(JSON.parse(saved))
-      } catch (e) {
+      } catch {
         setBlogPosts(initialBlogPosts)
       }
     }
+  }
+
+  useEffect(() => {
+    loadBlogPosts()
   }, [])
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      const saved = localStorage.getItem('admin_blog')
-      if (saved) {
-        try {
-          setBlogPosts(JSON.parse(saved))
-        } catch (e) {
-          // Ignorar errores
-        }
-      }
+    const handleUpdate = () => {
+      loadBlogPosts()
     }
 
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('blogUpdated', handleStorageChange)
+    window.addEventListener('storage', handleUpdate)
+    window.addEventListener('blogUpdated', handleUpdate)
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('blogUpdated', handleStorageChange)
+      window.removeEventListener('storage', handleUpdate)
+      window.removeEventListener('blogUpdated', handleUpdate)
     }
   }, [])
 

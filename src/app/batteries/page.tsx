@@ -9,7 +9,7 @@ import { Search } from 'lucide-react'
 
 export default function BatteriesPage() {
   const { t } = useLanguage()
-  const batteries = useBatteries()
+  const { batteries, isReady } = useBatteries()
   
   // Filter states
   const [selectedBrand, setSelectedBrand] = useState<string>('all')
@@ -181,7 +181,23 @@ export default function BatteriesPage() {
       </section>
 
       {/* Batteries Grid - Toyota */}
-      {toyotaBatteries.length > 0 && (
+      {!isReady && (
+        <section className="pt-4 pb-16 bg-white">
+          <div className="container-custom">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="card animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-lg mb-4" />
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                  <div className="h-10 bg-gray-200 rounded w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      {isReady && toyotaBatteries.length > 0 && (
         <section className="pt-4 pb-16 bg-white">
           <div className="container-custom">
             <div className="mb-8">
@@ -202,7 +218,7 @@ export default function BatteriesPage() {
       )}
 
       {/* Batteries Grid - Lexus */}
-      {lexusBatteries.length > 0 && (
+      {isReady && lexusBatteries.length > 0 && (
         <section className="pt-8 pb-16 bg-gray-50">
           <div className="container-custom">
             <div className="mb-8">
