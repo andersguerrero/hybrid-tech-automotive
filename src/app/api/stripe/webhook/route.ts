@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { sendBookingConfirmation } from '@/lib/email'
+import { sendBookingConfirmation, sendAdminNewOrderNotification } from '@/lib/email'
 import { createOrder } from '@/lib/orders'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -125,14 +125,16 @@ export async function POST(request: NextRequest) {
           }))
         : [{ id: 'booking', name: bookingData.service, price: (session.amount_total || 0) / 100, quantity: 1, type: 'service' as const }]
 
-      await createOrder({
+      const orderTotal = bookingData.total || (session.amount_total || 0) / 100
+
+      const order = await createOrder({
         customerName: bookingData.name,
         customerEmail: bookingData.email,
         customerPhone: bookingData.phone || '',
         items: orderItems,
         subtotal: bookingData.subtotal || (session.amount_total || 0) / 100,
         tax: bookingData.tax || 0,
-        total: bookingData.total || (session.amount_total || 0) / 100,
+        total: orderTotal,
         paymentMethod: 'stripe',
         paymentStatus: 'paid',
         orderStatus: 'confirmed',
@@ -141,6 +143,19 @@ export async function POST(request: NextRequest) {
         comments: bookingData.comments || '',
         stripeSessionId: session.id,
       })
+
+      // Send admin notification (fire-and-forget)
+      sendAdminNewOrderNotification({
+        customerName: bookingData.name,
+        customerEmail: bookingData.email,
+        customerPhone: bookingData.phone || '',
+        items: orderItems.map((i: any) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+        total: orderTotal,
+        paymentMethod: 'stripe',
+        date: bookingData.date,
+        time: bookingData.time,
+        orderId: order.id,
+      }).catch(err => console.error('Admin notification failed:', err))
 
       console.log('Booking confirmed and email sent:', {
         sessionId: session.id,

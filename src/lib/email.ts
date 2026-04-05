@@ -121,6 +121,99 @@ export async function sendBookingConfirmation(
   return sendWithRetry(mailOptions)
 }
 
+/**
+ * Send notification to admin when a new order/booking arrives
+ */
+export async function sendAdminNewOrderNotification(
+  orderData: {
+    customerName: string
+    customerEmail: string
+    customerPhone: string
+    items: Array<{ name: string; quantity: number; price: number }>
+    total: number
+    paymentMethod: string
+    date: string
+    time: string
+    orderId?: string
+  }
+) {
+  const adminEmail = process.env.BUSINESS_EMAIL
+  if (!adminEmail) {
+    console.warn('BUSINESS_EMAIL not set, skipping admin notification')
+    return { success: false, error: 'No admin email configured' }
+  }
+
+  const itemsList = orderData.items
+    .map(item => `<tr>
+      <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
+      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
+    </tr>`)
+    .join('')
+
+  const paymentLabels: Record<string, string> = {
+    stripe: 'Credit Card (Paid)',
+    zelle: 'Zelle (Pending)',
+    cash: 'Cash (In-person)',
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hybridtechauto.com'
+
+  const mailOptions = {
+    from: adminEmail,
+    to: adminEmail,
+    subject: `New Order from ${orderData.customerName} - $${orderData.total.toFixed(2)}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #007BFF; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+          <h2 style="margin: 0;">New Order Received!</h2>
+          ${orderData.orderId ? `<p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">${orderData.orderId}</p>` : ''}
+        </div>
+
+        <div style="border: 1px solid #ddd; border-top: none; padding: 20px; border-radius: 0 0 8px 8px;">
+          <h3 style="color: #333; margin-top: 0;">Customer Info</h3>
+          <p><strong>Name:</strong> ${orderData.customerName}</p>
+          <p><strong>Email:</strong> <a href="mailto:${orderData.customerEmail}">${orderData.customerEmail}</a></p>
+          <p><strong>Phone:</strong> <a href="tel:${orderData.customerPhone}">${orderData.customerPhone}</a></p>
+
+          <h3 style="color: #333;">Appointment</h3>
+          <p><strong>Date:</strong> ${orderData.date}</p>
+          <p><strong>Time:</strong> ${orderData.time}</p>
+          <p><strong>Payment:</strong> ${paymentLabels[orderData.paymentMethod] || orderData.paymentMethod}</p>
+
+          <h3 style="color: #333;">Items</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f5f5f5;">
+                <th style="padding: 8px; text-align: left;">Item</th>
+                <th style="padding: 8px; text-align: center;">Qty</th>
+                <th style="padding: 8px; text-align: right;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsList}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" style="padding: 10px 8px; font-weight: bold; font-size: 16px;">Total</td>
+                <td style="padding: 10px 8px; font-weight: bold; font-size: 16px; text-align: right; color: #007BFF;">$${orderData.total.toFixed(2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="${baseUrl}/admin/orders" style="background-color: #007BFF; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+              View in Admin Panel
+            </a>
+          </div>
+        </div>
+      </div>
+    `,
+  }
+
+  return sendWithRetry(mailOptions)
+}
+
 export async function sendContactForm(
   formData: {
     name: string

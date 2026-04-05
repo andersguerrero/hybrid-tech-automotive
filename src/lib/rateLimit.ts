@@ -10,8 +10,8 @@ interface RateLimitEntry {
 
 const limiters = new Map<string, Map<string, RateLimitEntry>>()
 
-// Clean up expired entries every 5 minutes
-setInterval(() => {
+// Clean up expired entries every 5 minutes (unref to not block process exit)
+const cleanupTimer = setInterval(() => {
   const now = Date.now()
   limiters.forEach((entries) => {
     entries.forEach((entry, key) => {
@@ -21,6 +21,11 @@ setInterval(() => {
     })
   })
 }, 5 * 60 * 1000)
+
+// Allow Node.js to exit even if the timer is active
+if (typeof cleanupTimer === 'object' && 'unref' in cleanupTimer) {
+  cleanupTimer.unref()
+}
 
 interface RateLimitConfig {
   /** Unique identifier for this limiter (e.g., 'contact-form') */

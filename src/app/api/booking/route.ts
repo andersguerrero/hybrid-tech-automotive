@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendBookingConfirmation } from '@/lib/email'
+import { sendBookingConfirmation, sendAdminNewOrderNotification } from '@/lib/email'
 import { createOrder } from '@/lib/orders'
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
 import { bookingFormSchema, formatZodError } from '@/lib/validations'
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
         }))
       : [{ id: service || 'booking', name: service || 'Service', price: total || 0, quantity: 1, type: 'service' as const }]
 
-    await createOrder({
+    const order = await createOrder({
       customerName: name,
       customerEmail: email,
       customerPhone: phone,
@@ -111,6 +111,19 @@ export async function POST(request: NextRequest) {
       time,
       comments,
     })
+
+    // Send admin notification (fire-and-forget, don't block response)
+    sendAdminNewOrderNotification({
+      customerName: name,
+      customerEmail: email,
+      customerPhone: phone,
+      items: orderItems.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+      total: total || subtotal || 0,
+      paymentMethod: paymentMethod || 'cash',
+      date,
+      time,
+      orderId: order.id,
+    }).catch(err => console.error('Admin notification failed:', err))
 
     return NextResponse.json({
       success: true,
