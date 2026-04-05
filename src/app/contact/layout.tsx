@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Contact Us | Hybrid Tech Auto',
     description: 'Get in touch with Hybrid Tech Auto for hybrid battery replacement and automotive services.',
+    images: [{ url: '/logo.jpg', width: 600, height: 300, alt: 'Contact Hybrid Tech Auto' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Contact Us | Hybrid Tech Auto',
+    description: 'Contact Hybrid Tech Auto in Spring, TX. Call (832) 762-5299.',
   },
   alternates: { canonical: '/contact' },
 }

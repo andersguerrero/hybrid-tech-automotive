@@ -6,6 +6,7 @@ import { Battery } from '@/types'
 import { ArrowRight, Shield, ShoppingCart, Check } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useAddToCart } from '@/hooks/useAddToCart'
+import { BLUR_DATA_URL } from '@/lib/imageUtils'
 
 interface BatteryCardProps {
   battery: Battery
@@ -24,6 +25,9 @@ export default function BatteryCard({ battery }: BatteryCardProps) {
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL={BLUR_DATA_URL}
         />
       </div>
 

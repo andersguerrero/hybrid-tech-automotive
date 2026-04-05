@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Book an Appointment | Hybrid Tech Auto',
     description: 'Schedule your automotive service appointment online.',
+    images: [{ url: '/logo.jpg', width: 600, height: 300, alt: 'Book Appointment - Hybrid Tech Auto' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Book an Appointment | Hybrid Tech Auto',
+    description: 'Schedule your hybrid service appointment online.',
   },
   alternates: { canonical: '/booking' },
 }

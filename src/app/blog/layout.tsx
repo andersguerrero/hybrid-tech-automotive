@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Blog | Hybrid Tech Auto',
     description: 'Expert tips and guides about hybrid vehicles and battery maintenance.',
+    images: [{ url: '/logo.jpg', width: 600, height: 300, alt: 'Hybrid Tech Auto Blog' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Blog | Hybrid Tech Auto',
+    description: 'Expert tips and guides about hybrid vehicles and battery maintenance.',
   },
   alternates: { canonical: '/blog' },
 }

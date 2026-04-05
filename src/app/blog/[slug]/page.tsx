@@ -7,6 +7,7 @@ import { Calendar, User, ArrowLeft, ArrowRight } from 'lucide-react'
 import { useBlogPosts } from '@/hooks/useData'
 import { useLanguage } from '@/contexts/LanguageContext'
 import type { BlogPost } from '@/types'
+import { BLUR_DATA_URL } from '@/lib/imageUtils'
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const { t } = useLanguage()
@@ -56,7 +57,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           src={post.image}
           alt={post.title}
           fill
+          priority
           className="object-cover"
+          placeholder="blur"
+          blurDataURL={BLUR_DATA_URL}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-8 text-white">

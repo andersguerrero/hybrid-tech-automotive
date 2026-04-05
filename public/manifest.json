@@ -1,0 +1,32 @@
+{
+  "name": "Hybrid Tech Auto",
+  "short_name": "HybridTech",
+  "description": "Professional hybrid battery replacement and car services in Spring, TX",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007BFF",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["auto", "automotive", "business"],
+  "lang": "en",
+  "dir": "ltr"
+}

@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Customer Reviews | Hybrid Tech Auto',
     description: 'What our customers say about Hybrid Tech Auto services.',
+    images: [{ url: '/logo.jpg', width: 600, height: 300, alt: 'Hybrid Tech Auto Reviews' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Customer Reviews | Hybrid Tech Auto',
+    description: 'Read customer reviews about Hybrid Tech Auto services.',
   },
   alternates: { canonical: '/reviews' },
 }

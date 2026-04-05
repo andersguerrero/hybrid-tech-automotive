@@ -28,9 +28,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Hybrid Tech Auto',
+    images: [{ url: '/logo.jpg', width: 600, height: 300, alt: 'Hybrid Tech Auto Logo' }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Hybrid Tech Auto - Expert Hybrid Services',
+    description: 'Professional hybrid battery replacement and car services in Spring, TX.',
+    images: ['/logo.jpg'],
+  },
+  manifest: '/manifest.json',
   alternates: {
     canonical: '/',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'HybridTech',
   },
 }
 
@@ -41,6 +55,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#007BFF" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+      </head>
       <body>
         <LocalBusinessJsonLd />
         <LanguageProviderWrapper>

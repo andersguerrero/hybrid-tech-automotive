@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Automotive Services | Hybrid Tech Auto',
     description: 'Expert automotive services with transparent pricing. Suspension, brakes, coolant, transmission, and hybrid battery diagnostics.',
+    images: [{ url: '/logo.jpg', width: 600, height: 300, alt: 'Hybrid Tech Auto Services' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Automotive Services | Hybrid Tech Auto',
+    description: 'Expert automotive services with transparent pricing in Spring, TX.',
   },
   alternates: { canonical: '/services' },
 }
