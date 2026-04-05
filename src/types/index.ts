@@ -48,6 +48,7 @@ export interface Review {
   comment: string
   date: string
   verified: boolean
+  images?: string[]
 }
 
 export interface OrderItem {
@@ -76,4 +77,29 @@ export interface Order {
   stripeSessionId?: string
   createdAt: string
   updatedAt: string
+  couponCode?: string
+  couponDiscount?: number
+}
+
+export interface Coupon {
+  id: string
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  minPurchase: number
+  maxUses: number
+  usedCount: number
+  isActive: boolean
+  expiresAt: string | null
+  description: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Subscriber {
+  id: string
+  email: string
+  locale: string
+  subscribedAt: string
+  active: boolean
 }

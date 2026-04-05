@@ -15,6 +15,8 @@ const PROTECTED_API_ROUTES = [
   '/api/hours',
   '/api/contact-info',
   '/api/orders',
+  '/api/coupons',
+  '/api/subscribers',
 ]
 
 /**
@@ -111,6 +113,8 @@ export const config = {
     '/api/hours/:path*',
     '/api/contact-info/:path*',
     '/api/orders/:path*',
+    '/api/coupons/:path*',
+    '/api/subscribers/:path*',
     '/api/contact',
     '/api/booking',
     '/api/stripe/:path*',

@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import BatteryCard from '@/components/BatteryCard'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Battery } from '@/types'
-import { Search, ChevronLeft, ChevronRight, SlidersHorizontal, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { Search, ChevronLeft, ChevronRight, SlidersHorizontal, Loader2, GitCompareArrows } from 'lucide-react'
 
 const PAGE_SIZE = 12
 
@@ -39,6 +40,7 @@ export default function BatteriesPage() {
 
   // Data states
   const [batteries, setBatteries] = useState<Battery[]>([])
+  const [previousPrices, setPreviousPrices] = useState<Record<string, number>>({})
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [facets, setFacets] = useState<FacetsInfo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -71,6 +73,7 @@ export default function BatteriesPage() {
 
       if (data.success) {
         setBatteries(data.batteries)
+        setPreviousPrices(data.previousPrices || {})
         setPagination(data.pagination)
         setFacets(data.facets)
       }
@@ -216,8 +219,17 @@ export default function BatteriesPage() {
               </div>
             </div>
 
-            {/* Results Count + Pagination Info */}
+            {/* Compare Link + Results Count */}
             <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
+              <Link
+                href="/batteries/compare"
+                className="inline-flex items-center text-primary-500 hover:text-primary-600 font-medium"
+              >
+                <GitCompareArrows className="w-4 h-4 mr-1" />
+                Compare Batteries
+              </Link>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
               <p>
                 {pagination ? (
                   pagination.total === 0
@@ -260,7 +272,7 @@ export default function BatteriesPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {toyotaBatteries.map((battery) => (
-                <BatteryCard key={battery.id} battery={battery} />
+                <BatteryCard key={battery.id} battery={battery} previousPrice={previousPrices[battery.id]} />
               ))}
             </div>
           </div>
@@ -281,7 +293,7 @@ export default function BatteriesPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {lexusBatteries.map((battery) => (
-                <BatteryCard key={battery.id} battery={battery} />
+                <BatteryCard key={battery.id} battery={battery} previousPrice={previousPrices[battery.id]} />
               ))}
             </div>
           </div>

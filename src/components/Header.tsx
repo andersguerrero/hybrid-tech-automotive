@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Phone, Calendar, ShoppingCart } from 'lucide-react'
+import { Menu, X, Phone, Calendar, ShoppingCart, Moon, Sun } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useSiteImages } from '@/hooks/useData'
 import { useCart } from '@/contexts/CartContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import Cart from '@/components/Cart'
 
 export default function Header() {
@@ -15,6 +16,7 @@ export default function Header() {
   const { locale, setLocale, t } = useLanguage()
   const siteImages = useSiteImages()
   const { getTotalItems } = useCart()
+  const { theme, toggleTheme } = useTheme()
   const cartItemsCount = getTotalItems()
 
   const navigation = [
@@ -27,7 +29,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
       {/* Skip to content */}
       <a
         href="#main-content"
@@ -58,7 +60,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-primary-500 font-medium transition-colors text-sm"
+                className="text-gray-700 dark:text-gray-200 hover:text-primary-500 font-medium transition-colors text-sm"
               >
                 {item.name}
               </Link>
@@ -128,6 +130,15 @@ export default function Header() {
                 ES
               </button>
             </div>
+
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-700 dark:text-gray-200 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
 
             {/* Primary CTA */}
             <Link
@@ -208,19 +219,29 @@ export default function Header() {
                 </Link>
 
                 {/* Utilities Row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {/* Phone */}
                   <a
                     href="tel:+18327625299"
-                    className="flex flex-col items-center justify-center p-3 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 border border-gray-200"
+                    className="flex flex-col items-center justify-center p-3 text-gray-700 dark:text-gray-200 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700"
                     aria-label="Call (832) 762-5299"
                   >
                     <Phone className="w-5 h-5 mb-1" aria-hidden="true" />
                     <span className="text-xs">Call</span>
                   </a>
 
+                  {/* Dark Mode */}
+                  <button
+                    onClick={toggleTheme}
+                    className="flex flex-col items-center justify-center p-3 text-gray-700 dark:text-gray-200 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                    aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                  >
+                    {theme === 'dark' ? <Sun className="w-5 h-5 mb-1" /> : <Moon className="w-5 h-5 mb-1" />}
+                    <span className="text-xs">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+                  </button>
+
                   {/* Language */}
-                  <div className="flex flex-col items-center justify-center p-3 border border-gray-200 rounded-lg" role="group" aria-label="Language switcher">
+                  <div className="flex flex-col items-center justify-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg" role="group" aria-label="Language switcher">
                     <span className="text-xs text-gray-600 mb-2">Language</span>
                     <div className="flex items-center space-x-1">
                       <button

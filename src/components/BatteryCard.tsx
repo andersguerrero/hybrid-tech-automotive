@@ -3,16 +3,17 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Battery } from '@/types'
-import { ArrowRight, Shield, ShoppingCart, Check } from 'lucide-react'
+import { ArrowRight, Shield, ShoppingCart, Check, GitCompareArrows } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { BLUR_DATA_URL } from '@/lib/imageUtils'
 
 interface BatteryCardProps {
   battery: Battery
+  previousPrice?: number
 }
 
-export default function BatteryCard({ battery }: BatteryCardProps) {
+export default function BatteryCard({ battery, previousPrice }: BatteryCardProps) {
   const { t } = useLanguage()
   const { addedToCart, handleAddToCart } = useAddToCart()
 
@@ -41,9 +42,19 @@ export default function BatteryCard({ battery }: BatteryCardProps) {
 
         <div className="flex justify-between items-center">
           <div>
+            {previousPrice && previousPrice > battery.price && (
+              <span className="text-sm text-gray-400 line-through mr-2">
+                ${previousPrice}
+              </span>
+            )}
             <span className="text-3xl font-bold text-primary-500">
               ${battery.price}
             </span>
+            {previousPrice && previousPrice > battery.price && (
+              <span className="ml-2 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full font-medium">
+                Save ${previousPrice - battery.price}
+              </span>
+            )}
             <p className="text-sm text-gray-600">{t.batteries.startingPrice}</p>
           </div>
 
@@ -85,13 +96,22 @@ export default function BatteryCard({ battery }: BatteryCardProps) {
               </>
             )}
           </button>
-          <Link
-            href="/booking"
-            className="btn-outline w-full flex items-center justify-center"
-          >
-            {t.batteries.getQuote}
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Link>
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              href="/booking"
+              className="btn-outline flex items-center justify-center text-sm py-2"
+            >
+              {t.batteries.getQuote}
+              <ArrowRight className="ml-1 w-3 h-3" />
+            </Link>
+            <Link
+              href={`/batteries/compare?ids=${battery.id}`}
+              className="flex items-center justify-center text-sm py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500 hover:text-primary-500 rounded-lg transition-colors"
+            >
+              <GitCompareArrows className="mr-1 w-3 h-3" />
+              Compare
+            </Link>
+          </div>
         </div>
       </div>
     </div>

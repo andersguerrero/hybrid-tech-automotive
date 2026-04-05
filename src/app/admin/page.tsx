@@ -13,7 +13,10 @@ import {
   ImageIcon,
   Star,
   Type,
-  Package
+  Package,
+  Ticket,
+  BarChart3,
+  Users
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -104,6 +107,27 @@ export default function AdminPage() {
       icon: Type,
       href: '/admin/texts',
       color: 'bg-teal-500 hover:bg-teal-600'
+    },
+    {
+      title: 'Analytics',
+      description: 'Revenue, top products, and business metrics',
+      icon: BarChart3,
+      href: '/admin/analytics',
+      color: 'bg-violet-500 hover:bg-violet-600'
+    },
+    {
+      title: 'Coupons',
+      description: 'Create and manage discount codes',
+      icon: Ticket,
+      href: '/admin/coupons',
+      color: 'bg-amber-500 hover:bg-amber-600'
+    },
+    {
+      title: 'Subscribers',
+      description: 'Newsletter email subscribers',
+      icon: Users,
+      href: '/admin/subscribers',
+      color: 'bg-rose-500 hover:bg-rose-600'
     },
   ]
 

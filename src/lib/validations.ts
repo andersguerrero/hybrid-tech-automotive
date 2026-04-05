@@ -133,6 +133,7 @@ const stripeCheckoutBase = z.object({
   customerEmail: emailField.optional(),
   bookingData: z.record(z.string(), z.unknown()).optional(),
   zipCode: z.string().max(10).optional(),
+  couponCode: z.string().max(50).optional(),
   lineItems: z.array(legacyLineItemSchema).optional(),
 })
 

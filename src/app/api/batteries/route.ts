@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
 import { batteries as staticBatteries } from '@/data/batteries'
+import { recordAllPrices, getPriceHistory } from '@/lib/priceHistory'
 import type { Battery } from '@/types'
 
 const BLOB_PATH = 'config/batteries-custom.json'
@@ -142,9 +143,25 @@ export async function GET(request: NextRequest) {
       batteries = filtered.slice(offset, offset + limit)
     }
 
+    // Record prices for history tracking (fire-and-forget)
+    recordAllPrices(allBatteries.map(b => ({ id: b.id, price: b.price }))).catch(() => {})
+
+    // Get price history for response
+    const priceHistory = await getPriceHistory().catch(() => [])
+    const previousPrices: Record<string, number> = {}
+    batteries.forEach(b => {
+      const records = priceHistory
+        .filter(r => r.batteryId === b.id && r.price !== b.price)
+        .sort((a, c) => c.date.localeCompare(a.date))
+      if (records.length > 0) {
+        previousPrices[b.id] = records[0].price
+      }
+    })
+
     return NextResponse.json({
       success: true,
       batteries,
+      previousPrices,
       pagination: {
         page,
         limit: limit || total,

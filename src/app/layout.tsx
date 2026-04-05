@@ -4,7 +4,9 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import LanguageProviderWrapper from '@/providers/LanguageProviderWrapper'
 import CartProviderWrapper from '@/providers/CartProviderWrapper'
+import ThemeProviderWrapper from '@/providers/ThemeProviderWrapper'
 import { LocalBusinessJsonLd } from '@/components/JsonLd'
+import WhatsAppButton from '@/components/WhatsAppButton'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
@@ -54,22 +56,25 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#007BFF" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
       <body>
         <LocalBusinessJsonLd />
-        <LanguageProviderWrapper>
-          <CartProviderWrapper>
-            <Header />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
-          </CartProviderWrapper>
-        </LanguageProviderWrapper>
+        <ThemeProviderWrapper>
+          <LanguageProviderWrapper>
+            <CartProviderWrapper>
+              <Header />
+              <main id="main-content" className="min-h-screen">
+                {children}
+              </main>
+              <Footer />
+              <WhatsAppButton />
+            </CartProviderWrapper>
+          </LanguageProviderWrapper>
+        </ThemeProviderWrapper>
         <Analytics />
         <SpeedInsights />
       </body>

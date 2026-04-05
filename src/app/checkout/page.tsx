@@ -28,10 +28,49 @@ export default function CheckoutPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [couponCode, setCouponCode] = useState('')
+  const [couponDiscount, setCouponDiscount] = useState(0)
+  const [couponApplied, setCouponApplied] = useState('')
+  const [couponLoading, setCouponLoading] = useState(false)
+  const [couponError, setCouponError] = useState('')
 
   // Calculate tax based on zip code
-  const { taxAmount, rate, state } = calculateSalesTax(formData.zipCode, total)
-  const finalTotal = total + taxAmount
+  const subtotalAfterDiscount = total - couponDiscount
+  const { taxAmount, rate, state } = calculateSalesTax(formData.zipCode, subtotalAfterDiscount)
+  const finalTotal = subtotalAfterDiscount + taxAmount
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return
+    setCouponLoading(true)
+    setCouponError('')
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponCode, subtotal: total }),
+      })
+      const data = await res.json()
+      if (data.valid) {
+        setCouponDiscount(data.discount)
+        setCouponApplied(couponCode.toUpperCase())
+      } else {
+        setCouponError(data.error || 'Invalid coupon')
+        setCouponDiscount(0)
+        setCouponApplied('')
+      }
+    } catch {
+      setCouponError('Failed to validate coupon')
+    } finally {
+      setCouponLoading(false)
+    }
+  }
+
+  const removeCoupon = () => {
+    setCouponCode('')
+    setCouponDiscount(0)
+    setCouponApplied('')
+    setCouponError('')
+  }
 
   const timeSlots = [
     '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
@@ -72,6 +111,8 @@ export default function CheckoutPage() {
           ...formData,
           cartItems: items,
           subtotal: total,
+          couponCode: couponApplied || undefined,
+          couponDiscount: couponDiscount || undefined,
           tax: taxAmount,
           total: finalTotal
         }))
@@ -86,10 +127,13 @@ export default function CheckoutPage() {
             items: cartItemRefs,
             zipCode: formData.zipCode,
             customerEmail: formData.email,
+            couponCode: couponApplied || undefined,
             bookingData: {
               ...formData,
               cartItems: items,
               subtotal: total,
+              couponCode: couponApplied || undefined,
+              couponDiscount: couponDiscount || undefined,
               tax: taxAmount,
               total: finalTotal
             }
@@ -115,6 +159,8 @@ export default function CheckoutPage() {
             ...formData,
             cartItems: items,
             subtotal: total,
+            couponCode: couponApplied || undefined,
+            couponDiscount: couponDiscount || undefined,
             tax: taxAmount,
             total: finalTotal
           }),
@@ -210,11 +256,50 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
+                {/* Coupon Code */}
+                <div className="border-t pt-4 mb-4">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Discount Code</p>
+                  {couponApplied ? (
+                    <div className="flex items-center justify-between bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2">
+                      <div>
+                        <span className="font-mono font-bold text-green-700 dark:text-green-400">{couponApplied}</span>
+                        <span className="text-sm text-green-600 dark:text-green-400 ml-2">-${couponDiscount.toFixed(2)}</span>
+                      </div>
+                      <button onClick={removeCoupon} className="text-red-500 text-sm hover:underline">Remove</button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={couponCode}
+                        onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                        placeholder="HYBRID10"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={couponLoading || !couponCode.trim()}
+                        className="px-3 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 disabled:opacity-50"
+                      >
+                        {couponLoading ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                  )}
+                  {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+                </div>
+
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600">Subtotal</span>
                     <span className="font-semibold text-gray-900">${total.toFixed(2)}</span>
                   </div>
+                  {couponDiscount > 0 && (
+                    <div className="flex justify-between items-center mb-2 text-green-600">
+                      <span className="text-sm">Discount ({couponApplied})</span>
+                      <span className="font-semibold">-${couponDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
                   {formData.zipCode && (
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-600 text-sm">

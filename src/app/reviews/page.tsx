@@ -1,12 +1,15 @@
 'use client'
 
-import { Star, Quote } from 'lucide-react'
+import { useState } from 'react'
+import Image from 'next/image'
+import { Star, Quote, Camera, X } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useReviews } from '@/hooks/useData'
 
 export default function ReviewsPage() {
   const { t } = useLanguage()
   const reviews = useReviews()
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   
   return (
     <div className="min-h-screen">
@@ -101,12 +104,30 @@ export default function ReviewsPage() {
                   
                   <div className="mb-4">
                     <Quote className="w-8 h-8 text-primary-200 mb-2" />
-                    <p className="text-gray-700 italic">"{review.comment}"</p>
+                    <p className="text-gray-700 dark:text-gray-300 italic">&ldquo;{review.comment}&rdquo;</p>
                   </div>
-                  
+
+                  {/* Review Photos */}
+                  {review.images && review.images.length > 0 && (
+                    <div className="flex gap-2 mb-4">
+                      {review.images.map((img, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setLightboxImage(img)}
+                          className="relative w-16 h-16 rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+                        >
+                          <Image src={img} alt={`Review photo ${idx + 1}`} fill className="object-cover" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition-colors">
+                            <Camera className="w-4 h-4 text-white opacity-0 hover:opacity-100" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-gray-900">{review.author}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{review.author}</p>
                       <p className="text-sm text-gray-500">
                         {new Date(review.date).toLocaleDateString()}
                       </p>
@@ -138,6 +159,30 @@ export default function ReviewsPage() {
           </div>
         </div>
       </section>
+
+      {/* Image Lightbox */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-full"
+            aria-label="Close"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="relative max-w-3xl max-h-[80vh] w-full h-full">
+            <Image
+              src={lightboxImage}
+              alt="Review photo"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

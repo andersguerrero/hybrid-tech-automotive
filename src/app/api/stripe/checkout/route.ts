@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { items, customerEmail, bookingData, zipCode, lineItems: legacyLineItems } = parsed.data
+    const { items, customerEmail, bookingData, zipCode, lineItems: legacyLineItems, couponCode } = parsed.data
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
 
@@ -62,6 +62,49 @@ export async function POST(request: NextRequest) {
       }
 
       finalLineItems = result.lineItems
+
+      // Apply coupon discount if provided
+      if (couponCode) {
+        const { blobGet } = await import('@/lib/storage')
+        const coupons = await blobGet<Array<{ code: string; type: string; value: number; isActive: boolean; maxUses: number; usedCount: number; minPurchase: number; expiresAt: string | null }>>('config/coupons.json', 'coupons.json', [])
+        const coupon = coupons.find(c => c.code === couponCode.toUpperCase().trim())
+
+        if (coupon && coupon.isActive) {
+          const isExpired = coupon.expiresAt && new Date(coupon.expiresAt) < new Date()
+          const isExhausted = coupon.maxUses > 0 && coupon.usedCount >= coupon.maxUses
+          const meetsMinimum = coupon.minPurchase <= 0 || result.subtotal >= coupon.minPurchase
+
+          if (!isExpired && !isExhausted && meetsMinimum) {
+            let discount = 0
+            if (coupon.type === 'percentage') {
+              discount = (result.subtotal * coupon.value) / 100
+            } else {
+              discount = Math.min(coupon.value, result.subtotal)
+            }
+
+            if (discount > 0) {
+              finalLineItems.push({
+                price_data: {
+                  currency: 'usd',
+                  product_data: {
+                    name: 'Discount',
+                    description: `Coupon ${coupon.code} (${coupon.type === 'percentage' ? coupon.value + '%' : '$' + coupon.value} off)`,
+                  },
+                  unit_amount: -Math.round(discount * 100),
+                },
+                quantity: 1,
+              })
+
+              // Increment usage count (fire-and-forget)
+              const { blobPut } = await import('@/lib/storage')
+              const updatedCoupons = coupons.map(c =>
+                c.code === coupon.code ? { ...c, usedCount: c.usedCount + 1 } : c
+              )
+              blobPut('config/coupons.json', 'coupons.json', updatedCoupons).catch(() => {})
+            }
+          }
+        }
+      }
 
       // Calculate tax server-side
       if (zipCode) {

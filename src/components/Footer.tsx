@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import NewsletterSignup from '@/components/NewsletterSignup'
 
 export default function Footer() {
   const { t, locale } = useLanguage()
@@ -102,7 +103,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Hours */}
+          {/* Hours & Newsletter */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">{t.footer.businessHours}</h4>
             <div className="space-y-2">
@@ -115,6 +116,7 @@ export default function Footer() {
                 </div>
               </div>
             </div>
+            <NewsletterSignup />
           </div>
         </div>
 
