@@ -1,55 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { put, list } from '@vercel/blob'
-import { readFile, writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
+import { blobGet, blobPut } from '@/lib/storage'
 import { siteImages as defaultSiteImages, type SiteImages } from '@/data/images'
 
-const CONFIG_PATH = 'config/site-images.json'
+const BLOB_PATH = 'config/site-images.json'
+const LOCAL_FILE = 'site-images-custom.json'
 
-// En localhost: archivo JSON. En Vercel: Blob.
-const LOCAL_DATA_FILE = process.env.VERCEL
-  ? join('/tmp', 'site-images-custom.json')
-  : join(process.cwd(), 'data', 'site-images-custom.json')
-
-// GET: Obtener configuración de imágenes
 export async function GET() {
   try {
-    // Producción con Blob
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const { blobs } = await list({ prefix: 'config/' })
-      const configBlob = blobs.find((b) => b.pathname === CONFIG_PATH)
-
-      if (configBlob?.url) {
-        const response = await fetch(configBlob.url)
-        const siteImages: SiteImages = await response.json()
-        return NextResponse.json({ success: true, siteImages, source: 'blob' })
-      }
-    }
-
-    // Localhost: leer desde archivo
-    if (existsSync(LOCAL_DATA_FILE)) {
-      const content = await readFile(LOCAL_DATA_FILE, 'utf-8')
-      const siteImages: SiteImages = JSON.parse(content)
-      return NextResponse.json({ success: true, siteImages, source: 'file' })
-    }
-
-    return NextResponse.json({
-      success: true,
-      siteImages: defaultSiteImages,
-      source: 'default',
-    })
+    const siteImages = await blobGet<SiteImages>(BLOB_PATH, LOCAL_FILE, defaultSiteImages)
+    return NextResponse.json({ success: true, siteImages })
   } catch (error) {
     console.error('Error loading site images:', error)
-    return NextResponse.json({
-      success: true,
-      siteImages: defaultSiteImages,
-      source: 'default',
-    })
+    return NextResponse.json({ success: true, siteImages: defaultSiteImages })
   }
 }
 
-// POST: Guardar configuración de imágenes
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -62,31 +27,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Producción con Blob
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const json = JSON.stringify(siteImages, null, 2)
-      await put(CONFIG_PATH, json, {
-        access: 'public',
-        contentType: 'application/json',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-      })
-      return NextResponse.json({
-        success: true,
-        message: 'Configuración guardada en Vercel Blob',
-      })
-    }
-
-    // Localhost: guardar en archivo
-    const dataDir = join(process.cwd(), 'data')
-    if (!existsSync(dataDir)) {
-      await mkdir(dataDir, { recursive: true })
-    }
-    await writeFile(
-      LOCAL_DATA_FILE,
-      JSON.stringify(siteImages, null, 2),
-      'utf-8'
-    )
+    await blobPut(BLOB_PATH, LOCAL_FILE, siteImages)
 
     return NextResponse.json({
       success: true,

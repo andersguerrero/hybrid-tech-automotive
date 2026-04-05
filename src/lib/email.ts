@@ -10,6 +10,32 @@ const authMethod = process.env.SMTP_AUTH_METHOD
 function getMissingEnvVars(vars: string[]) {
   return vars.filter((v) => !process.env[v] || process.env[v] === '')
 }
+
+async function sendWithRetry(
+  mailOptions: nodemailer.SendMailOptions,
+  maxRetries = 3
+): Promise<{ success: boolean; error?: unknown }> {
+  const missing = getMissingEnvVars(['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'])
+  if (missing.length) {
+    return { success: false, error: new Error(`Missing SMTP vars: ${missing.join(', ')}`) }
+  }
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await transporter.sendMail(mailOptions)
+      return { success: true }
+    } catch (error) {
+      console.error(`Email send attempt ${attempt}/${maxRetries} failed:`, error)
+      if (attempt < maxRetries) {
+        const delay = Math.pow(3, attempt - 1) * 1000 // 1s, 3s, 9s
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      } else {
+        return { success: false, error }
+      }
+    }
+  }
+  return { success: false, error: new Error('Max retries reached') }
+}
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: smtpPort,
@@ -92,19 +118,7 @@ export async function sendBookingConfirmation(
     `,
   }
 
-  try {
-    const missing = getMissingEnvVars(['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'])
-    if (missing.length) {
-      return { success: false, error: new Error(`Faltan variables SMTP: ${missing.join(', ')}`) }
-    }
-    // Verify SMTP connection before sending
-    await transporter.verify()
-    await transporter.sendMail(mailOptions)
-    return { success: true }
-  } catch (error) {
-    console.error('Error sending email:', error)
-    return { success: false, error }
-  }
+  return sendWithRetry(mailOptions)
 }
 
 export async function sendContactForm(
@@ -143,17 +157,5 @@ export async function sendContactForm(
     `,
   }
 
-  try {
-    const missing = getMissingEnvVars(['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'])
-    if (missing.length) {
-      return { success: false, error: new Error(`Faltan variables SMTP: ${missing.join(', ')}`) }
-    }
-    // Verify SMTP connection before sending
-    await transporter.verify()
-    await transporter.sendMail(mailOptions)
-    return { success: true }
-  } catch (error) {
-    console.error('Error sending contact form:', error)
-    return { success: false, error }
-  }
+  return sendWithRetry(mailOptions)
 }

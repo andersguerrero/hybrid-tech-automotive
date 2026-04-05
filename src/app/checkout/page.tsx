@@ -60,33 +60,12 @@ export default function CheckoutPage() {
 
     try {
       if (formData.paymentMethod === 'stripe') {
-        // Prepare line items for Stripe
-        let lineItems = items.map(item => ({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: item.name,
-              description: item.description || `Service appointment for ${item.name}`,
-            },
-            unit_amount: Math.round(item.price * 100), // Convert to cents
-          },
+        // Prepare item references for server-side price validation
+        const cartItemRefs = items.map(item => ({
+          id: item.id,
+          type: item.type,
           quantity: item.quantity,
         }))
-        
-        // Add tax as a separate line item if tax amount > 0
-        if (taxAmount > 0 && formData.zipCode) {
-          lineItems.push({
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'Sales Tax',
-                description: `${state} sales tax (${(rate * 100).toFixed(2)}%)`,
-              },
-              unit_amount: Math.round(taxAmount * 100), // Convert to cents
-            },
-            quantity: 1,
-          })
-        }
 
         // Save booking data temporarily
         sessionStorage.setItem('pending_booking', JSON.stringify({
@@ -97,14 +76,15 @@ export default function CheckoutPage() {
           total: finalTotal
         }))
 
-        // Create Stripe checkout session
+        // Create Stripe checkout session (prices validated server-side)
         const checkoutResponse = await fetch('/api/stripe/checkout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            lineItems,
+            items: cartItemRefs,
+            zipCode: formData.zipCode,
             customerEmail: formData.email,
             bookingData: {
               ...formData,
@@ -255,7 +235,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               <div className="card">
                 {errorMessage && (
-                  <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+                  <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800" role="alert">
                     {errorMessage}
                   </div>
                 )}

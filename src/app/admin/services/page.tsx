@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Save, Lock, Plus, Edit, Trash2, ArrowLeft } from 'lucide-react'
+import { Save, Plus, Edit, Trash2, ArrowLeft } from 'lucide-react'
 import { services as initialServices } from '@/data'
 import type { Service } from '@/types'
 
 export default function ServicesAdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [servicesData, setServicesData] = useState(initialServices)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -21,71 +19,50 @@ export default function ServicesAdminPage() {
   })
   const [savedMessage, setSavedMessage] = useState<string>('')
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
-    }
-
-    // Cargar servicios guardados desde localStorage
-    const savedServices = localStorage.getItem('admin_services')
-    if (savedServices) {
+    const loadServices = async () => {
       try {
-        const parsed = JSON.parse(savedServices)
-        setServicesData(parsed)
+        const response = await fetch('/api/services')
+        const data = await response.json()
+        if (data.success && data.services && data.services.length > 0) {
+          setServicesData(data.services)
+          localStorage.setItem('admin_services', JSON.stringify(data.services))
+          return
+        }
       } catch (error) {
-        console.error('Error loading saved services:', error)
+        console.error('Error loading services from API:', error)
+      }
+      // Fallback to localStorage
+      const savedServices = localStorage.getItem('admin_services')
+      if (savedServices) {
+        try {
+          const parsed = JSON.parse(savedServices)
+          setServicesData(parsed)
+        } catch (error) {
+          console.error('Error loading saved services:', error)
+          setServicesData(initialServices)
+        }
+      } else {
         setServicesData(initialServices)
       }
-    } else {
-      setServicesData(initialServices)
     }
+    loadServices()
   }, [])
 
-  // Guardar servicios en localStorage cuando cambien
+  // Guardar servicios en localStorage y API cuando cambien
   useEffect(() => {
-    if (isAuthenticated && servicesData.length > 0) {
+    if (servicesData.length > 0) {
       localStorage.setItem('admin_services', JSON.stringify(servicesData))
+      // Persistir en el servidor
+      fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ services: servicesData })
+      }).catch(error => console.error('Error saving services to API:', error))
       // Disparar evento personalizado para actualizar otros componentes
       window.dispatchEvent(new CustomEvent('servicesUpdated'))
     }
-  }, [servicesData, isAuthenticated])
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-    }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">Acceso Administrativo</h1>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-                placeholder="Contraseña"
-                required
-              />
-              <button type="submit" className="w-full btn-primary">Ingresar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  }, [servicesData])
 
   const handleAdd = () => {
     setFormData({

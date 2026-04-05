@@ -28,6 +28,14 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
+      {/* Skip to content */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:bg-primary-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
+      >
+        Skip to content
+      </a>
+
       <div className="container-custom">
         <div className="flex justify-between items-center py-3">
           {/* Logo */}
@@ -38,13 +46,14 @@ export default function Header() {
                 alt="Hybrid Tech Auto Logo"
                 width={180}
                 height={64}
+                priority
                 className="h-full w-auto object-contain"
               />
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6 mx-6 flex-1">
+          <nav className="hidden lg:flex items-center space-x-6 mx-6 flex-1" aria-label="Main navigation">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -63,10 +72,13 @@ export default function Header() {
               <Link
                 href="/cart"
                 className="relative p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
-                title="Shopping Cart"
+                aria-label={`Shopping cart, ${cartItemsCount} items`}
               >
-                <ShoppingCart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <ShoppingCart className="w-5 h-5" aria-hidden="true" />
+                <span
+                  className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                  aria-hidden="true"
+                >
                   {cartItemsCount}
                 </span>
               </Link>
@@ -74,9 +86,9 @@ export default function Header() {
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
-                title="Shopping Cart"
+                aria-label="Shopping cart"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5" aria-hidden="true" />
               </button>
             )}
 
@@ -84,15 +96,17 @@ export default function Header() {
             <a
               href="tel:+18327625299"
               className="p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
-              title="Call (832) 762-5299"
+              aria-label="Call (832) 762-5299"
             >
-              <Phone className="w-5 h-5" />
+              <Phone className="w-5 h-5" aria-hidden="true" />
             </a>
 
             {/* Language Switcher - Compact */}
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden" role="group" aria-label="Language switcher">
               <button
                 onClick={() => setLocale('en')}
+                aria-label="Switch to English"
+                aria-pressed={locale === 'en'}
                 className={`px-2.5 py-1.5 text-xs font-medium transition-colors ${
                   locale === 'en'
                     ? 'bg-primary-500 text-white'
@@ -103,6 +117,8 @@ export default function Header() {
               </button>
               <button
                 onClick={() => setLocale('es')}
+                aria-label="Cambiar a Español"
+                aria-pressed={locale === 'es'}
                 className={`px-2.5 py-1.5 text-xs font-medium transition-colors ${
                   locale === 'es'
                     ? 'bg-primary-500 text-white'
@@ -118,7 +134,7 @@ export default function Header() {
               href="/booking"
               className="btn-primary flex items-center space-x-2 px-4 py-2 text-sm"
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4" aria-hidden="true" />
               <span>Book Now</span>
             </Link>
           </div>
@@ -130,9 +146,10 @@ export default function Header() {
               <Link
                 href="/cart"
                 className="relative p-2 text-gray-700"
+                aria-label={`Shopping cart, ${cartItemsCount} items`}
               >
-                <ShoppingCart className="w-6 h-6" />
-                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <ShoppingCart className="w-6 h-6" aria-hidden="true" />
+                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" aria-hidden="true">
                   {cartItemsCount}
                 </span>
               </Link>
@@ -140,29 +157,33 @@ export default function Header() {
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-gray-700"
+                aria-label="Shopping cart"
               >
-                <ShoppingCart className="w-6 h-6" />
+                <ShoppingCart className="w-6 h-6" aria-hidden="true" />
               </button>
             )}
 
             {/* Mobile Menu Button */}
-          <button
+            <button
               className="p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6" aria-hidden="true" />
+              ) : (
+                <Menu className="w-6 h-6" aria-hidden="true" />
+              )}
+            </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-gray-200">
-            <nav className="flex flex-col space-y-1">
+          <div className="lg:hidden py-4 border-t border-gray-200" id="mobile-navigation">
+            <nav className="flex flex-col space-y-1" aria-label="Mobile navigation">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -173,7 +194,7 @@ export default function Header() {
                   {item.name}
                 </Link>
               ))}
-              
+
               {/* Mobile Actions */}
               <div className="pt-4 mt-4 border-t border-gray-200 space-y-2">
                 {/* Primary CTA */}
@@ -182,7 +203,7 @@ export default function Header() {
                   className="btn-primary flex items-center justify-center space-x-2 w-full py-3"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-4 h-4" aria-hidden="true" />
                   <span>Book Now</span>
                 </Link>
 
@@ -192,17 +213,20 @@ export default function Header() {
                   <a
                     href="tel:+18327625299"
                     className="flex flex-col items-center justify-center p-3 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 border border-gray-200"
+                    aria-label="Call (832) 762-5299"
                   >
-                    <Phone className="w-5 h-5 mb-1" />
+                    <Phone className="w-5 h-5 mb-1" aria-hidden="true" />
                     <span className="text-xs">Call</span>
                   </a>
 
                   {/* Language */}
-                  <div className="flex flex-col items-center justify-center p-3 border border-gray-200 rounded-lg">
+                  <div className="flex flex-col items-center justify-center p-3 border border-gray-200 rounded-lg" role="group" aria-label="Language switcher">
                     <span className="text-xs text-gray-600 mb-2">Language</span>
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setLocale('en')}
+                        aria-label="Switch to English"
+                        aria-pressed={locale === 'en'}
                         className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                           locale === 'en'
                             ? 'bg-primary-500 text-white'
@@ -213,6 +237,8 @@ export default function Header() {
                       </button>
                       <button
                         onClick={() => setLocale('es')}
+                        aria-label="Cambiar a Español"
+                        aria-pressed={locale === 'es'}
                         className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                           locale === 'es'
                             ? 'bg-primary-500 text-white'

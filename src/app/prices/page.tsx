@@ -1,30 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { DollarSign, Save, AlertCircle, Lock } from 'lucide-react'
+import { DollarSign, Save, AlertCircle } from 'lucide-react'
 import { services as initialServices } from '@/data/services'
 import { batteries as initialBatteries } from '@/data/batteries'
 import { useLanguage } from '@/contexts/LanguageContext'
 
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
 export default function PricesPage() {
   const { t } = useLanguage()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
-  const [passwordError, setPasswordError] = useState('')
   const [servicesData, setServicesData] = useState<typeof initialServices>([])
   const [batteriesData, setBatteriesData] = useState<typeof initialBatteries>([])
   const [savedMessage, setSavedMessage] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
-    // Verificar si ya está autenticado (sesión guardada en localStorage)
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
-    }
-
     // Cargar datos guardados desde localStorage
     const savedServices = localStorage.getItem('admin_services')
     if (savedServices) {
@@ -50,24 +39,6 @@ export default function PricesPage() {
       setBatteriesData(initialBatteries)
     }
   }, [])
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-      setPasswordError('')
-      // Redirigir al panel de administración después de login
-      window.location.href = '/admin'
-    } else {
-      setPasswordError(t.admin.wrongPassword)
-    }
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    localStorage.removeItem('admin_authenticated')
-  }
 
   const handleServicePriceChange = (id: string, newPrice: number) => {
     setServicesData(prev => 
@@ -118,56 +89,6 @@ export default function PricesPage() {
       setErrorMessage(t.admin.pricesError)
       setSavedMessage('')
     }
-  }
-
-  // Si no está autenticado, mostrar formulario de login
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-10 h-10 text-primary-500" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {t.admin.loginTitle}
-              </h1>
-              <p className="text-gray-600">
-                {t.admin.loginSubtitle}
-              </p>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t.admin.passwordLabel}
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder={t.admin.passwordPlaceholder}
-                  required
-                />
-                {passwordError && (
-                  <p className="mt-2 text-sm text-red-600">{passwordError}</p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full btn-primary"
-              >
-                {t.admin.loginButton}
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -227,13 +148,6 @@ export default function PricesPage() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <button
-                  onClick={handleLogout}
-                  className="btn-outline flex items-center justify-center space-x-2"
-                >
-                  <Lock className="w-5 h-5" />
-                  <span>{t.admin.logout}</span>
-                </button>
                 <button
                   onClick={handleSave}
                   className="btn-primary flex items-center justify-center space-x-2"

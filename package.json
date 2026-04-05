@@ -2,7 +2,9 @@
   "name": "hybrid-tech-automotive",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=18.0.0 <25" },
+  "engines": {
+    "node": ">=18.0.0 <25"
+  },
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
@@ -14,8 +16,11 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^2.2.2",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.2.0",
+    "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.0.0",
+    "jose": "^6.2.2",
     "lucide-react": "^0.294.0",
     "next": "14.0.4",
     "nodemailer": "^6.9.7",

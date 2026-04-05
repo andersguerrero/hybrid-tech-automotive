@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Save, Lock, Plus, Edit, Trash2, ArrowLeft, Upload, Search } from 'lucide-react'
+import { Save, Plus, Edit, Trash2, ArrowLeft, Upload, Search } from 'lucide-react'
 import { batteries as initialBatteries } from '@/data'
 import type { Battery } from '@/types'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -53,8 +53,6 @@ function ImageUploadButton({
 
 export default function BatteriesAdminPage() {
   const { t } = useLanguage()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [batteriesData, setBatteriesData] = useState<Battery[]>(initialBatteries)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -75,14 +73,7 @@ export default function BatteriesAdminPage() {
   const [filterBrand, setFilterBrand] = useState<string>('all')
   const [filterCondition, setFilterCondition] = useState<string>('all')
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
-    }
-
     // Cargar baterías desde el servidor primero
     const loadBatteriesFromServer = async () => {
       try {
@@ -122,13 +113,13 @@ export default function BatteriesAdminPage() {
 
   // Guardar baterías en localStorage, servidor Y archivo fuente cuando cambien
   useEffect(() => {
-    if (isAuthenticated && batteriesData.length > 0) {
+    if (batteriesData.length > 0) {
       console.log('Saving batteries to localStorage, server, and source file:', batteriesData)
       localStorage.setItem('admin_batteries', JSON.stringify(batteriesData))
       localStorage.setItem('batteries_edited_by_admin', 'true')
       // Disparar evento personalizado para actualizar otros componentes
       window.dispatchEvent(new CustomEvent('batteriesUpdated'))
-      
+
       // Guardar en el servidor (para producción)
       fetch('/api/batteries', {
         method: 'POST',
@@ -139,7 +130,7 @@ export default function BatteriesAdminPage() {
       }).catch(error => {
         console.error('Error saving batteries to server:', error)
       })
-      
+
       // IMPORTANTE: Guardar también en el archivo fuente para que se despliegue correctamente
       fetch('/api/save-batteries-to-source', {
         method: 'POST',
@@ -159,7 +150,7 @@ export default function BatteriesAdminPage() {
           console.warn('⚠️ Error guardando en archivo fuente (normal en producción):', error)
         })
     }
-  }, [batteriesData, isAuthenticated])
+  }, [batteriesData])
 
   // Filter batteries
   const filteredBatteries = useMemo(() => {
@@ -182,47 +173,6 @@ export default function BatteriesAdminPage() {
       return true
     })
   }, [batteriesData, searchTerm, filterBrand, filterCondition])
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-    }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">{t.admin.loginTitle}</h1>
-              <p className="text-gray-600 mt-2">{t.admin.loginSubtitle}</p>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t.admin.passwordLabel}
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder={t.admin.passwordPlaceholder}
-                  required
-                />
-              </div>
-              <button type="submit" className="w-full btn-primary">{t.admin.loginButton}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   const handleAdd = () => {
     setFormData({

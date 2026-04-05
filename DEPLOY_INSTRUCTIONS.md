@@ -56,7 +56,7 @@ Configura estas variables en la plataforma que elijas:
 SMTP_HOST=smtpout.secureserver.net
 SMTP_PORT=465
 SMTP_USER=info@hybridtechauto.com
-SMTP_PASS=Toyotaprius
+SMTP_PASS=your_smtp_password_here
 SMTP_SECURE=true
 
 STRIPE_PUBLISHABLE_KEY=pk_live_tu_clave_publica
@@ -72,7 +72,9 @@ NEXTAUTH_URL=https://tu-dominio.vercel.app
 NEXTAUTH_SECRET=tu-secret-random
 NEXT_PUBLIC_BASE_URL=https://tu-dominio.vercel.app
 
-NEXT_PUBLIC_ADMIN_PASSWORD=Toyotaprius2024!
+# Admin (server-side only, NO usar NEXT_PUBLIC_)
+ADMIN_PASSWORD=your_admin_password_here
+JWT_SECRET=your_jwt_secret_min_32_chars
 ```
 
 ### 📸 Imágenes en producción (Vercel Blob)

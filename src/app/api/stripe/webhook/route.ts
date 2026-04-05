@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { sendBookingConfirmation } from '@/lib/email'
+import { createOrder } from '@/lib/orders'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -113,11 +114,33 @@ export async function POST(request: NextRequest) {
         // You might want to retry sending the email later
       }
 
-      // In a real application, you would:
-      // 1. Save the booking to a database with payment_status = 'paid'
-      // 2. Send notification to business email
-      // 3. Update calendar system
-      // 4. Send receipt to customer
+      // Persist order with payment confirmed
+      const orderItems = hasCartItems
+        ? bookingData.cartItems.map((item: any) => ({
+            id: item.id || item.name,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity || 1,
+            type: item.type || 'service',
+          }))
+        : [{ id: 'booking', name: bookingData.service, price: (session.amount_total || 0) / 100, quantity: 1, type: 'service' as const }]
+
+      await createOrder({
+        customerName: bookingData.name,
+        customerEmail: bookingData.email,
+        customerPhone: bookingData.phone || '',
+        items: orderItems,
+        subtotal: bookingData.subtotal || (session.amount_total || 0) / 100,
+        tax: bookingData.tax || 0,
+        total: bookingData.total || (session.amount_total || 0) / 100,
+        paymentMethod: 'stripe',
+        paymentStatus: 'paid',
+        orderStatus: 'confirmed',
+        date: bookingData.date,
+        time: bookingData.time,
+        comments: bookingData.comments || '',
+        stripeSessionId: session.id,
+      })
 
       console.log('Booking confirmed and email sent:', {
         sessionId: session.id,

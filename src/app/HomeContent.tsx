@@ -46,6 +46,8 @@ export default function HomeContent() {
                 alt="Hybrid battery replacement"
                 width={600}
                 height={400}
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="rounded-xl shadow-2xl"
               />
             </div>

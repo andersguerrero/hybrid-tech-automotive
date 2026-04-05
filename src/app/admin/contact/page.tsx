@@ -2,60 +2,49 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Save, AlertCircle, MapPin, Phone, Mail, Lock, ArrowLeft } from 'lucide-react'
+import { Save, MapPin, Phone, Mail, ArrowLeft } from 'lucide-react'
 import { contactInfo as initialContactInfo } from '@/data'
 
 export default function ContactAdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [contactData, setContactData] = useState(initialContactInfo)
   const [savedMessage, setSavedMessage] = useState<string>('')
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
+    const loadContact = async () => {
+      try {
+        const response = await fetch('/api/contact-info')
+        const data = await response.json()
+        if (data.success && data.contact) {
+          setContactData(data.contact)
+          localStorage.setItem('admin_contact', JSON.stringify(data.contact))
+          return
+        }
+      } catch (error) {
+        console.error('Error loading contact info from API:', error)
+      }
+      // Fallback to localStorage
+      const savedContact = localStorage.getItem('admin_contact')
+      if (savedContact) {
+        try {
+          const parsed = JSON.parse(savedContact)
+          setContactData(parsed)
+        } catch (error) {
+          console.error('Error loading saved contact info:', error)
+        }
+      }
     }
+    loadContact()
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-    }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">Acceso Administrativo</h1>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-                placeholder="Contraseña"
-                required
-              />
-              <button type="submit" className="w-full btn-primary">Ingresar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const handleSave = () => {
-    // Aquí se guardaría en backend/base de datos
+    // Guardar en localStorage para UI inmediata
+    localStorage.setItem('admin_contact', JSON.stringify(contactData))
+    // Persistir en el servidor
+    fetch('/api/contact-info', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contact: contactData })
+    }).catch(error => console.error('Error saving contact info to API:', error))
     setSavedMessage('Información actualizada correctamente')
     setTimeout(() => setSavedMessage(''), 3000)
   }

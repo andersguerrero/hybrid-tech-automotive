@@ -66,6 +66,11 @@ export default function Footer() {
                   {t.nav.blog}
                 </Link>
               </li>
+              <li>
+                <Link href="/my-orders" className="text-gray-300 hover:text-white transition-colors">
+                  My Orders
+                </Link>
+              </li>
             </ul>
           </div>
 

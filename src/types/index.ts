@@ -49,3 +49,31 @@ export interface Review {
   date: string
   verified: boolean
 }
+
+export interface OrderItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  type: 'service' | 'battery'
+}
+
+export interface Order {
+  id: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  items: OrderItem[]
+  subtotal: number
+  tax: number
+  total: number
+  paymentMethod: 'stripe' | 'zelle' | 'cash'
+  paymentStatus: 'pending' | 'paid' | 'failed'
+  orderStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  date: string
+  time: string
+  comments: string
+  stripeSessionId?: string
+  createdAt: string
+  updatedAt: string
+}

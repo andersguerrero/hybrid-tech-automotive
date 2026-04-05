@@ -168,9 +168,9 @@ export default function CartPage() {
                           <button
                             onClick={() => removeFromCart(item.id)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title={t.cart?.removeItem || 'Remove item'}
+                            aria-label={`Remove ${item.name} from cart`}
                           >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-5 h-5" aria-hidden="true" />
                           </button>
                         </div>
 

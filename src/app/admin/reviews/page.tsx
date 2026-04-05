@@ -2,15 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Save, Lock, Plus, Edit, Trash2, ArrowLeft, Star } from 'lucide-react'
+import { Save, Plus, Edit, Trash2, ArrowLeft, Star } from 'lucide-react'
 import { reviews as initialReviews } from '@/data'
 import type { Review } from '@/types'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function ReviewsAdminPage() {
   const { t } = useLanguage()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [reviewsData, setReviewsData] = useState<Review[]>(initialReviews)
   const [savedMessage, setSavedMessage] = useState<string>('')
   const [isAdding, setIsAdding] = useState(false)
@@ -23,68 +21,47 @@ export default function ReviewsAdminPage() {
     verified: true
   })
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
-    }
-
-    // Cargar reviews guardados desde localStorage
-    const savedReviews = localStorage.getItem('admin_reviews')
-    if (savedReviews) {
+    const loadReviews = async () => {
       try {
-        const parsed = JSON.parse(savedReviews)
-        setReviewsData(parsed)
+        const response = await fetch('/api/reviews')
+        const data = await response.json()
+        if (data.success && data.reviews && data.reviews.length > 0) {
+          setReviewsData(data.reviews)
+          localStorage.setItem('admin_reviews', JSON.stringify(data.reviews))
+          return
+        }
       } catch (error) {
-        console.error('Error loading saved reviews:', error)
+        console.error('Error loading reviews from API:', error)
+      }
+      // Fallback to localStorage
+      const savedReviews = localStorage.getItem('admin_reviews')
+      if (savedReviews) {
+        try {
+          const parsed = JSON.parse(savedReviews)
+          setReviewsData(parsed)
+        } catch (error) {
+          console.error('Error loading saved reviews:', error)
+        }
       }
     }
+    loadReviews()
   }, [])
 
-  // Guardar reviews en localStorage cuando cambien
+  // Guardar reviews en localStorage y API cuando cambien
   useEffect(() => {
-    if (reviewsData.length > 0 && isAuthenticated) {
+    if (reviewsData.length > 0) {
       localStorage.setItem('admin_reviews', JSON.stringify(reviewsData))
+      // Persistir en el servidor
+      fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviews: reviewsData })
+      }).catch(error => console.error('Error saving reviews to API:', error))
       // Disparar evento personalizado para actualizar otros componentes
       window.dispatchEvent(new CustomEvent('reviewsUpdated'))
     }
-  }, [reviewsData, isAuthenticated])
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-    }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">{t.admin.adminAccess}</h1>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-                placeholder={t.admin.passwordPlaceholder}
-                required
-              />
-              <button type="submit" className="w-full btn-primary">{t.admin.loginButton}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  }, [reviewsData])
 
   const handleSave = () => {
     if (!formData.author || !formData.comment || !formData.date || !formData.rating) {

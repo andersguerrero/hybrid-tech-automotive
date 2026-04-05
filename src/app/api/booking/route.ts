@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendBookingConfirmation } from '@/lib/email'
+import { createOrder } from '@/lib/orders'
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,11 +59,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // In a real application, you would also:
-    // 1. Save the booking to a database
-    // 2. Send notification to business email
-    // 3. Integrate with calendar system
-    // 4. Process payment if Stripe is selected
+    // Persist order
+    const orderItems = cartItems && cartItems.length > 0
+      ? cartItems.map((item: any) => ({
+          id: item.id || item.name,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity || 1,
+          type: item.type || 'service',
+        }))
+      : [{ id: service || 'booking', name: service || 'Service', price: total || 0, quantity: 1, type: 'service' as const }]
+
+    await createOrder({
+      customerName: name,
+      customerEmail: email,
+      customerPhone: phone,
+      items: orderItems,
+      subtotal: subtotal || total || 0,
+      tax: tax || 0,
+      total: total || subtotal || 0,
+      paymentMethod: paymentMethod || 'cash',
+      paymentStatus: 'pending',
+      orderStatus: 'pending',
+      date,
+      time,
+      comments: comments || '',
+    })
 
     return NextResponse.json({
       success: true,

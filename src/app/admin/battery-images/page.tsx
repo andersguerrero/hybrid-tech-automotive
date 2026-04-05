@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Upload, Lock, ArrowLeft, Save } from 'lucide-react'
+import { Upload, ArrowLeft, Save } from 'lucide-react'
 import { batteries as initialBatteries } from '@/data'
-
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
 
 // Get unique battery images with their vehicle groups
 function getBatteryImageGroups(batteries: typeof initialBatteries) {
@@ -32,19 +30,11 @@ function getBatteryImageGroups(batteries: typeof initialBatteries) {
 }
 
 export default function BatteryImagesAdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [batteries, setBatteries] = useState<typeof initialBatteries>(initialBatteries)
   const [uploading, setUploading] = useState<string | null>(null)
   const [imagesChanged, setImagesChanged] = useState(false)
 
   useEffect(() => {
-    // Check if already authenticated
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
-    }
-
     // Load batteries from localStorage if available
     try {
       const stored = localStorage.getItem('admin_batteries')
@@ -56,16 +46,6 @@ export default function BatteryImagesAdminPage() {
       console.error('Error loading batteries from localStorage', e)
     }
   }, [])
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-    } else {
-      alert('Invalid password')
-    }
-  }
 
   const handleFileUpload = async (file: File, imagePath: string) => {
     setUploading(imagePath)
@@ -150,48 +130,6 @@ export default function BatteryImagesAdminPage() {
   }
 
   const imageGroups = getBatteryImageGroups(batteries)
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-          <div className="flex items-center justify-center mb-6">
-            <Lock className="w-12 h-12 text-primary-500" />
-          </div>
-          <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
-          <form onSubmit={handleLogin}>
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Enter admin password"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-primary-500 text-white py-2 px-4 rounded-lg hover:bg-primary-600 transition-colors font-medium"
-            >
-              Login
-            </button>
-          </form>
-          <Link
-            href="/admin"
-            className="block text-center mt-4 text-sm text-gray-600 hover:text-primary-500"
-          >
-            <ArrowLeft className="inline w-4 h-4 mr-1" />
-            Back to Admin Panel
-          </Link>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

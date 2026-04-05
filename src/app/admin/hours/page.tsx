@@ -2,59 +2,49 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Save, Clock, Lock, ArrowLeft } from 'lucide-react'
+import { Save, Clock, ArrowLeft } from 'lucide-react'
 import { businessHours as initialHours } from '@/data'
 
 export default function HoursAdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [hoursData, setHoursData] = useState(initialHours)
   const [savedMessage, setSavedMessage] = useState<string>('')
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
+    const loadHours = async () => {
+      try {
+        const response = await fetch('/api/hours')
+        const data = await response.json()
+        if (data.success && data.hours) {
+          setHoursData(data.hours)
+          localStorage.setItem('admin_hours', JSON.stringify(data.hours))
+          return
+        }
+      } catch (error) {
+        console.error('Error loading hours from API:', error)
+      }
+      // Fallback to localStorage
+      const savedHours = localStorage.getItem('admin_hours')
+      if (savedHours) {
+        try {
+          const parsed = JSON.parse(savedHours)
+          setHoursData(parsed)
+        } catch (error) {
+          console.error('Error loading saved hours:', error)
+        }
+      }
     }
+    loadHours()
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-    }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">Acceso Administrativo</h1>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-                placeholder="Contraseña"
-                required
-              />
-              <button type="submit" className="w-full btn-primary">Ingresar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const handleSave = () => {
+    // Guardar en localStorage para UI inmediata
+    localStorage.setItem('admin_hours', JSON.stringify(hoursData))
+    // Persistir en el servidor
+    fetch('/api/hours', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hours: hoursData })
+    }).catch(error => console.error('Error saving hours to API:', error))
     setSavedMessage('Horarios actualizados correctamente')
     setTimeout(() => setSavedMessage(''), 3000)
   }

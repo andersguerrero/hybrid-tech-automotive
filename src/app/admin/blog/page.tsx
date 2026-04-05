@@ -2,15 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Save, Lock, Plus, Edit, Trash2, X, ArrowLeft } from 'lucide-react'
+import { Save, Plus, Edit, Trash2, X, ArrowLeft } from 'lucide-react'
 import { blogPosts as initialPosts } from '@/data'
 import type { BlogPost } from '@/types'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function BlogAdminPage() {
   const { t } = useLanguage()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
   const [posts, setPosts] = useState(initialPosts)
   const [savedMessage, setSavedMessage] = useState<string>('')
   const [isAdding, setIsAdding] = useState(false)
@@ -26,48 +24,45 @@ export default function BlogAdminPage() {
     slug: ''
   })
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
+    const loadPosts = async () => {
+      try {
+        const response = await fetch('/api/blog')
+        const data = await response.json()
+        if (data.success && data.posts && data.posts.length > 0) {
+          setPosts(data.posts)
+          localStorage.setItem('admin_blog', JSON.stringify(data.posts))
+          return
+        }
+      } catch (error) {
+        console.error('Error loading blog posts from API:', error)
+      }
+      // Fallback to localStorage
+      const savedPosts = localStorage.getItem('admin_blog')
+      if (savedPosts) {
+        try {
+          const parsed = JSON.parse(savedPosts)
+          setPosts(parsed)
+        } catch (error) {
+          console.error('Error loading saved blog posts:', error)
+        }
+      }
     }
+    loadPosts()
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
+  // Guardar posts en localStorage y API cuando cambien
+  useEffect(() => {
+    if (posts.length > 0) {
+      localStorage.setItem('admin_blog', JSON.stringify(posts))
+      // Persistir en el servidor
+      fetch('/api/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ posts })
+      }).catch(error => console.error('Error saving blog posts to API:', error))
     }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">{t.admin.adminAccess}</h1>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-                placeholder={t.admin.passwordPlaceholder}
-                required
-              />
-              <button type="submit" className="w-full btn-primary">{t.admin.loginButton}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  }, [posts])
 
   const handleAdd = () => {
     setFormData({

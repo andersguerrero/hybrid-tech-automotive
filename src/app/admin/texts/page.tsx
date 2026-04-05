@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Save, Lock, ArrowLeft, Type, ChevronDown, ChevronRight } from 'lucide-react'
+import { Save, ArrowLeft, Type, ChevronDown, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 
@@ -17,9 +17,6 @@ interface TranslationSection {
 
 export default function TextsAdminPage() {
   const { locale, setLocale, t } = useLanguage()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
-  const [passwordError, setPasswordError] = useState('')
   const [savedMessage, setSavedMessage] = useState<string>('')
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     nav: true,
@@ -33,14 +30,7 @@ export default function TextsAdminPage() {
   })
   const [localTranslations, setLocalTranslations] = useState(translations)
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Toyotaprius2024!'
-
   useEffect(() => {
-    const authStatus = localStorage.getItem('admin_authenticated')
-    if (authStatus === 'true') {
-      setIsAuthenticated(true)
-    }
-
     // Load custom translations
     const loadCustomTranslations = () => {
       const customEn = localStorage.getItem('admin_translations_en')
@@ -61,17 +51,6 @@ export default function TextsAdminPage() {
       window.removeEventListener('customTranslationUpdate', loadCustomTranslations)
     }
   }, [])
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
-      setPasswordError('')
-    } else {
-      setPasswordError(t.admin.wrongPassword)
-    }
-  }
 
   const toggleSection = (sectionKey: string) => {
     setCollapsedSections(prev => ({
@@ -123,42 +102,6 @@ export default function TextsAdminPage() {
       ...localTranslations,
       [locale]: currentTranslations
     })
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container-custom max-w-md">
-          <div className="card">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">{t.admin.loginTitle}</h1>
-              <p className="text-gray-600 mt-2">{t.admin.loginSubtitle}</p>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t.admin.passwordLabel}
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder={t.admin.passwordPlaceholder}
-                  required
-                />
-                {passwordError && (
-                  <p className="mt-2 text-sm text-red-600">{passwordError}</p>
-                )}
-              </div>
-              <button type="submit" className="w-full btn-primary">{t.admin.loginButton}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   const sections = [

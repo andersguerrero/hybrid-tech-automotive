@@ -1,19 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCheckoutSession } from '@/lib/stripe'
+import { validateCartItems } from '@/lib/prices'
+import { calculateSalesTax } from '@/lib/taxCalculator'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { serviceName, servicePrice, customerEmail, bookingData, lineItems } = body
+    const { items, customerEmail, bookingData, zipCode, lineItems: legacyLineItems } = body
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
-    
+
     let finalLineItems = []
 
-    // If lineItems is provided (from cart), use it
-    if (lineItems && Array.isArray(lineItems) && lineItems.length > 0) {
-      // Validate all line items
-      for (const item of lineItems) {
+    // New secure flow: validate prices server-side from item IDs
+    if (items && Array.isArray(items) && items.length > 0) {
+      const result = await validateCartItems(items)
+
+      if ('error' in result) {
+        return NextResponse.json(
+          { error: result.error },
+          { status: 400 }
+        )
+      }
+
+      finalLineItems = result.lineItems
+
+      // Calculate tax server-side
+      if (zipCode) {
+        const { taxAmount, rate, state } = calculateSalesTax(zipCode, result.subtotal)
+        if (taxAmount > 0) {
+          finalLineItems.push({
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: 'Sales Tax',
+                description: `${state} sales tax (${(rate * 100).toFixed(2)}%)`,
+              },
+              unit_amount: Math.round(taxAmount * 100),
+            },
+            quantity: 1,
+          })
+        }
+      }
+    } else if (legacyLineItems && Array.isArray(legacyLineItems) && legacyLineItems.length > 0) {
+      // Legacy support: accept pre-built lineItems (deprecated)
+      console.warn('DEPRECATED: Checkout using client-side lineItems. Migrate to item IDs.')
+      for (const item of legacyLineItems) {
         if (!item.price_data || !item.price_data.unit_amount || !item.quantity) {
           return NextResponse.json(
             { error: 'Invalid line items format' },
@@ -27,32 +59,10 @@ export async function POST(request: NextRequest) {
           )
         }
       }
-      finalLineItems = lineItems
-    } else if (serviceName && servicePrice) {
-      // Legacy support: single service
-      if (servicePrice <= 0 || servicePrice > 100000) {
-        return NextResponse.json(
-          { error: 'Invalid price amount' },
-          { status: 400 }
-        )
-      }
-      
-      finalLineItems = [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: serviceName,
-              description: `Service appointment for ${serviceName}`,
-            },
-            unit_amount: Math.round(servicePrice * 100), // Convert to cents, ensure integer
-          },
-          quantity: 1,
-        },
-      ]
+      finalLineItems = legacyLineItems
     } else {
       return NextResponse.json(
-        { error: 'Either lineItems or serviceName and servicePrice are required' },
+        { error: 'Items array is required' },
         { status: 400 }
       )
     }
