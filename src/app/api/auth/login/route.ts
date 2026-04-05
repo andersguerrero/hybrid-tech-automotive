@@ -1,46 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyPassword, createToken, getAuthCookieConfig } from '@/lib/auth'
-
-const failedAttempts = new Map<string, { count: number; lastAttempt: number }>()
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
+import { loginSchema, formatZodError } from '@/lib/validations'
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown'
+    const ip = getClientIP(request)
 
     // Rate limiting: 5 attempts per 15 minutes
-    const attempts = failedAttempts.get(ip)
-    if (attempts && attempts.count >= 5) {
-      const elapsed = Date.now() - attempts.lastAttempt
-      if (elapsed < 15 * 60 * 1000) {
-        return NextResponse.json(
-          { success: false, error: 'Too many login attempts. Try again later.' },
-          { status: 429 }
-        )
-      }
-      failedAttempts.delete(ip)
+    const rateCheck = checkRateLimit(ip, RATE_LIMITS.login)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many login attempts. Try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
+      )
     }
 
-    const { password } = await request.json()
+    const body = await request.json()
 
-    if (!password) {
+    // Zod validation
+    const parsed = loginSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Password is required' },
+        { success: false, error: formatZodError(parsed.error) },
         { status: 400 }
       )
     }
 
-    if (!verifyPassword(password)) {
-      const current = failedAttempts.get(ip) || { count: 0, lastAttempt: 0 }
-      failedAttempts.set(ip, { count: current.count + 1, lastAttempt: Date.now() })
+    const { password } = parsed.data
 
+    // verifyPassword is now async (supports bcrypt)
+    if (!(await verifyPassword(password))) {
       return NextResponse.json(
         { success: false, error: 'Invalid password' },
         { status: 401 }
       )
     }
-
-    // Clear failed attempts on success
-    failedAttempts.delete(ip)
 
     const token = await createToken()
     const cookieConfig = getAuthCookieConfig(token)

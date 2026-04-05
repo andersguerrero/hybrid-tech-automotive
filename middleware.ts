@@ -17,6 +17,16 @@ const PROTECTED_API_ROUTES = [
   '/api/orders',
 ]
 
+/**
+ * Security headers added to all responses
+ */
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+}
+
 async function verifyTokenEdge(token: string): Promise<boolean> {
   try {
     const secret = process.env.JWT_SECRET
@@ -34,13 +44,22 @@ export async function middleware(request: NextRequest) {
 
   // Allow the login page and auth API routes without auth
   if (pathname === '/admin/login' || pathname.startsWith('/api/auth/')) {
+    const response = NextResponse.next()
+    applySecurityHeaders(response)
+    return response
+  }
+
+  // Allow Stripe webhooks without auth (verified by Stripe signature in handler)
+  if (pathname === '/api/stripe/webhook') {
     return NextResponse.next()
   }
 
   // For protected API routes, only protect write operations (POST/PUT/DELETE)
   if (PROTECTED_API_ROUTES.some(route => pathname.startsWith(route))) {
     if (request.method === 'GET') {
-      return NextResponse.next()
+      const response = NextResponse.next()
+      applySecurityHeaders(response)
+      return response
     }
 
     const token = request.cookies.get(AUTH_COOKIE_NAME)?.value
@@ -50,7 +69,9 @@ export async function middleware(request: NextRequest) {
         { status: 401 }
       )
     }
-    return NextResponse.next()
+    const response = NextResponse.next()
+    applySecurityHeaders(response)
+    return response
   }
 
   // For admin pages, require auth
@@ -60,10 +81,20 @@ export async function middleware(request: NextRequest) {
       const loginUrl = new URL('/admin/login', request.url)
       return NextResponse.redirect(loginUrl)
     }
-    return NextResponse.next()
+    const response = NextResponse.next()
+    applySecurityHeaders(response)
+    return response
   }
 
-  return NextResponse.next()
+  const response = NextResponse.next()
+  applySecurityHeaders(response)
+  return response
+}
+
+function applySecurityHeaders(response: NextResponse) {
+  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+    response.headers.set(key, value)
+  }
 }
 
 export const config = {
@@ -80,5 +111,8 @@ export const config = {
     '/api/hours/:path*',
     '/api/contact-info/:path*',
     '/api/orders/:path*',
+    '/api/contact',
+    '/api/booking',
+    '/api/stripe/:path*',
   ],
 }

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, readFile } from 'fs/promises'
+import { writeFile } from 'fs/promises'
 import { join } from 'path'
 import type { Battery } from '@/types'
+import { saveBatteriesSchema, formatZodError } from '@/lib/validations'
 
 const BATTERIES_FILE = join(process.cwd(), 'src', 'data', 'batteries.ts')
 const BATTERIES_JSON_FILE = join(process.cwd(), 'data', 'batteries-custom.json')
@@ -24,14 +25,18 @@ function formatBattery(battery: Battery, index: number, total: number): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { batteries } = await request.json()
-    
-    if (!Array.isArray(batteries)) {
+    const body = await request.json()
+
+    // Zod validation (auth already checked by middleware)
+    const parsed = saveBatteriesSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Datos inválidos' },
+        { success: false, error: formatZodError(parsed.error) },
         { status: 400 }
       )
     }
+
+    const { batteries } = parsed.data
 
     // Siempre guardar en JSON primero (funciona en producción y desarrollo)
     try {

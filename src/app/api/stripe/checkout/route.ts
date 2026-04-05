@@ -2,18 +2,56 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createCheckoutSession } from '@/lib/stripe'
 import { validateCartItems } from '@/lib/prices'
 import { calculateSalesTax } from '@/lib/taxCalculator'
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
+import { stripeCheckoutSchema, formatZodError } from '@/lib/validations'
+import { validateOrigin } from '@/lib/csrf'
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF: Verify request comes from our domain
+    if (!validateOrigin(request)) {
+      return NextResponse.json(
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      )
+    }
+
+    // Rate limiting: 10 requests per 15 minutes per IP
+    const ip = getClientIP(request)
+    const rateCheck = checkRateLimit(ip, RATE_LIMITS.stripeCheckout)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: 'Too many checkout requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+
     const body = await request.json()
-    const { items, customerEmail, bookingData, zipCode, lineItems: legacyLineItems } = body
+
+    // Zod validation
+    const parsed = stripeCheckoutSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: formatZodError(parsed.error) },
+        { status: 400 }
+      )
+    }
+
+    const { items, customerEmail, bookingData, zipCode, lineItems: legacyLineItems } = parsed.data
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
 
-    let finalLineItems = []
+    let finalLineItems: Array<{
+      price_data: {
+        currency: string
+        product_data: { name: string; description?: string }
+        unit_amount: number
+      }
+      quantity: number
+    }> = []
 
     // New secure flow: validate prices server-side from item IDs
-    if (items && Array.isArray(items) && items.length > 0) {
+    if (items && items.length > 0) {
       const result = await validateCartItems(items)
 
       if ('error' in result) {
@@ -42,29 +80,10 @@ export async function POST(request: NextRequest) {
           })
         }
       }
-    } else if (legacyLineItems && Array.isArray(legacyLineItems) && legacyLineItems.length > 0) {
+    } else if (legacyLineItems && legacyLineItems.length > 0) {
       // Legacy support: accept pre-built lineItems (deprecated)
       console.warn('DEPRECATED: Checkout using client-side lineItems. Migrate to item IDs.')
-      for (const item of legacyLineItems) {
-        if (!item.price_data || !item.price_data.unit_amount || !item.quantity) {
-          return NextResponse.json(
-            { error: 'Invalid line items format' },
-            { status: 400 }
-          )
-        }
-        if (item.price_data.unit_amount <= 0 || item.price_data.unit_amount > 10000000) {
-          return NextResponse.json(
-            { error: 'Invalid price amount in line items' },
-            { status: 400 }
-          )
-        }
-      }
       finalLineItems = legacyLineItems
-    } else {
-      return NextResponse.json(
-        { error: 'Items array is required' },
-        { status: 400 }
-      )
     }
 
     // Store booking data in metadata for webhook processing

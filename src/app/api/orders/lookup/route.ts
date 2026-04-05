@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SignJWT } from 'jose'
 import { getOrdersByEmail } from '@/lib/orders'
 import nodemailer from 'nodemailer'
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
+import { orderLookupSchema, formatZodError } from '@/lib/validations'
+import { sanitizeEmail } from '@/lib/sanitize'
+import { validateOrigin } from '@/lib/csrf'
 
 const getSecret = () => new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret')
 
@@ -17,11 +21,37 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
-
-    if (!email || typeof email !== 'string') {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+    // CSRF: Verify request comes from our domain
+    if (!validateOrigin(request)) {
+      return NextResponse.json(
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      )
     }
+
+    // Rate limiting: 5 requests per 15 minutes per IP
+    const ip = getClientIP(request)
+    const rateCheck = checkRateLimit(ip, RATE_LIMITS.orderLookup)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+
+    const body = await request.json()
+
+    // Zod validation
+    const parsed = orderLookupSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: formatZodError(parsed.error) },
+        { status: 400 }
+      )
+    }
+
+    // Sanitize email
+    const email = sanitizeEmail(parsed.data.email)
 
     // Check if orders exist for this email (don't reveal this to the user)
     const orders = await getOrdersByEmail(email)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrders, updateOrderStatus } from '@/lib/orders'
+import { orderUpdateSchema, formatZodError } from '@/lib/validations'
 
 export async function GET() {
   try {
@@ -13,11 +14,18 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { orderId, orderStatus, paymentStatus } = await request.json()
+    const body = await request.json()
 
-    if (!orderId) {
-      return NextResponse.json({ error: 'Missing orderId' }, { status: 400 })
+    // Zod validation (auth already checked by middleware)
+    const parsed = orderUpdateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: formatZodError(parsed.error) },
+        { status: 400 }
+      )
     }
+
+    const { orderId, orderStatus, paymentStatus } = parsed.data
 
     const updated = await updateOrderStatus(orderId, { orderStatus, paymentStatus })
 

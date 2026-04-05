@@ -1,24 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendContactForm } from '@/lib/email'
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
+import { contactFormSchema, formatZodError } from '@/lib/validations'
+import { sanitizeName, sanitizeEmail, sanitizePhone, sanitizeText, sanitizeMessage } from '@/lib/sanitize'
+import { validateOrigin } from '@/lib/csrf'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { name, email, phone, subject, message } = body
-
-    // Validate required fields
-    if (!name || !email || !subject || !message) {
+    // CSRF: Verify request comes from our domain
+    if (!validateOrigin(request)) {
       return NextResponse.json(
-        { success: false, error: 'Faltan campos requeridos' },
+        { success: false, error: 'Invalid request origin' },
+        { status: 403 }
+      )
+    }
+
+    // Rate limiting: 3 requests per 15 minutes per IP
+    const ip = getClientIP(request)
+    const rateCheck = checkRateLimit(ip, RATE_LIMITS.contactForm)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Demasiados mensajes enviados. Intenta de nuevo en unos minutos.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+
+    const body = await request.json()
+
+    // Zod validation
+    const parsed = contactFormSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: formatZodError(parsed.error) },
         { status: 400 }
       )
     }
+
+    // Sanitize all inputs
+    const name = sanitizeName(parsed.data.name)
+    const email = sanitizeEmail(parsed.data.email)
+    const phone = sanitizePhone(parsed.data.phone || '')
+    const subject = sanitizeText(parsed.data.subject, 200)
+    const message = sanitizeMessage(parsed.data.message)
 
     // Check if email configuration is available
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.BUSINESS_EMAIL) {
       console.log('Email configuration not available, logging contact form data:')
       console.log('Contact Form Data:', { name, email, phone, subject, message })
-      
+
       return NextResponse.json({
         success: true,
         message: 'Mensaje recibido correctamente. Te contactaremos pronto al (123) 456-7890.'
@@ -29,7 +58,7 @@ export async function POST(request: NextRequest) {
     const emailResult = await sendContactForm({
       name,
       email,
-      phone: phone || '',
+      phone,
       subject,
       message
     })

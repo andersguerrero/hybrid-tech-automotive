@@ -1,48 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendBookingConfirmation } from '@/lib/email'
 import { createOrder } from '@/lib/orders'
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
+import { bookingFormSchema, formatZodError } from '@/lib/validations'
+import { sanitizeName, sanitizeEmail, sanitizePhone, sanitizeText, sanitizeMessage } from '@/lib/sanitize'
+import { validateOrigin } from '@/lib/csrf'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { name, email, phone, service, date, time, comments, paymentMethod, cartItems, subtotal, tax, total } = body
-
-    // Validate required fields
-    if (!name || !email || !phone || !date || !time) {
+    // CSRF: Verify request comes from our domain
+    if (!validateOrigin(request)) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Invalid request origin' },
+        { status: 403 }
+      )
+    }
+
+    // Rate limiting: 5 requests per 15 minutes per IP
+    const ip = getClientIP(request)
+    const rateCheck = checkRateLimit(ip, RATE_LIMITS.booking)
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: 'Too many booking requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+
+    const body = await request.json()
+
+    // Zod validation
+    const parsed = bookingFormSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: formatZodError(parsed.error) },
         { status: 400 }
       )
     }
 
+    // Sanitize inputs
+    const name = sanitizeName(parsed.data.name)
+    const email = sanitizeEmail(parsed.data.email)
+    const phone = sanitizePhone(parsed.data.phone)
+    const service = parsed.data.service ? sanitizeText(parsed.data.service, 500) : undefined
+    const date = sanitizeText(parsed.data.date, 20)
+    const time = sanitizeText(parsed.data.time, 20)
+    const comments = sanitizeMessage(parsed.data.comments || '')
+    const paymentMethod = parsed.data.paymentMethod
+    const cartItems = parsed.data.cartItems
+    const subtotal = parsed.data.subtotal
+    const tax = parsed.data.tax
+    const total = parsed.data.total
+
     // Build service description from cart items or single service
     let serviceDescription = service
     if (cartItems && cartItems.length > 0) {
-      serviceDescription = cartItems.map((item: any) => 
-        `${item.quantity}x ${item.name} - $${(item.price * item.quantity).toFixed(2)}`
+      serviceDescription = cartItems.map((item) =>
+        `${item.quantity}x ${sanitizeText(item.name, 200)} - $${(item.price * item.quantity).toFixed(2)}`
       ).join(', ')
     }
 
     // Prepare booking data for email
-    const bookingData: any = {
-      service: serviceDescription,
+    const bookingData = {
+      service: serviceDescription || 'Service',
       date,
       time,
-      comments: comments || ''
-    }
-
-    // Add cart totals if available
-    if (subtotal !== undefined) {
-      bookingData.subtotal = subtotal
-    }
-    if (tax !== undefined) {
-      bookingData.tax = tax
-    }
-    if (total !== undefined) {
-      bookingData.total = total
-    }
-    if (paymentMethod) {
-      bookingData.paymentMethod = paymentMethod
+      comments,
+      subtotal,
+      tax,
+      total,
+      paymentMethod,
     }
 
     // Send confirmation email to customer
@@ -51,7 +77,7 @@ export async function POST(request: NextRequest) {
     if (!emailResult.success) {
       console.error('Failed to send confirmation email:', emailResult.error)
       const errorMsg = process.env.NODE_ENV === 'production'
-        ? 'No se pudo enviar el correo de confirmación. Intenta nuevamente o contáctanos.'
+        ? 'No se pudo enviar el correo de confirmaci\u00f3n. Intenta nuevamente o cont\u00e1ctanos.'
         : `SMTP error: ${(emailResult.error as Error)?.message || emailResult.error || 'Unknown error'}`
       return NextResponse.json(
         { success: false, error: errorMsg },
@@ -61,12 +87,12 @@ export async function POST(request: NextRequest) {
 
     // Persist order
     const orderItems = cartItems && cartItems.length > 0
-      ? cartItems.map((item: any) => ({
-          id: item.id || item.name,
-          name: item.name,
+      ? cartItems.map((item) => ({
+          id: item.id || sanitizeText(item.name, 200),
+          name: sanitizeText(item.name, 200),
           price: item.price,
           quantity: item.quantity || 1,
-          type: item.type || 'service',
+          type: item.type || 'service' as const,
         }))
       : [{ id: service || 'booking', name: service || 'Service', price: total || 0, quantity: 1, type: 'service' as const }]
 
@@ -83,7 +109,7 @@ export async function POST(request: NextRequest) {
       orderStatus: 'pending',
       date,
       time,
-      comments: comments || '',
+      comments,
     })
 
     return NextResponse.json({
