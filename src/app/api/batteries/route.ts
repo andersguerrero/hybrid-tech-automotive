@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
 
       // Model filter
       if (model) {
-        const match = battery.vehicle.match(/^(?:Toyota|Lexus)\s+(.+?)\s*\(/)
+        const match = battery.vehicle.match(/^\w+\s+(.+?)\s*\(/)
         if (!match || match[1].toLowerCase() !== model.toLowerCase()) {
           return false
         }
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
     const conditionSet = new Set<string>()
 
     allBatteries.forEach((b) => {
-      const brandMatch = b.vehicle.match(/^(Toyota|Lexus)/)
+      const brandMatch = b.vehicle.match(/^(\w+)/)
       if (brandMatch) brandSet.add(brandMatch[1])
       conditionSet.add(b.condition)
     })
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
       ? allBatteries.filter((b) => b.vehicle.toLowerCase().startsWith(brand.toLowerCase()))
       : allBatteries
     modelSource.forEach((b) => {
-      const match = b.vehicle.match(/^(?:Toyota|Lexus)\s+(.+?)\s*\(/)
+      const match = b.vehicle.match(/^\w+\s+(.+?)\s*\(/)
       if (match) modelSet.add(match[1])
     })
 
