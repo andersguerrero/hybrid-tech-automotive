@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "prisma generate && node -e \"if(process.env.DATABASE_URL){const{execSync}=require('child_process');execSync('npx prisma db push --skip-generate',{stdio:'inherit'})}else{console.log('No DATABASE_URL, skipping db push')}\" && next build",
-    "postinstall": "prisma generate",
+    "postinstall": "test -f prisma/schema.prisma && prisma generate || true",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
