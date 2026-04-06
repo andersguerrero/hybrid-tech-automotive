@@ -13,12 +13,30 @@ import Cart from '@/components/Cart'
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const { locale, setLocale, t } = useLanguage()
   const siteImages = useSiteImages()
   const contact = useContactInfo()
   const { getTotalItems } = useCart()
   const { theme, toggleTheme } = useTheme()
   const cartItemsCount = getTotalItems()
+
+  // Hide header on scroll down, show on scroll up
+  useEffect(() => {
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      // Only hide after scrolling past the header height, and not when mobile menu is open
+      if (y > 80 && y > lastY && !isMenuOpen) {
+        setHidden(true)
+      } else {
+        setHidden(false)
+      }
+      lastY = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isMenuOpen])
 
   // Navigation links are always visible — no need to fetch data just to show nav
   const navigation = [
@@ -30,7 +48,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
+    <header className={`bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 transition-transform duration-300 ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
       {/* Skip to content */}
       <a
         href="#main-content"
