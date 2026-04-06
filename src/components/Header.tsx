@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Phone, Calendar, ShoppingCart, Moon, Sun } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useSiteImages, useContactInfo, useBatteries, useServices, useBlogPosts, useReviews } from '@/hooks/useData'
+import { useSiteImages, useContactInfo } from '@/hooks/useData'
 import { useCart } from '@/contexts/CartContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import Cart from '@/components/Cart'
@@ -16,20 +16,16 @@ export default function Header() {
   const { locale, setLocale, t } = useLanguage()
   const siteImages = useSiteImages()
   const contact = useContactInfo()
-  const { batteries } = useBatteries()
-  const { services } = useServices()
-  const { blogPosts } = useBlogPosts()
-  const { reviews } = useReviews()
   const { getTotalItems } = useCart()
   const { theme, toggleTheme } = useTheme()
   const cartItemsCount = getTotalItems()
 
+  // Navigation links are always visible — no need to fetch data just to show nav
   const navigation = [
     { name: t.nav.home, href: '/' },
-    ...(services.length > 0 ? [{ name: t.nav.services, href: '/services' }] : []),
-    ...(batteries.length > 0 ? [{ name: t.nav.batteries, href: '/batteries' }] : []),
-    ...(reviews.length > 0 ? [{ name: t.nav.reviews, href: '/reviews' }] : []),
-    ...(blogPosts.length > 0 ? [{ name: t.nav.blog, href: '/blog' }] : []),
+    { name: t.nav.services, href: '/services' },
+    { name: t.nav.batteries, href: '/batteries' },
+    { name: t.nav.reviews, href: '/reviews' },
     { name: t.nav.contact, href: '/contact' },
   ]
 
