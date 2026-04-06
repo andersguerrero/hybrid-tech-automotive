@@ -1,9 +1,11 @@
 'use client'
 
 import { MessageCircle } from 'lucide-react'
+import { useContactInfo } from '@/hooks/useData'
 
 export default function WhatsAppButton() {
-  const phoneNumber = '18327625299'
+  const contact = useContactInfo()
+  const phoneNumber = contact.phoneTel.replace('+', '')
   const message = encodeURIComponent('Hi! I\'m interested in your hybrid battery services.')
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`
 

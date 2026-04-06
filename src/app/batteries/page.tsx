@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { Battery } from '@/types'
 import Link from 'next/link'
 import { Search, ChevronLeft, ChevronRight, SlidersHorizontal, Loader2, GitCompareArrows } from 'lucide-react'
+import { useContactInfo } from '@/hooks/useData'
 
 const PAGE_SIZE = 12
 
@@ -27,6 +28,7 @@ interface FacetsInfo {
 
 export default function BatteriesPage() {
   const { t } = useLanguage()
+  const contact = useContactInfo()
 
   // Filter states
   const [selectedBrand, setSelectedBrand] = useState<string>('')
@@ -426,7 +428,7 @@ export default function BatteriesPage() {
             <a href="/booking" className="btn-secondary text-lg px-8 py-4">
               {t.batteries.getQuote}
             </a>
-            <a href="tel:+18327625299" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
+            <a href={`tel:${contact.phoneTel}`} className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
               {t.batteriesPage.callToAction}
             </a>
           </div>

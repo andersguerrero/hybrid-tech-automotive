@@ -4,18 +4,21 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useContactInfo, useBusinessHours } from '@/hooks/useData'
 import NewsletterSignup from '@/components/NewsletterSignup'
 
 export default function Footer() {
   const { t, locale } = useLanguage()
-  
+  const contact = useContactInfo()
+  const { weekdayHours, saturdayHours, sundayHours } = useBusinessHours()
+
   // Rutas según idioma
   const routes = {
     privacy: locale === 'es' ? '/privacidad' : '/privacy',
     terms: locale === 'es' ? '/terminos' : '/terms',
     warranty: locale === 'es' ? '/garantia' : '/warranty'
   }
-  
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container-custom section-padding">
@@ -54,7 +57,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/booking" className="text-gray-300 hover:text-white transition-colors">
-                  Book Appointment
+                  {t.home.bookAppointment}
                 </Link>
               </li>
               <li>
@@ -81,23 +84,20 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-300 text-sm">
-                    24422 Starview Landing Ct,<br />
-                    Spring, TX 77373
-                  </p>
-                </div>
+                <p className="text-gray-300 text-sm">
+                  {contact.address}
+                </p>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                <a href="tel:+18327625299" className="text-gray-300 hover:text-white transition-colors">
-                  (832) 762-5299
+                <a href={`tel:${contact.phoneTel}`} className="text-gray-300 hover:text-white transition-colors">
+                  {contact.phone}
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                <a href="mailto:info@hybridtechauto.com" className="text-gray-300 hover:text-white transition-colors">
-                  info@hybridtechauto.com
+                <a href={`mailto:${contact.email}`} className="text-gray-300 hover:text-white transition-colors">
+                  {contact.email}
                 </a>
               </div>
             </div>
@@ -110,9 +110,9 @@ export default function Footer() {
               <div className="flex items-center space-x-3">
                 <Clock className="w-5 h-5 text-primary-500 flex-shrink-0" />
                 <div className="text-gray-300 text-sm">
-                  <p>{t.contact.mondayFriday}</p>
-                  <p>{t.contact.saturday}</p>
-                  <p>{t.contact.sunday}</p>
+                  <p>Mon-Fri: {weekdayHours}</p>
+                  <p>Sat: {saturdayHours}</p>
+                  <p>Sun: {sundayHours}</p>
                 </div>
               </div>
             </div>

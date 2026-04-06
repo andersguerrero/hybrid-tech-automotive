@@ -6,13 +6,14 @@ import { ArrowRight, Shield, Clock, Star } from 'lucide-react'
 import ServiceCard from '@/components/ServiceCard'
 import BatteryCard from '@/components/BatteryCard'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useBatteries, useServices, useSiteImages } from '@/hooks/useData'
+import { useBatteries, useServices, useSiteImages, useContactInfo } from '@/hooks/useData'
 
 export default function HomeContent() {
   const { t } = useLanguage()
   const { batteries, isReady: batteriesReady } = useBatteries()
   const services = useServices()
   const siteImages = useSiteImages()
+  const contact = useContactInfo()
 
   return (
     <div className="min-h-screen">
@@ -161,7 +162,7 @@ export default function HomeContent() {
             <Link href="/booking" className="btn-secondary text-lg px-8 py-4">
               {t.home.bookAppointment}
             </Link>
-            <a href="tel:+18327625299" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
+            <a href={`tel:${contact.phoneTel}`} className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
               {t.home.callToAction}
             </a>
           </div>
@@ -180,7 +181,7 @@ export default function HomeContent() {
           </div>
           <div className="rounded-xl overflow-hidden shadow-xl" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
             <iframe
-              src="https://www.google.com/maps?q=24422+Starview+Landing+Ct,+Spring,+TX+77373&output=embed"
+              src={contact.mapEmbedUrl}
               width="100%"
               height="100%"
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}

@@ -306,37 +306,137 @@ export function useSiteImages() {
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>(initialReviews)
 
-  useEffect(() => {
+  const loadReviews = async () => {
+    try {
+      const response = await fetch('/api/reviews')
+      const data = await response.json()
+      if (data.success && data.reviews && data.reviews.length > 0) {
+        setReviews(data.reviews)
+        localStorage.setItem('admin_reviews', JSON.stringify(data.reviews))
+        return
+      }
+    } catch (error) {
+      console.error('Error loading reviews from API:', error)
+    }
     const saved = localStorage.getItem('admin_reviews')
     if (saved) {
       try {
         setReviews(JSON.parse(saved))
-      } catch (e) {
+      } catch {
         setReviews(initialReviews)
       }
     }
+  }
+
+  useEffect(() => {
+    loadReviews()
   }, [])
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      const saved = localStorage.getItem('admin_reviews')
-      if (saved) {
-        try {
-          setReviews(JSON.parse(saved))
-        } catch (e) {
-          // Ignorar errores
-        }
-      }
+    const handleUpdate = () => {
+      loadReviews()
     }
 
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('reviewsUpdated', handleStorageChange)
+    window.addEventListener('storage', handleUpdate)
+    window.addEventListener('reviewsUpdated', handleUpdate)
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('reviewsUpdated', handleStorageChange)
+      window.removeEventListener('storage', handleUpdate)
+      window.removeEventListener('reviewsUpdated', handleUpdate)
     }
   }, [])
 
   return reviews
+}
+
+// ─── Contact Info ─────────────────────────────────────────────────────────────
+
+interface ContactInfo {
+  phone: string
+  email: string
+  address: string
+  mapUrl?: string
+}
+
+const DEFAULT_CONTACT: ContactInfo = {
+  phone: '(832) 762-5299',
+  email: 'info@hybridtechauto.com',
+  address: '24422 Starview Landing Ct, Spring, TX 77373',
+}
+
+export function useContactInfo() {
+  const [contact, setContact] = useState<ContactInfo>(DEFAULT_CONTACT)
+
+  useEffect(() => {
+    const loadContact = async () => {
+      try {
+        const response = await fetch('/api/contact-info')
+        const data = await response.json()
+        if (data.success && data.contact) {
+          setContact(data.contact)
+        }
+      } catch (error) {
+        console.error('Error loading contact info:', error)
+      }
+    }
+    loadContact()
+  }, [])
+
+  // Derive useful values
+  const phoneRaw = contact.phone.replace(/[^+\d]/g, '')
+  const phoneTel = phoneRaw.startsWith('+') ? phoneRaw : `+1${phoneRaw}`
+  const mapEmbedUrl = contact.mapUrl || `https://www.google.com/maps?q=${encodeURIComponent(contact.address)}&output=embed`
+
+  return { ...contact, phoneTel, mapEmbedUrl }
+}
+
+// ─── Business Hours ───────────────────────────────────────────────────────────
+
+interface DayHours {
+  open: string
+  close: string
+  closed?: boolean
+}
+
+interface BusinessHours {
+  [key: string]: DayHours
+}
+
+const DEFAULT_HOURS: BusinessHours = {
+  monday: { open: '8:00 AM', close: '6:00 PM' },
+  tuesday: { open: '8:00 AM', close: '6:00 PM' },
+  wednesday: { open: '8:00 AM', close: '6:00 PM' },
+  thursday: { open: '8:00 AM', close: '6:00 PM' },
+  friday: { open: '8:00 AM', close: '6:00 PM' },
+  saturday: { open: '9:00 AM', close: '3:00 PM' },
+  sunday: { open: '', close: '', closed: true },
+}
+
+export function useBusinessHours() {
+  const [hours, setHours] = useState<BusinessHours>(DEFAULT_HOURS)
+
+  useEffect(() => {
+    const loadHours = async () => {
+      try {
+        const response = await fetch('/api/hours')
+        const data = await response.json()
+        if (data.success && data.hours) {
+          setHours(data.hours)
+        }
+      } catch (error) {
+        console.error('Error loading business hours:', error)
+      }
+    }
+    loadHours()
+  }, [])
+
+  // Format for display
+  const formatDay = (day: DayHours) =>
+    day.closed ? 'Closed' : `${day.open} - ${day.close}`
+
+  const weekdayHours = formatDay(hours.monday || DEFAULT_HOURS.monday)
+  const saturdayHours = formatDay(hours.saturday || DEFAULT_HOURS.saturday)
+  const sundayHours = formatDay(hours.sunday || DEFAULT_HOURS.sunday)
+
+  return { hours, weekdayHours, saturdayHours, sundayHours }
 }

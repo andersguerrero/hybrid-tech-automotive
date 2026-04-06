@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Phone, Calendar, ShoppingCart, Moon, Sun } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useSiteImages } from '@/hooks/useData'
+import { useSiteImages, useContactInfo } from '@/hooks/useData'
 import { useCart } from '@/contexts/CartContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import Cart from '@/components/Cart'
@@ -15,6 +15,7 @@ export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const { locale, setLocale, t } = useLanguage()
   const siteImages = useSiteImages()
+  const contact = useContactInfo()
   const { getTotalItems } = useCart()
   const { theme, toggleTheme } = useTheme()
   const cartItemsCount = getTotalItems()
@@ -96,9 +97,9 @@ export default function Header() {
 
             {/* Phone - Icon only */}
             <a
-              href="tel:+18327625299"
+              href={`tel:${contact.phoneTel}`}
               className="p-2 text-gray-700 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50"
-              aria-label="Call (832) 762-5299"
+              aria-label={`Call ${contact.phone}`}
             >
               <Phone className="w-5 h-5" aria-hidden="true" />
             </a>
@@ -222,9 +223,9 @@ export default function Header() {
                 <div className="grid grid-cols-3 gap-2">
                   {/* Phone */}
                   <a
-                    href="tel:+18327625299"
+                    href={`tel:${contact.phoneTel}`}
                     className="flex flex-col items-center justify-center p-3 text-gray-700 dark:text-gray-200 hover:text-primary-500 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                    aria-label="Call (832) 762-5299"
+                    aria-label={`Call ${contact.phone}`}
                   >
                     <Phone className="w-5 h-5 mb-1" aria-hidden="true" />
                     <span className="text-xs">Call</span>

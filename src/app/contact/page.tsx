@@ -1,11 +1,14 @@
 'use client'
 
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react'
+import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 import ContactForm from './ContactForm'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useContactInfo, useBusinessHours } from '@/hooks/useData'
 
 export default function ContactPage() {
   const { t } = useLanguage()
+  const contact = useContactInfo()
+  const { weekdayHours, saturdayHours, sundayHours } = useBusinessHours()
 
   return (
     <div className="min-h-screen">
@@ -43,7 +46,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.contact.addressLabel}</h3>
-                    <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: t.contact.addressValue }} />
+                    <p className="text-gray-600">{contact.address}</p>
                   </div>
                 </div>
 
@@ -54,8 +57,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.contact.phoneLabel}</h3>
                     <p className="text-gray-600">
-                      <a href="tel:+18327625299" className="hover:text-primary-500 transition-colors">
-                        {t.contact.phoneValue}
+                      <a href={`tel:${contact.phoneTel}`} className="hover:text-primary-500 transition-colors">
+                        {contact.phone}
                       </a>
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
@@ -71,8 +74,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.contact.emailLabel}</h3>
                     <p className="text-gray-600">
-                      <a href="mailto:info@hybridtechauto.com" className="hover:text-primary-500 transition-colors">
-                        {t.contact.emailValue}
+                      <a href={`mailto:${contact.email}`} className="hover:text-primary-500 transition-colors">
+                        {contact.email}
                       </a>
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
@@ -88,9 +91,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.contact.businessHoursLabel}</h3>
                     <div className="text-gray-600 space-y-1">
-                      <p>{t.contact.mondayFriday}</p>
-                      <p>{t.contact.saturday}</p>
-                      <p>{t.contact.sunday}</p>
+                      <p>Mon-Fri: {weekdayHours}</p>
+                      <p>Sat: {saturdayHours}</p>
+                      <p>Sun: {sundayHours}</p>
                     </div>
                   </div>
                 </div>
@@ -114,10 +117,10 @@ export default function ContactPage() {
               {t.contact.findUsDesc}
             </p>
           </div>
-          
+
           <div className="rounded-xl overflow-hidden shadow-xl" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
             <iframe
-              src="https://www.google.com/maps?q=24422+Starview+Landing+Ct,+Spring,+TX+77373&output=embed"
+              src={contact.mapEmbedUrl}
               width="100%"
               height="100%"
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
