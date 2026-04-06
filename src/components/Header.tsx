@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Phone, Calendar, ShoppingCart, Moon, Sun } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useSiteImages, useContactInfo } from '@/hooks/useData'
+import { useSiteImages, useContactInfo, useBatteries } from '@/hooks/useData'
 import { useCart } from '@/contexts/CartContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import Cart from '@/components/Cart'
@@ -16,6 +16,7 @@ export default function Header() {
   const { locale, setLocale, t } = useLanguage()
   const siteImages = useSiteImages()
   const contact = useContactInfo()
+  const { batteries } = useBatteries()
   const { getTotalItems } = useCart()
   const { theme, toggleTheme } = useTheme()
   const cartItemsCount = getTotalItems()
@@ -23,7 +24,7 @@ export default function Header() {
   const navigation = [
     { name: t.nav.home, href: '/' },
     { name: t.nav.services, href: '/services' },
-    { name: t.nav.batteries, href: '/batteries' },
+    ...(batteries.length > 0 ? [{ name: t.nav.batteries, href: '/batteries' }] : []),
     { name: t.nav.reviews, href: '/reviews' },
     { name: t.nav.blog, href: '/blog' },
     { name: t.nav.contact, href: '/contact' },

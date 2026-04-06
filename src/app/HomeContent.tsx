@@ -36,9 +36,11 @@ export default function HomeContent() {
                 <Link href="/services" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
                   {t.nav.services}
                 </Link>
-                <Link href="/batteries" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
-                  {t.nav.batteries}
-                </Link>
+                {batteries.length > 0 && (
+                  <Link href="/batteries" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
+                    {t.nav.batteries}
+                  </Link>
+                )}
               </div>
             </div>
             <div className="relative">
@@ -116,39 +118,42 @@ export default function HomeContent() {
         </div>
       </section>
 
-      <section className="section-padding bg-gray-50">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.home.batteriesTitle}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.batteriesDescription}
-            </p>
+      {/* Batteries Section — only shown when there are batteries */}
+      {(!batteriesReady || batteries.length > 0) && (
+        <section className="section-padding bg-gray-50">
+          <div className="container-custom">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {t.home.batteriesTitle}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                {t.home.batteriesDescription}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              {!batteriesReady ? (
+                [1, 2].map((i) => (
+                  <div key={i} className="card animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4" />
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  </div>
+                ))
+              ) : (
+                batteries.slice(0, 2).map((battery) => (
+                  <BatteryCard key={battery.id} battery={battery} />
+                ))
+              )}
+            </div>
+            <div className="text-center">
+              <Link href="/batteries" className="btn-primary text-lg px-8 py-4 inline-flex items-center">
+                {t.home.viewAllBatteries}
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            {!batteriesReady ? (
-              [1, 2].map((i) => (
-                <div key={i} className="card animate-pulse">
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4" />
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                </div>
-              ))
-            ) : (
-              batteries.slice(0, 2).map((battery) => (
-                <BatteryCard key={battery.id} battery={battery} />
-              ))
-            )}
-          </div>
-          <div className="text-center">
-            <Link href="/batteries" className="btn-primary text-lg px-8 py-4 inline-flex items-center">
-              {t.home.viewAllBatteries}
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="section-padding bg-primary-500 text-white">
         <div className="container-custom text-center">
