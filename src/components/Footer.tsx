@@ -4,13 +4,18 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useContactInfo, useBusinessHours } from '@/hooks/useData'
+import { useContactInfo, useBusinessHours, useSiteImages, useServices, useBatteries, useReviews, useBlogPosts } from '@/hooks/useData'
 import NewsletterSignup from '@/components/NewsletterSignup'
 
 export default function Footer() {
   const { t, locale } = useLanguage()
   const contact = useContactInfo()
   const { weekdayHours, saturdayHours, sundayHours } = useBusinessHours()
+  const siteImages = useSiteImages()
+  const { services } = useServices()
+  const { batteries } = useBatteries()
+  const { reviews } = useReviews()
+  const { blogPosts } = useBlogPosts()
 
   // Rutas según idioma
   const routes = {
@@ -28,7 +33,7 @@ export default function Footer() {
             <div className="flex items-center">
               <div className="w-56 h-28 bg-white rounded-lg p-2">
                 <Image
-                  src="/logo.jpg"
+                  src={siteImages.logo || "/logo.jpg"}
                   alt="Hybrid Tech Auto Logo"
                   width={224}
                   height={112}
@@ -45,31 +50,39 @@ export default function Footer() {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">{t.footer.quickLinks}</h4>
             <ul className="space-y-2">
-              <li>
-                <Link href="/services" className="text-gray-300 hover:text-white transition-colors">
-                  {t.nav.services}
-                </Link>
-              </li>
-              <li>
-                <Link href="/batteries" className="text-gray-300 hover:text-white transition-colors">
-                  {t.nav.batteries}
-                </Link>
-              </li>
+              {services.length > 0 && (
+                <li>
+                  <Link href="/services" className="text-gray-300 hover:text-white transition-colors">
+                    {t.nav.services}
+                  </Link>
+                </li>
+              )}
+              {batteries.length > 0 && (
+                <li>
+                  <Link href="/batteries" className="text-gray-300 hover:text-white transition-colors">
+                    {t.nav.batteries}
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/booking" className="text-gray-300 hover:text-white transition-colors">
                   {t.home.bookAppointment}
                 </Link>
               </li>
-              <li>
-                <Link href="/reviews" className="text-gray-300 hover:text-white transition-colors">
-                  {t.nav.reviews}
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
-                  {t.nav.blog}
-                </Link>
-              </li>
+              {reviews.length > 0 && (
+                <li>
+                  <Link href="/reviews" className="text-gray-300 hover:text-white transition-colors">
+                    {t.nav.reviews}
+                  </Link>
+                </li>
+              )}
+              {blogPosts.length > 0 && (
+                <li>
+                  <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
+                    {t.nav.blog}
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/my-orders" className="text-gray-300 hover:text-white transition-colors">
                   My Orders
