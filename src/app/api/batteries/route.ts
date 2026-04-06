@@ -1,12 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
 import { batteries as staticBatteries } from '@/data/batteries'
-import { recordAllPrices, getPriceHistory } from '@/lib/priceHistory'
+import { recordAllPrices } from '@/lib/priceHistory'
 import type { Battery } from '@/types'
 import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/batteries-custom.json'
 const LOCAL_FILE = 'batteries-custom.json'
+
+// ─── In-memory cache ─────────────────────────────────────────────────────────
+// Avoids hitting the DB on every request. Cache lives for 60 seconds.
+let cachedBatteries: Battery[] | null = null
+let cacheTimestamp = 0
+const CACHE_TTL = 60_000 // 60 seconds
+
+async function getCachedBatteries(): Promise<Battery[]> {
+  const now = Date.now()
+  if (cachedBatteries && now - cacheTimestamp < CACHE_TTL) {
+    return cachedBatteries
+  }
+
+  const storedBatteries = await blobGet<Battery[]>(BLOB_PATH, LOCAL_FILE, [])
+  const allBatteries = process.env.DATABASE_URL
+    ? storedBatteries
+    : (storedBatteries.length > 0 ? storedBatteries : staticBatteries)
+
+  cachedBatteries = allBatteries
+  cacheTimestamp = now
+  return allBatteries
+}
 
 /**
  * GET /api/batteries
@@ -25,11 +47,8 @@ const LOCAL_FILE = 'batteries-custom.json'
  */
 export async function GET(request: NextRequest) {
   try {
-    // Load batteries from storage; only fallback to static data when no DB is configured
-    const storedBatteries = await blobGet<Battery[]>(BLOB_PATH, LOCAL_FILE, [])
-    const allBatteries = process.env.DATABASE_URL
-      ? storedBatteries
-      : (storedBatteries.length > 0 ? storedBatteries : staticBatteries)
+    // Load batteries from cache (hits DB at most once per 60s)
+    const allBatteries = await getCachedBatteries()
 
     const params = request.nextUrl.searchParams
 
@@ -146,30 +165,9 @@ export async function GET(request: NextRequest) {
       batteries = filtered.slice(offset, offset + limit)
     }
 
-    // Price history: fetch with timeout to prevent hanging when DB pool is busy.
-    // Recording only happens on POST/PUT, never on GET.
-    const previousPrices: Record<string, number> = {}
-    try {
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Price history timeout')), 3000)
-      )
-      const priceHistory = await Promise.race([getPriceHistory(), timeout])
-      batteries.forEach(b => {
-        const records = priceHistory
-          .filter(r => r.batteryId === b.id && r.price !== b.price)
-          .sort((a, c) => c.date.localeCompare(a.date))
-        if (records.length > 0) {
-          previousPrices[b.id] = records[0].price
-        }
-      })
-    } catch {
-      // Price history is non-critical; continue without it
-    }
-
     return NextResponse.json({
       success: true,
       batteries,
-      previousPrices,
       pagination: {
         page,
         limit: limit || total,
@@ -179,7 +177,7 @@ export async function GET(request: NextRequest) {
         hasPrev: page > 1,
       },
       facets,
-      source: storedBatteries.length > 0 ? 'storage' : 'default',
+      source: allBatteries.length > 0 ? 'storage' : 'default',
     })
   } catch (error) {
     logger.error('Error reading batteries:', error as Error)
@@ -202,6 +200,10 @@ export async function POST(request: NextRequest) {
     }
 
     await blobPut(BLOB_PATH, LOCAL_FILE, batteries)
+
+    // Invalidate cache so next GET picks up the new data
+    cachedBatteries = null
+    cacheTimestamp = 0
 
     // Record price history when batteries are saved (not on every GET)
     recordAllPrices(batteries.map((b: Battery) => ({ id: b.id, price: b.price }))).catch(() => {})

@@ -114,22 +114,9 @@ export default function BatteriesPage() {
     setCurrentPage(1)
   }
 
-  // Group batteries by brand for display (dynamic — supports any brand)
-  const brandGroups = batteries.reduce<Record<string, typeof batteries>>((acc, b) => {
-    const brand = b.vehicle.split(' ')[0]
-    if (!acc[brand]) acc[brand] = []
-    acc[brand].push(b)
-    return acc
-  }, {})
-  // Fixed order: Toyota first, Lexus second, then rest alphabetically
-  const brandOrder = ['Toyota', 'Lexus', ...Object.keys(brandGroups).filter(b => b !== 'Toyota' && b !== 'Lexus').sort()]
-  const orderedBrands = brandOrder.filter(b => brandGroups[b]?.length > 0)
-
-  const brandDescriptions: Record<string, string> = {
-    Toyota: 'High-quality rebuilt NiMH batteries for Toyota hybrid vehicles',
-    Lexus: 'Premium rebuilt NiMH batteries for Lexus hybrid vehicles',
-    Honda: 'Reliable hybrid batteries for Honda hybrid vehicles',
-  }
+  // No brand grouping — pagination already sorts batteries by the selected order.
+  // Grouping by brand within a paginated page causes confusing layouts
+  // (e.g., page 2 mixing Honda and Lexus with forced brand reordering).
 
   return (
     <div className="min-h-screen">
@@ -273,26 +260,18 @@ export default function BatteriesPage() {
         </section>
       )}
 
-      {/* Batteries Grid - Dynamic by Brand */}
-      {!loading && orderedBrands.map((brand, idx) => (
-        <section key={brand} className={`${idx === 0 ? 'pt-4' : 'pt-8'} pb-8 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+      {/* Batteries Grid */}
+      {!loading && batteries.length > 0 && (
+        <section className="pt-6 pb-8 bg-white">
           <div className="container-custom">
-            <div className="mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                {brand} Hybrid Batteries
-              </h2>
-              <p className="text-gray-600">
-                {brandDescriptions[brand] || `Quality hybrid batteries for ${brand} vehicles`}
-              </p>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {brandGroups[brand].map((battery) => (
+              {batteries.map((battery) => (
                 <BatteryCard key={battery.id} battery={battery} previousPrice={previousPrices[battery.id]} />
               ))}
             </div>
           </div>
         </section>
-      ))}
+      )}
 
       {/* No Results */}
       {!loading && batteries.length === 0 && (
