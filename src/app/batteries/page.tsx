@@ -133,7 +133,7 @@ export default function BatteriesPage() {
       </section>
 
       {/* Search and Filters Section */}
-      <section className="py-8 bg-white sticky top-[72px] z-10 border-b">
+      <section className="py-8 bg-white border-b">
         <div className="container-custom">
           <div className="max-w-5xl mx-auto">
             {/* Search Bar */}
