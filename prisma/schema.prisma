@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Batteries ────────────────────────────────────────────────────────────────
+
+model Battery {
+  id          String @id
+  vehicle     String
+  batteryType String @map("battery_type")
+  condition   String
+  price       Float
+  warranty    String
+  image       String
+  description String @db.Text
+
+  @@map("batteries")
+}
+
+// ─── Services ─────────────────────────────────────────────────────────────────
+
+model Service {
+  id          String @id
+  name        String
+  price       Float
+  description String @db.Text
+  image       String
+  category    String
+
+  @@map("services")
+}
+
+// ─── Reviews ──────────────────────────────────────────────────────────────────
+
+model Review {
+  id       String   @id
+  author   String
+  rating   Int
+  comment  String   @db.Text
+  date     String
+  verified Boolean  @default(false)
+  images   String[] @default([])
+
+  @@map("reviews")
+}
+
+// ─── Blog Posts ───────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id          String @id
+  title       String
+  excerpt     String @db.Text
+  content     String @db.Text
+  author      String
+  publishedAt String @map("published_at")
+  category    String
+  image       String
+  slug        String @unique
+
+  @@map("blog_posts")
+}
+
+// ─── Orders ───────────────────────────────────────────────────────────────────
+
+model Order {
+  id              String  @id
+  customerName    String  @map("customer_name")
+  customerEmail   String  @map("customer_email")
+  customerPhone   String  @map("customer_phone")
+  items           Json
+  subtotal        Float
+  tax             Float
+  total           Float
+  paymentMethod   String  @map("payment_method")
+  paymentStatus   String  @map("payment_status")
+  orderStatus     String  @map("order_status")
+  date            String
+  time            String
+  comments        String  @db.Text @default("")
+  stripeSessionId String? @map("stripe_session_id")
+  couponCode      String? @map("coupon_code")
+  couponDiscount  Float?  @map("coupon_discount")
+  createdAt       String  @map("created_at")
+  updatedAt       String  @map("updated_at")
+
+  @@index([customerEmail])
+  @@index([orderStatus])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+// ─── Coupons ──────────────────────────────────────────────────────────────────
+
+model Coupon {
+  id          String  @id
+  code        String  @unique
+  type        String
+  value       Float
+  minPurchase Float   @default(0) @map("min_purchase")
+  maxUses     Int     @default(0) @map("max_uses")
+  usedCount   Int     @default(0) @map("used_count")
+  isActive    Boolean @default(true) @map("is_active")
+  expiresAt   String? @map("expires_at")
+  description String  @default("")
+  createdAt   String  @map("created_at")
+  updatedAt   String  @map("updated_at")
+
+  @@map("coupons")
+}
+
+// ─── Subscribers ──────────────────────────────────────────────────────────────
+
+model Subscriber {
+  id           String  @id
+  email        String  @unique
+  locale       String  @default("en")
+  subscribedAt String  @map("subscribed_at")
+  active       Boolean @default(true)
+
+  @@map("subscribers")
+}
+
+// ─── Price History ────────────────────────────────────────────────────────────
+
+model PriceRecord {
+  id        Int    @id @default(autoincrement())
+  batteryId String @map("battery_id")
+  price     Float
+  date      String
+
+  @@index([batteryId])
+  @@map("price_records")
+}
+
+// ─── Site Config (key-value for settings) ─────────────────────────────────────
+
+model SiteConfig {
+  key       String   @id
+  data      Json
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("site_config")
+}

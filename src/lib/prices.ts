@@ -1,5 +1,6 @@
 import { batteries as staticBatteries } from '@/data/batteries'
 import { services as staticServices } from '@/data/services'
+import { blobGet } from '@/lib/storage'
 import type { Battery } from '@/types'
 import logger from '@/lib/logger'
 
@@ -21,32 +22,20 @@ interface ValidatedLineItem {
   quantity: number
 }
 
-async function loadBatteriesFromBlob(): Promise<Battery[]> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return []
-
+async function loadCustomBatteries(): Promise<Battery[]> {
   try {
-    const { list } = await import('@vercel/blob')
-    const { blobs } = await list({ prefix: 'config/' })
-    const batteriesBlob = blobs.find((b) => b.pathname === 'config/batteries-custom.json')
-
-    if (batteriesBlob?.url) {
-      const response = await fetch(batteriesBlob.url)
-      const batteries = await response.json()
-      if (Array.isArray(batteries) && batteries.length > 0) {
-        return batteries
-      }
-    }
+    return await blobGet<Battery[]>('config/batteries-custom.json', 'batteries-custom.json', [])
   } catch (error) {
-    logger.error('Error loading batteries from blob:', error as Error)
+    logger.error('Error loading custom batteries:', error as Error)
+    return []
   }
-  return []
 }
 
 export async function getItemPrice(itemId: string, itemType: 'battery' | 'service'): Promise<{ price: number; name: string; description: string } | null> {
   if (itemType === 'battery') {
-    // Try blob first, then static data
-    const blobBatteries = await loadBatteriesFromBlob()
-    const allBatteries = blobBatteries.length > 0 ? blobBatteries : staticBatteries
+    // Try stored batteries first, then static data
+    const customBatteries = await loadCustomBatteries()
+    const allBatteries = customBatteries.length > 0 ? customBatteries : staticBatteries
 
     const battery = allBatteries.find(b => b.id === itemId)
     if (battery) {

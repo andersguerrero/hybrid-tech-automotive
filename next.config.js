@@ -4,7 +4,7 @@ const { withSentryConfig } = require('@sentry/nextjs')
 const nextConfig = {
   output: 'standalone',
   experimental: {
-    serverComponentsExternalPackages: ['@vercel/blob'],
+    serverComponentsExternalPackages: ['@vercel/blob', '@prisma/client'],
   },
   images: {
     formats: ['image/webp'],

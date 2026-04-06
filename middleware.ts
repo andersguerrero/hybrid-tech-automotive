@@ -17,6 +17,7 @@ const PROTECTED_API_ROUTES = [
   '/api/orders',
   '/api/coupons',
   '/api/subscribers',
+  '/api/seed',
 ]
 
 /**
@@ -115,6 +116,7 @@ export const config = {
     '/api/orders/:path*',
     '/api/coupons/:path*',
     '/api/subscribers/:path*',
+    '/api/seed/:path*',
     '/api/contact',
     '/api/booking',
     '/api/stripe/:path*',

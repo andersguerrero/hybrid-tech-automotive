@@ -13,6 +13,7 @@ interface HealthResponse {
   uptime: number
   version: string
   services: {
+    database: ServiceCheck
     storage: ServiceCheck
     stripe: ServiceCheck
     smtp: ServiceCheck
@@ -20,6 +21,24 @@ interface HealthResponse {
 }
 
 const startTime = Date.now()
+
+async function checkDatabase(): Promise<ServiceCheck> {
+  const start = Date.now()
+  try {
+    if (!process.env.DATABASE_URL) {
+      return { status: 'degraded', message: 'DATABASE_URL not configured' }
+    }
+    const { prisma } = await import('@/lib/db')
+    if (!prisma) {
+      return { status: 'down', message: 'Prisma client unavailable' }
+    }
+    await prisma.$queryRaw`SELECT 1`
+    return { status: 'ok', latencyMs: Date.now() - start, message: 'PostgreSQL connected' }
+  } catch (error) {
+    logger.error('Health check: database failed', error as Error)
+    return { status: 'down', latencyMs: Date.now() - start, message: 'PostgreSQL unreachable' }
+  }
+}
 
 async function checkStorage(): Promise<ServiceCheck> {
   const start = Date.now()
@@ -88,13 +107,14 @@ async function checkSMTP(): Promise<ServiceCheck> {
 }
 
 export async function GET() {
-  const [storage, stripe, smtp] = await Promise.all([
+  const [database, storage, stripe, smtp] = await Promise.all([
+    checkDatabase(),
     checkStorage(),
     checkStripe(),
     checkSMTP(),
   ])
 
-  const services = { storage, stripe, smtp }
+  const services = { database, storage, stripe, smtp }
   const allStatuses = Object.values(services).map(s => s.status)
 
   let overallStatus: HealthResponse['status'] = 'healthy'
