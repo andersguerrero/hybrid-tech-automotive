@@ -146,11 +146,14 @@ export async function GET(request: NextRequest) {
       batteries = filtered.slice(offset, offset + limit)
     }
 
-    // Price history: only fetch (don't record on every GET — recording
-    // should happen only when prices are actually updated via POST/PUT)
+    // Price history: fetch with timeout to prevent hanging when DB pool is busy.
+    // Recording only happens on POST/PUT, never on GET.
     const previousPrices: Record<string, number> = {}
     try {
-      const priceHistory = await getPriceHistory()
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Price history timeout')), 3000)
+      )
+      const priceHistory = await Promise.race([getPriceHistory(), timeout])
       batteries.forEach(b => {
         const records = priceHistory
           .filter(r => r.batteryId === b.id && r.price !== b.price)
