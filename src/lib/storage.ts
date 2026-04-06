@@ -180,7 +180,8 @@ export async function blobGet<T>(blobPath: string, localFilename: string, defaul
 
     return defaults
   } catch (error) {
-    logger.error(`Error reading from ${blobPath}:`, error as Error)
+    const errMsg = error instanceof Error ? error.message : String(error)
+    logger.error(`Error reading from ${blobPath}: ${errMsg}`, error as Error)
     return defaults
   }
 }

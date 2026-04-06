@@ -146,20 +146,22 @@ export async function GET(request: NextRequest) {
       batteries = filtered.slice(offset, offset + limit)
     }
 
-    // Record prices for history tracking (fire-and-forget)
-    recordAllPrices(allBatteries.map(b => ({ id: b.id, price: b.price }))).catch(() => {})
-
-    // Get price history for response
-    const priceHistory = await getPriceHistory().catch(() => [])
+    // Price history: only fetch (don't record on every GET — recording
+    // should happen only when prices are actually updated via POST/PUT)
     const previousPrices: Record<string, number> = {}
-    batteries.forEach(b => {
-      const records = priceHistory
-        .filter(r => r.batteryId === b.id && r.price !== b.price)
-        .sort((a, c) => c.date.localeCompare(a.date))
-      if (records.length > 0) {
-        previousPrices[b.id] = records[0].price
-      }
-    })
+    try {
+      const priceHistory = await getPriceHistory()
+      batteries.forEach(b => {
+        const records = priceHistory
+          .filter(r => r.batteryId === b.id && r.price !== b.price)
+          .sort((a, c) => c.date.localeCompare(a.date))
+        if (records.length > 0) {
+          previousPrices[b.id] = records[0].price
+        }
+      })
+    } catch {
+      // Price history is non-critical; continue without it
+    }
 
     return NextResponse.json({
       success: true,
@@ -197,6 +199,9 @@ export async function POST(request: NextRequest) {
     }
 
     await blobPut(BLOB_PATH, LOCAL_FILE, batteries)
+
+    // Record price history when batteries are saved (not on every GET)
+    recordAllPrices(batteries.map((b: Battery) => ({ id: b.id, price: b.price }))).catch(() => {})
 
     return NextResponse.json({
       success: true,
