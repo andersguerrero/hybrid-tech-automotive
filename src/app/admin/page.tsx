@@ -4,15 +4,11 @@ import Link from 'next/link'
 import {
   Settings,
   DollarSign,
-  Palette,
   FileText,
   Clock,
-  MapPin,
   Phone,
-  Mail,
   ImageIcon,
   Star,
-  Type,
   Package,
   Ticket,
   BarChart3,
@@ -30,13 +26,6 @@ export default function AdminPage() {
       icon: Package,
       href: '/admin/orders',
       color: 'bg-emerald-500 hover:bg-emerald-600'
-    },
-    {
-      title: t.admin.priceManagement,
-      description: t.admin.priceDesc,
-      icon: DollarSign,
-      href: '/prices',
-      color: 'bg-green-500 hover:bg-green-600'
     },
     {
       title: t.admin.contactInfo,
@@ -81,13 +70,6 @@ export default function AdminPage() {
       color: 'bg-cyan-500 hover:bg-cyan-600'
     },
     {
-      title: 'Export/Import Batteries',
-      description: 'Sync batteries between localhost and production',
-      icon: Settings,
-      href: '/admin/export-batteries',
-      color: 'bg-purple-500 hover:bg-purple-600'
-    },
-    {
       title: t.admin.images,
       description: t.admin.imagesDesc,
       icon: ImageIcon,
@@ -100,13 +82,6 @@ export default function AdminPage() {
       icon: Star,
       href: '/admin/reviews',
       color: 'bg-yellow-500 hover:bg-yellow-600'
-    },
-    {
-      title: t.admin.texts || 'Content Management',
-      description: t.admin.textsDesc || 'Edit all texts and content',
-      icon: Type,
-      href: '/admin/texts',
-      color: 'bg-teal-500 hover:bg-teal-600'
     },
     {
       title: 'Analytics',
