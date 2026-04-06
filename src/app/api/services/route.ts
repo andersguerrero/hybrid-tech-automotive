@@ -10,10 +10,13 @@ const LOCAL_FILE = 'services-custom.json'
 export async function GET() {
   try {
     const services = await blobGet<Service[]>(BLOB_PATH, LOCAL_FILE, [])
+    const finalServices = process.env.DATABASE_URL
+      ? services
+      : (services.length > 0 ? services : defaultServices)
     return NextResponse.json({
       success: true,
-      services: services.length > 0 ? services : defaultServices,
-      source: services.length > 0 ? 'storage' : 'default',
+      services: finalServices,
+      source: process.env.DATABASE_URL || services.length > 0 ? 'storage' : 'default',
     })
   } catch (error) {
     logger.error('Error reading services:', error as Error)

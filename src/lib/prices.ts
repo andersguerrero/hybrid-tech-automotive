@@ -33,9 +33,11 @@ async function loadCustomBatteries(): Promise<Battery[]> {
 
 export async function getItemPrice(itemId: string, itemType: 'battery' | 'service'): Promise<{ price: number; name: string; description: string } | null> {
   if (itemType === 'battery') {
-    // Try stored batteries first, then static data
+    // Use DB data when PostgreSQL is configured; otherwise fallback to static
     const customBatteries = await loadCustomBatteries()
-    const allBatteries = customBatteries.length > 0 ? customBatteries : staticBatteries
+    const allBatteries = process.env.DATABASE_URL
+      ? customBatteries
+      : (customBatteries.length > 0 ? customBatteries : staticBatteries)
 
     const battery = allBatteries.find(b => b.id === itemId)
     if (battery) {
@@ -48,7 +50,11 @@ export async function getItemPrice(itemId: string, itemType: 'battery' | 'servic
   }
 
   if (itemType === 'service') {
-    const service = staticServices.find(s => s.id === itemId)
+    const customServices = await blobGet<typeof staticServices>('config/services-custom.json', 'services-custom.json', [])
+    const allServices = process.env.DATABASE_URL
+      ? customServices
+      : (customServices.length > 0 ? customServices : staticServices)
+    const service = allServices.find(s => s.id === itemId)
     if (service) {
       return {
         price: service.price,

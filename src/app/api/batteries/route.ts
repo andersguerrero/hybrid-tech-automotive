@@ -25,9 +25,11 @@ const LOCAL_FILE = 'batteries-custom.json'
  */
 export async function GET(request: NextRequest) {
   try {
-    // Load batteries from storage or fallback to static data
+    // Load batteries from storage; only fallback to static data when no DB is configured
     const storedBatteries = await blobGet<Battery[]>(BLOB_PATH, LOCAL_FILE, [])
-    const allBatteries = storedBatteries.length > 0 ? storedBatteries : staticBatteries
+    const allBatteries = process.env.DATABASE_URL
+      ? storedBatteries
+      : (storedBatteries.length > 0 ? storedBatteries : staticBatteries)
 
     const params = request.nextUrl.searchParams
 
