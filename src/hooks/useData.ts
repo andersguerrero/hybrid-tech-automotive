@@ -27,8 +27,7 @@ export function useBatteries() {
       } catch (error) {
         console.error('Error loading batteries from server:', error)
       }
-      // Fallback only on network error
-      setBatteries(initialBatteries)
+      // On error, keep empty — no fallback to static data
       setIsReady(true)
     }
     loadBatteries()
