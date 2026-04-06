@@ -11,7 +11,7 @@ import { useBatteries, useServices, useSiteImages, useContactInfo } from '@/hook
 export default function HomeContent() {
   const { t } = useLanguage()
   const { batteries, isReady: batteriesReady } = useBatteries()
-  const services = useServices()
+  const { services, isReady: servicesReady } = useServices()
   const siteImages = useSiteImages()
   const contact = useContactInfo()
 
@@ -33,9 +33,11 @@ export default function HomeContent() {
                   {t.home.bookAppointment}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
-                <Link href="/services" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
-                  {t.nav.services}
-                </Link>
+                {services.length > 0 && (
+                  <Link href="/services" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
+                    {t.nav.services}
+                  </Link>
+                )}
                 {batteries.length > 0 && (
                   <Link href="/batteries" className="btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary-500">
                     {t.nav.batteries}
@@ -94,29 +96,32 @@ export default function HomeContent() {
         </div>
       </section>
 
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.home.servicesTitle}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.servicesDescription}
-            </p>
+      {/* Services Section — only rendered after API confirms there are services */}
+      {servicesReady && services.length > 0 && (
+        <section className="section-padding">
+          <div className="container-custom">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {t.home.servicesTitle}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                {t.home.servicesDescription}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {services.slice(0, 3).map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
+            <div className="text-center">
+              <Link href="/services" className="btn-primary text-lg px-8 py-4 inline-flex items-center">
+                {t.home.viewAllServices}
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {services.slice(0, 3).map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
-          </div>
-          <div className="text-center">
-            <Link href="/services" className="btn-primary text-lg px-8 py-4 inline-flex items-center">
-              {t.home.viewAllServices}
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Batteries Section — only rendered after API confirms there are batteries */}
       {batteriesReady && batteries.length > 0 && (

@@ -8,15 +8,29 @@ import { useBlogPosts } from '@/hooks/useData'
 
 export default function BlogPage() {
   const { t } = useLanguage()
-  const blogPosts = useBlogPosts()
-  
-  // Si no hay posts, mostrar mensaje de carga
-  if (!blogPosts || blogPosts.length === 0) {
+  const { blogPosts, isReady } = useBlogPosts()
+
+  if (!isReady) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600">{t.common.loading}</p>
         </div>
+      </div>
+    )
+  }
+
+  if (blogPosts.length === 0) {
+    return (
+      <div className="min-h-screen">
+        <section className="bg-gray-50 section-padding">
+          <div className="container-custom text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              {t.blog.heroTitle}
+            </h1>
+            <p className="text-xl text-gray-500">No blog posts available at this time.</p>
+          </div>
+        </section>
       </div>
     )
   }

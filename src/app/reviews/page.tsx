@@ -9,7 +9,7 @@ import { useReviews, useContactInfo } from '@/hooks/useData'
 export default function ReviewsPage() {
   const { t } = useLanguage()
   const contact = useContactInfo()
-  const reviews = useReviews()
+  const { reviews } = useReviews()
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   
   return (

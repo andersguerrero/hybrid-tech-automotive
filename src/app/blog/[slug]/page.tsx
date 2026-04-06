@@ -11,7 +11,7 @@ import { BLUR_DATA_URL } from '@/lib/imageUtils'
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const { t } = useLanguage()
-  const blogPosts = useBlogPosts()
+  const { blogPosts } = useBlogPosts()
   const [post, setPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
 

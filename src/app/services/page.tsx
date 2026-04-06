@@ -6,9 +6,17 @@ import { useServices, useContactInfo } from '@/hooks/useData'
 
 export default function ServicesPage() {
   const { t } = useLanguage()
-  const services = useServices()
+  const { services, isReady } = useServices()
   const contact = useContactInfo()
-  
+
+  if (!isReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">{t.common.loading}</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -24,15 +32,23 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Grid */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
+      {services.length > 0 ? (
+        <section className="section-padding">
+          <div className="container-custom">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="section-padding">
+          <div className="container-custom text-center py-12">
+            <p className="text-xl text-gray-500">No services available at this time.</p>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="section-padding bg-primary-500 text-white">

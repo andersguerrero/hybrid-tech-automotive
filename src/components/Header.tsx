@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Phone, Calendar, ShoppingCart, Moon, Sun } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useSiteImages, useContactInfo, useBatteries } from '@/hooks/useData'
+import { useSiteImages, useContactInfo, useBatteries, useServices, useBlogPosts, useReviews } from '@/hooks/useData'
 import { useCart } from '@/contexts/CartContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import Cart from '@/components/Cart'
@@ -17,16 +17,19 @@ export default function Header() {
   const siteImages = useSiteImages()
   const contact = useContactInfo()
   const { batteries } = useBatteries()
+  const { services } = useServices()
+  const { blogPosts } = useBlogPosts()
+  const { reviews } = useReviews()
   const { getTotalItems } = useCart()
   const { theme, toggleTheme } = useTheme()
   const cartItemsCount = getTotalItems()
 
   const navigation = [
     { name: t.nav.home, href: '/' },
-    { name: t.nav.services, href: '/services' },
+    ...(services.length > 0 ? [{ name: t.nav.services, href: '/services' }] : []),
     ...(batteries.length > 0 ? [{ name: t.nav.batteries, href: '/batteries' }] : []),
-    { name: t.nav.reviews, href: '/reviews' },
-    { name: t.nav.blog, href: '/blog' },
+    ...(reviews.length > 0 ? [{ name: t.nav.reviews, href: '/reviews' }] : []),
+    ...(blogPosts.length > 0 ? [{ name: t.nav.blog, href: '/blog' }] : []),
     { name: t.nav.contact, href: '/contact' },
   ]
 

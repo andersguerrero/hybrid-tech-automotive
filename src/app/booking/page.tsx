@@ -7,7 +7,7 @@ import { useServices, useBatteries } from '@/hooks/useData'
 
 export default function BookingPage() {
   const { t } = useLanguage()
-  const services = useServices()
+  const { services } = useServices()
   const { batteries } = useBatteries()
   
   const [formData, setFormData] = useState({

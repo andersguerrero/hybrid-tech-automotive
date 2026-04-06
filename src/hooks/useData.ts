@@ -39,6 +39,7 @@ export function useBatteries() {
 
 export function useServices() {
   const [services, setServices] = useState<Service[]>([])
+  const [isReady, setIsReady] = useState(false)
 
   const loadServices = async () => {
     try {
@@ -46,13 +47,14 @@ export function useServices() {
       const data = await response.json()
       if (data.success && Array.isArray(data.services)) {
         setServices(data.services)
+        setIsReady(true)
         return
       }
     } catch (error) {
       console.error('Error loading services from API:', error)
     }
-    // Fallback only on network error
-    setServices(initialServices)
+    // On error, keep empty — no fallback to static data
+    setIsReady(true)
   }
 
   useEffect(() => {
@@ -71,11 +73,12 @@ export function useServices() {
     }
   }, [])
 
-  return services
+  return { services, isReady }
 }
 
 export function useBlogPosts() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  const [isReady, setIsReady] = useState(false)
 
   const loadBlogPosts = async () => {
     try {
@@ -83,13 +86,14 @@ export function useBlogPosts() {
       const data = await response.json()
       if (data.success && Array.isArray(data.blogPosts)) {
         setBlogPosts(data.blogPosts)
+        setIsReady(true)
         return
       }
     } catch (error) {
       console.error('Error loading blog posts from API:', error)
     }
-    // Fallback only on network error
-    setBlogPosts(initialBlogPosts)
+    // On error, keep empty — no fallback to static data
+    setIsReady(true)
   }
 
   useEffect(() => {
@@ -108,7 +112,7 @@ export function useBlogPosts() {
     }
   }, [])
 
-  return blogPosts
+  return { blogPosts, isReady }
 }
 
 export function useSiteImages() {
@@ -150,6 +154,7 @@ export function useSiteImages() {
 
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [isReady, setIsReady] = useState(false)
 
   const loadReviews = async () => {
     try {
@@ -157,13 +162,14 @@ export function useReviews() {
       const data = await response.json()
       if (data.success && Array.isArray(data.reviews)) {
         setReviews(data.reviews)
+        setIsReady(true)
         return
       }
     } catch (error) {
       console.error('Error loading reviews from API:', error)
     }
-    // Fallback only on network error
-    setReviews(initialReviews)
+    // On error, keep empty — no fallback to static data
+    setIsReady(true)
   }
 
   useEffect(() => {
@@ -182,7 +188,7 @@ export function useReviews() {
     }
   }, [])
 
-  return reviews
+  return { reviews, isReady }
 }
 
 // ─── Contact Info ─────────────────────────────────────────────────────────────
