@@ -1,6 +1,7 @@
 import { batteries as staticBatteries } from '@/data/batteries'
 import { services as staticServices } from '@/data/services'
 import type { Battery } from '@/types'
+import logger from '@/lib/logger'
 
 interface CartItemInput {
   id: string
@@ -36,7 +37,7 @@ async function loadBatteriesFromBlob(): Promise<Battery[]> {
       }
     }
   } catch (error) {
-    console.error('Error loading batteries from blob:', error)
+    logger.error('Error loading batteries from blob:', error as Error)
   }
   return []
 }

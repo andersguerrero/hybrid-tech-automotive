@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet } from '@/lib/storage'
 import type { Coupon } from '@/types'
+import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/coupons.json'
 const LOCAL_FILE = 'coupons.json'
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
       discount: Math.round(discount * 100) / 100,
     })
   } catch (error) {
-    console.error('Error validating coupon:', error)
+    logger.error('Error validating coupon:', error as Error)
     return NextResponse.json({ error: 'Failed to validate coupon' }, { status: 500 })
   }
 }

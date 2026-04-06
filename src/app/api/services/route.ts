@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
 import { services as defaultServices } from '@/data/services'
 import type { Service } from '@/types'
+import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/services-custom.json'
 const LOCAL_FILE = 'services-custom.json'
@@ -15,7 +16,7 @@ export async function GET() {
       source: services.length > 0 ? 'storage' : 'default',
     })
   } catch (error) {
-    console.error('Error reading services:', error)
+    logger.error('Error reading services:', error as Error)
     return NextResponse.json({ success: true, services: defaultServices, source: 'default' })
   }
 }
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       count: services.length,
     })
   } catch (error) {
-    console.error('Error saving services:', error)
+    logger.error('Error saving services:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error saving services' },
       { status: 500 }

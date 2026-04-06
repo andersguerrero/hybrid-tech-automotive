@@ -4,6 +4,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { execSync } from 'child_process'
+import logger from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       message: 'Imagen subida correctamente (local)',
     })
   } catch (error) {
-    console.error('Error uploading image:', error)
+    logger.error('Error uploading image:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error al subir la imagen' },
       { status: 500 }

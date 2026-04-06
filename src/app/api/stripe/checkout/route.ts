@@ -5,6 +5,7 @@ import { calculateSalesTax } from '@/lib/taxCalculator'
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
 import { stripeCheckoutSchema, formatZodError } from '@/lib/validations'
 import { validateOrigin } from '@/lib/csrf'
+import logger from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
       }
     } else if (legacyLineItems && legacyLineItems.length > 0) {
       // Legacy support: accept pre-built lineItems (deprecated)
-      console.warn('DEPRECATED: Checkout using client-side lineItems. Migrate to item IDs.')
+      logger.warn('DEPRECATED: Checkout using client-side lineItems. Migrate to item IDs.')
       finalLineItems = legacyLineItems
     }
 
@@ -157,7 +158,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Stripe checkout error:', error)
+    logger.error('Stripe checkout error:', error as Error)
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }

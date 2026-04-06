@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
 import { siteImages as defaultSiteImages, type SiteImages } from '@/data/images'
+import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/site-images.json'
 const LOCAL_FILE = 'site-images-custom.json'
@@ -10,7 +11,7 @@ export async function GET() {
     const siteImages = await blobGet<SiteImages>(BLOB_PATH, LOCAL_FILE, defaultSiteImages)
     return NextResponse.json({ success: true, siteImages })
   } catch (error) {
-    console.error('Error loading site images:', error)
+    logger.error('Error loading site images:', error as Error)
     return NextResponse.json({ success: true, siteImages: defaultSiteImages })
   }
 }
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
       message: 'Configuración guardada correctamente',
     })
   } catch (error) {
-    console.error('Error saving site images:', error)
+    logger.error('Error saving site images:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error al guardar la configuración' },
       { status: 500 }

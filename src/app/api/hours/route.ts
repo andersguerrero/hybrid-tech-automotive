@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
+import logger from '@/lib/logger'
 
 interface BusinessHours {
   [key: string]: { open: string; close: string; closed?: boolean }
@@ -23,7 +24,7 @@ export async function GET() {
     const hours = await blobGet<BusinessHours>(BLOB_PATH, LOCAL_FILE, DEFAULT_HOURS)
     return NextResponse.json({ success: true, hours })
   } catch (error) {
-    console.error('Error reading hours:', error)
+    logger.error('Error reading hours:', error as Error)
     return NextResponse.json({ success: true, hours: DEFAULT_HOURS })
   }
 }
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       message: 'Business hours saved successfully',
     })
   } catch (error) {
-    console.error('Error saving hours:', error)
+    logger.error('Error saving hours:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error saving hours' },
       { status: 500 }

@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import logger from '@/lib/logger'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -19,7 +20,7 @@ export async function createPaymentIntent(amount: number, currency: string = 'us
       clientSecret: paymentIntent.client_secret,
     }
   } catch (error) {
-    console.error('Error creating payment intent:', error)
+    logger.error('Error creating payment intent:', error as Error)
     return {
       success: false,
       error: 'Failed to create payment intent',
@@ -69,7 +70,7 @@ export async function createCheckoutSession(
       url: session.url,
     }
   } catch (error) {
-    console.error('Error creating checkout session:', error)
+    logger.error('Error creating checkout session:', error as Error)
     return {
       success: false,
       error: 'Failed to create checkout session',

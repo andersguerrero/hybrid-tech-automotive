@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
+import logger from '@/lib/logger'
 
 interface ContactInfo {
   phone: string
@@ -22,7 +23,7 @@ export async function GET() {
     const contact = await blobGet<ContactInfo>(BLOB_PATH, LOCAL_FILE, DEFAULT_CONTACT)
     return NextResponse.json({ success: true, contact })
   } catch (error) {
-    console.error('Error reading contact info:', error)
+    logger.error('Error reading contact info:', error as Error)
     return NextResponse.json({ success: true, contact: DEFAULT_CONTACT })
   }
 }
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       message: 'Contact info saved successfully',
     })
   } catch (error) {
-    console.error('Error saving contact info:', error)
+    logger.error('Error saving contact info:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error saving contact info' },
       { status: 500 }

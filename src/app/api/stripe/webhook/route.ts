@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { sendBookingConfirmation, sendAdminNewOrderNotification } from '@/lib/email'
 import { createOrder } from '@/lib/orders'
+import logger from '@/lib/logger'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!
     )
   } catch (err) {
-    console.error('Webhook signature verification failed:', err)
+    logger.error('Webhook signature verification failed:', err as Error)
     return NextResponse.json(
       { error: 'Webhook signature verification failed' },
       { status: 400 }
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       const bookingDataString = session.metadata?.bookingData
       
       if (!bookingDataString) {
-        console.error('No booking data found in session metadata')
+        logger.error('No booking data found in session metadata')
         return NextResponse.json(
           { error: 'No booking data found' },
           { status: 400 }
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
       try {
         bookingData = JSON.parse(bookingDataString)
       } catch (parseError) {
-        console.error('Error parsing booking data:', parseError)
+        logger.error('Error parsing booking data:', parseError as Error)
         return NextResponse.json(
           { error: 'Invalid booking data format' },
           { status: 400 }
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
       const hasCartItems = bookingData.cartItems && Array.isArray(bookingData.cartItems) && bookingData.cartItems.length > 0
       
       if (!bookingData.name || !bookingData.email || !bookingData.date || !bookingData.time) {
-        console.error('Missing required booking fields')
+        logger.error('Missing required booking fields')
         return NextResponse.json(
           { error: 'Missing required booking fields' },
           { status: 400 }
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (!hasService && !hasCartItems) {
-        console.error('No service or cart items found')
+        logger.error('No service or cart items found')
         return NextResponse.json(
           { error: 'No service or cart items found' },
           { status: 400 }
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       )
 
       if (!emailResult.success) {
-        console.error('Failed to send confirmation email:', emailResult.error)
+        logger.error('Failed to send confirmation email:', emailResult.error as Error)
         // Don't fail the webhook, just log the error
         // You might want to retry sending the email later
       }
@@ -155,9 +156,9 @@ export async function POST(request: NextRequest) {
         date: bookingData.date,
         time: bookingData.time,
         orderId: order.id,
-      }).catch(err => console.error('Admin notification failed:', err))
+      }).catch(err => logger.error('Admin notification failed:', err as Error))
 
-      console.log('Booking confirmed and email sent:', {
+      logger.info('Booking confirmed and email sent:', {
         sessionId: session.id,
         customerEmail: bookingData.email,
         amount: session.amount_total,
@@ -172,20 +173,20 @@ export async function POST(request: NextRequest) {
     // Handle payment_intent.succeeded (alternative event)
     if (event.type === 'payment_intent.succeeded') {
       const paymentIntent = event.data.object as Stripe.PaymentIntent
-      console.log('Payment succeeded:', paymentIntent.id)
+      logger.info('Payment succeeded:', { data: paymentIntent.id })
       // Additional processing if needed
     }
 
     // Handle payment_intent.payment_failed
     if (event.type === 'payment_intent.payment_failed') {
       const paymentIntent = event.data.object as Stripe.PaymentIntent
-      console.log('Payment failed:', paymentIntent.id)
+      logger.info('Payment failed:', { data: paymentIntent.id })
       // Handle failed payment, maybe send notification
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook handler error:', error)
+    logger.error('Webhook handler error:', error as Error)
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }

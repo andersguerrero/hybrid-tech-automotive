@@ -4,6 +4,7 @@ import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
 import { contactFormSchema, formatZodError } from '@/lib/validations'
 import { sanitizeName, sanitizeEmail, sanitizePhone, sanitizeText, sanitizeMessage } from '@/lib/sanitize'
 import { validateOrigin } from '@/lib/csrf'
+import logger from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,8 +46,8 @@ export async function POST(request: NextRequest) {
 
     // Check if email configuration is available
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.BUSINESS_EMAIL) {
-      console.log('Email configuration not available, logging contact form data:')
-      console.log('Contact Form Data:', { name, email, phone, subject, message })
+      logger.info('Email configuration not available, logging contact form data:')
+      logger.info('Contact Form Data:', { name, email, phone, subject, message })
 
       return NextResponse.json({
         success: true,
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!emailResult.success) {
-      console.error('Failed to send contact form:', emailResult.error)
+      logger.error('Failed to send contact form:', emailResult.error as Error)
       const errorMsg = process.env.NODE_ENV === 'production'
         ? 'No se pudo enviar el correo. Intenta nuevamente o llámanos al (123) 456-7890.'
         : `SMTP error: ${(emailResult.error as Error)?.message || emailResult.error || 'Unknown error'}`
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Contact form error:', error)
+    logger.error('Contact form error:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error al procesar el mensaje. Por favor, llámanos al (123) 456-7890.' },
       { status: 500 }

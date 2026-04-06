@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
 import type { Coupon } from '@/types'
+import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/coupons.json'
 const LOCAL_FILE = 'coupons.json'
@@ -10,7 +11,7 @@ export async function GET() {
     const coupons = await blobGet<Coupon[]>(BLOB_PATH, LOCAL_FILE, [])
     return NextResponse.json(coupons)
   } catch (error) {
-    console.error('Error fetching coupons:', error)
+    logger.error('Error fetching coupons:', error as Error)
     return NextResponse.json([], { status: 500 })
   }
 }
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     await blobPut(BLOB_PATH, LOCAL_FILE, coupons)
     return NextResponse.json({ success: true, coupons })
   } catch (error) {
-    console.error('Error saving coupon:', error)
+    logger.error('Error saving coupon:', error as Error)
     return NextResponse.json({ error: 'Failed to save coupon' }, { status: 500 })
   }
 }

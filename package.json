@@ -18,6 +18,7 @@
     "sync-all": "node scripts/auto-sync-and-deploy.js"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.47.0",
     "@stripe/stripe-js": "^2.2.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.2.0",

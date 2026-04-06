@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose'
 import bcrypt from 'bcryptjs'
 import { timingSafeEqual } from 'crypto'
+import logger from '@/lib/logger'
 
 export const AUTH_COOKIE_NAME = 'admin_token'
 
@@ -45,7 +46,7 @@ export async function verifyPassword(password: string): Promise<boolean> {
     try {
       return await bcrypt.compare(password, passwordHash)
     } catch {
-      console.error('Error comparing bcrypt hash — check ADMIN_PASSWORD_HASH format')
+      logger.error('Error comparing bcrypt hash — check ADMIN_PASSWORD_HASH format')
       return false
     }
   }
@@ -53,12 +54,12 @@ export async function verifyPassword(password: string): Promise<boolean> {
   // Option 2: Plain text with constant-time comparison (backward compatible)
   const adminPassword = process.env.ADMIN_PASSWORD
   if (!adminPassword) {
-    console.error('Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD is set')
+    logger.error('Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD is set')
     return false
   }
 
   if (process.env.NODE_ENV === 'production') {
-    console.warn(
+    logger.warn(
       '⚠️  Using plain-text ADMIN_PASSWORD. For better security, set ADMIN_PASSWORD_HASH instead. ' +
       'Run: node scripts/hash-password.js "your-password"'
     )

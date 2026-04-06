@@ -3,6 +3,7 @@ import { writeFile } from 'fs/promises'
 import { join } from 'path'
 import type { Battery } from '@/types'
 import { saveBatteriesSchema, formatZodError } from '@/lib/validations'
+import logger from '@/lib/logger'
 
 const BATTERIES_FILE = join(process.cwd(), 'src', 'data', 'batteries.ts')
 const BATTERIES_JSON_FILE = join(process.cwd(), 'data', 'batteries-custom.json')
@@ -41,9 +42,9 @@ export async function POST(request: NextRequest) {
     // Siempre guardar en JSON primero (funciona en producción y desarrollo)
     try {
       await writeFile(BATTERIES_JSON_FILE, JSON.stringify(batteries, null, 2), 'utf-8')
-      console.log('Batteries saved to JSON file:', batteries.length)
+      logger.info('Batteries saved to JSON file:', { data: batteries.length })
     } catch (jsonError) {
-      console.warn('Could not save to JSON file:', jsonError)
+      logger.warn('Could not save to JSON file:', jsonError as Error)
     }
 
     // Intentar actualizar el archivo fuente (solo funciona en desarrollo local)
@@ -56,7 +57,7 @@ ${batteries.map((battery: Battery, index: number) => formatBattery(battery, inde
 `
 
       await writeFile(BATTERIES_FILE, fileContent, 'utf-8')
-      console.log('Batteries saved to source file:', batteries.length)
+      logger.info('Batteries saved to source file:', { data: batteries.length })
       
       return NextResponse.json({ 
         success: true, 
@@ -66,7 +67,7 @@ ${batteries.map((battery: Battery, index: number) => formatBattery(battery, inde
       })
     } catch (sourceError: any) {
       // En producción esto fallará, pero está bien - guardamos en JSON
-      console.log('Could not save to source file (normal in production):', sourceError.message)
+      logger.info('Could not save to source file (normal in production):', { data: sourceError.message })
       
       return NextResponse.json({ 
         success: true, 
@@ -77,7 +78,7 @@ ${batteries.map((battery: Battery, index: number) => formatBattery(battery, inde
       })
     }
   } catch (error: any) {
-    console.error('Error saving batteries to source:', error)
+    logger.error('Error saving batteries to source:', error as Error)
     return NextResponse.json(
       { success: false, error: error.message || 'Error al guardar las baterías' },
       { status: 500 }

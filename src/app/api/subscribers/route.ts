@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
+import logger from '@/lib/logger'
 
 interface Subscriber {
   id: string
@@ -17,7 +18,7 @@ export async function GET() {
     const subscribers = await blobGet<Subscriber[]>(BLOB_PATH, LOCAL_FILE, [])
     return NextResponse.json(subscribers)
   } catch (error) {
-    console.error('Error fetching subscribers:', error)
+    logger.error('Error fetching subscribers:', error as Error)
     return NextResponse.json([], { status: 500 })
   }
 }
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Subscribed successfully' })
   } catch (error) {
-    console.error('Error managing subscriber:', error)
+    logger.error('Error managing subscriber:', error as Error)
     return NextResponse.json({ error: 'Failed to process subscription' }, { status: 500 })
   }
 }

@@ -2,6 +2,7 @@ import { put, list } from '@vercel/blob'
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import logger from '@/lib/logger'
 
 function getLocalPath(filename: string): string {
   return process.env.VERCEL
@@ -33,7 +34,7 @@ export async function blobGet<T>(blobPath: string, localFilename: string, defaul
 
     return defaults
   } catch (error) {
-    console.error(`Error reading from ${blobPath}:`, error)
+    logger.error(`Error reading from ${blobPath}:`, error as Error)
     return defaults
   }
 }

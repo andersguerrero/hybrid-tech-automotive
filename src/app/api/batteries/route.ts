@@ -3,6 +3,7 @@ import { blobGet, blobPut } from '@/lib/storage'
 import { batteries as staticBatteries } from '@/data/batteries'
 import { recordAllPrices, getPriceHistory } from '@/lib/priceHistory'
 import type { Battery } from '@/types'
+import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/batteries-custom.json'
 const LOCAL_FILE = 'batteries-custom.json'
@@ -174,7 +175,7 @@ export async function GET(request: NextRequest) {
       source: storedBatteries.length > 0 ? 'storage' : 'default',
     })
   } catch (error) {
-    console.error('Error reading batteries:', error)
+    logger.error('Error reading batteries:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error al leer las baterías' },
       { status: 500 }
@@ -201,7 +202,7 @@ export async function POST(request: NextRequest) {
       count: batteries.length,
     })
   } catch (error) {
-    console.error('Error saving batteries:', error)
+    logger.error('Error saving batteries:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error al guardar las baterías' },
       { status: 500 }

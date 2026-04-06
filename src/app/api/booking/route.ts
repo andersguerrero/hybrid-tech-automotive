@@ -5,6 +5,7 @@ import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
 import { bookingFormSchema, formatZodError } from '@/lib/validations'
 import { sanitizeName, sanitizeEmail, sanitizePhone, sanitizeText, sanitizeMessage } from '@/lib/sanitize'
 import { validateOrigin } from '@/lib/csrf'
+import logger from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
     const emailResult = await sendBookingConfirmation(email, name, bookingData)
 
     if (!emailResult.success) {
-      console.error('Failed to send confirmation email:', emailResult.error)
+      logger.error('Failed to send confirmation email:', emailResult.error as Error)
       const errorMsg = process.env.NODE_ENV === 'production'
         ? 'No se pudo enviar el correo de confirmaci\u00f3n. Intenta nuevamente o cont\u00e1ctanos.'
         : `SMTP error: ${(emailResult.error as Error)?.message || emailResult.error || 'Unknown error'}`
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest) {
       date,
       time,
       orderId: order.id,
-    }).catch(err => console.error('Admin notification failed:', err))
+    }).catch(err => logger.error('Admin notification failed:', err as Error))
 
     return NextResponse.json({
       success: true,
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Booking error:', error)
+    logger.error('Booking error:', error as Error)
     return NextResponse.json(
       { error: 'Failed to book appointment' },
       { status: 500 }

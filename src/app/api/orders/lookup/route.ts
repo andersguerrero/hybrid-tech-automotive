@@ -6,6 +6,7 @@ import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
 import { orderLookupSchema, formatZodError } from '@/lib/validations'
 import { sanitizeEmail } from '@/lib/sanitize'
 import { validateOrigin } from '@/lib/csrf'
+import logger from '@/lib/logger'
 
 const getSecret = () => new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret')
 
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'If orders exist for this email, you will receive a link shortly.' })
   } catch (error) {
-    console.error('Order lookup error:', error)
+    logger.error('Order lookup error:', error as Error)
     return NextResponse.json({ error: 'Failed to process request' }, { status: 500 })
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { blobGet, blobPut } from '@/lib/storage'
 import { blogPosts as defaultPosts } from '@/data'
 import type { BlogPost } from '@/types'
+import logger from '@/lib/logger'
 
 const BLOB_PATH = 'config/blog-custom.json'
 const LOCAL_FILE = 'blog-custom.json'
@@ -15,7 +16,7 @@ export async function GET() {
       source: posts.length > 0 ? 'storage' : 'default',
     })
   } catch (error) {
-    console.error('Error reading blog posts:', error)
+    logger.error('Error reading blog posts:', error as Error)
     return NextResponse.json({ success: true, posts: defaultPosts, source: 'default' })
   }
 }
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       count: posts.length,
     })
   } catch (error) {
-    console.error('Error saving blog posts:', error)
+    logger.error('Error saving blog posts:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error saving blog posts' },
       { status: 500 }

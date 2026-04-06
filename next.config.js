@@ -1,3 +1,5 @@
+const { withSentryConfig } = require('@sentry/nextjs')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
@@ -75,4 +77,17 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+// Wrap with Sentry only when DSN is configured
+module.exports = process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(nextConfig, {
+      // Suppress source map upload warnings when no auth token
+      silent: !process.env.SENTRY_AUTH_TOKEN,
+      // Disable source map upload if no auth token
+      disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+      disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+      // Hide source maps from users
+      hideSourceMaps: true,
+      // Automatically tree-shake Sentry logger
+      disableLogger: true,
+    })
+  : nextConfig

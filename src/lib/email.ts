@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import logger from '@/lib/logger'
 
 const smtpPort = parseInt(process.env.SMTP_PORT || '587')
 const envSecure = (process.env.SMTP_SECURE || '').toLowerCase()
@@ -25,7 +26,7 @@ async function sendWithRetry(
       await transporter.sendMail(mailOptions)
       return { success: true }
     } catch (error) {
-      console.error(`Email send attempt ${attempt}/${maxRetries} failed:`, error)
+      logger.error(`Email send attempt ${attempt}/${maxRetries} failed:`, error as Error)
       if (attempt < maxRetries) {
         const delay = Math.pow(3, attempt - 1) * 1000 // 1s, 3s, 9s
         await new Promise((resolve) => setTimeout(resolve, delay))
@@ -139,7 +140,7 @@ export async function sendAdminNewOrderNotification(
 ) {
   const adminEmail = process.env.BUSINESS_EMAIL
   if (!adminEmail) {
-    console.warn('BUSINESS_EMAIL not set, skipping admin notification')
+    logger.warn('BUSINESS_EMAIL not set, skipping admin notification')
     return { success: false, error: 'No admin email configured' }
   }
 

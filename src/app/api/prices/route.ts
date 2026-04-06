@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import logger from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,11 +18,11 @@ export async function POST(request: NextRequest) {
     // Aquí se puede agregar lógica para guardar en base de datos
     // Por ejemplo: await db.prices.update({ services, batteries })
     
-    console.log('Precios actualizados:', { services, batteries })
+    logger.info('Precios actualizados', { services, batteries })
 
     return NextResponse.json({ success: true, message: 'Precios actualizados correctamente' })
   } catch (error) {
-    console.error('Error updating prices:', error)
+    logger.error('Error updating prices:', error as Error)
     return NextResponse.json(
       { success: false, error: 'Error al actualizar los precios' },
       { status: 500 }
