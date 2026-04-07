@@ -60,8 +60,9 @@ export async function GET(request: NextRequest) {
     const minPrice = parseFloat(params.get('minPrice') || '0') || 0
     const maxPrice = parseFloat(params.get('maxPrice') || '0') || 0
     const page = Math.max(1, parseInt(params.get('page') || '1') || 1)
-    const rawLimit = parseInt(params.get('limit') || '12') || 12
-    const limit = rawLimit === 0 ? 0 : Math.min(Math.max(1, rawLimit), 100)
+    const limitStr = params.get('limit')
+    const rawLimit = limitStr !== null ? parseInt(limitStr) : 12
+    const limit = rawLimit === 0 ? 0 : Math.min(Math.max(1, isNaN(rawLimit) ? 12 : rawLimit), 100)
     const sort = params.get('sort') || 'vehicle'
     const order = params.get('order') === 'desc' ? 'desc' : 'asc'
 

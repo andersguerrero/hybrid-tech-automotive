@@ -1,21 +1,20 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Save, Plus, Edit, Trash2, ArrowLeft, Upload, Search } from 'lucide-react'
-import { batteries as initialBatteries } from '@/data'
+import { Save, Plus, Edit, Trash2, ArrowLeft, Upload, Search, Loader2 } from 'lucide-react'
 import type { Battery } from '@/types'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 // Componente auxiliar para botón de carga de imagen
-function ImageUploadButton({ 
-  id, 
+function ImageUploadButton({
+  id,
   uploading,
   onUpload,
   uploadingText,
   selectFileText
-}: { 
+}: {
   id: string
   uploading: boolean
   onUpload: (file: File) => void
@@ -53,7 +52,8 @@ function ImageUploadButton({
 
 export default function BatteriesAdminPage() {
   const { t } = useLanguage()
-  const [batteriesData, setBatteriesData] = useState<Battery[]>(initialBatteries)
+  const [batteriesData, setBatteriesData] = useState<Battery[]>([])
+  const [loading, setLoading] = useState(true)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<Battery>>({
@@ -67,109 +67,77 @@ export default function BatteriesAdminPage() {
   })
   const [savedMessage, setSavedMessage] = useState<string>('')
   const [uploading, setUploading] = useState(false)
-  
+
   // Filter states
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filterBrand, setFilterBrand] = useState<string>('all')
   const [filterCondition, setFilterCondition] = useState<string>('all')
 
+  // Load batteries from API only — no static fallback
   useEffect(() => {
-    // Cargar baterías desde el servidor primero
-    const loadBatteriesFromServer = async () => {
+    const loadBatteries = async () => {
       try {
-        const response = await fetch('/api/batteries')
+        const response = await fetch('/api/batteries?limit=0')
         const data = await response.json()
         if (data.success && data.batteries && data.batteries.length > 0) {
-          console.log('Loading batteries from server:', data.batteries.length)
+          console.log('Admin: loaded', data.batteries.length, 'batteries from server')
           setBatteriesData(data.batteries)
-          // También guardar en localStorage para compatibilidad
-          localStorage.setItem('admin_batteries', JSON.stringify(data.batteries))
-          localStorage.setItem('batteries_edited_by_admin', 'true')
-          return
+        } else {
+          console.warn('Admin: API returned empty batteries')
+          setBatteriesData([])
         }
       } catch (error) {
-        console.error('Error loading batteries from server:', error)
-      }
-      
-      // Si no hay en servidor, cargar desde localStorage
-      const savedBatteries = localStorage.getItem('admin_batteries')
-      if (savedBatteries) {
-        try {
-          const parsed = JSON.parse(savedBatteries)
-          console.log('Loading saved batteries from localStorage:', parsed)
-          setBatteriesData(parsed)
-        } catch (error) {
-          console.error('Error loading saved batteries:', error)
-          setBatteriesData(initialBatteries)
-        }
-      } else {
-        console.log('No saved batteries found, using initial batteries')
-        setBatteriesData(initialBatteries)
+        console.error('Admin: Error loading batteries:', error)
+        setBatteriesData([])
+      } finally {
+        setLoading(false)
       }
     }
-    
-    loadBatteriesFromServer()
+
+    loadBatteries()
   }, [])
 
-  // Guardar baterías en localStorage, servidor Y archivo fuente cuando cambien
-  useEffect(() => {
-    if (batteriesData.length > 0) {
-      console.log('Saving batteries to localStorage, server, and source file:', batteriesData)
-      localStorage.setItem('admin_batteries', JSON.stringify(batteriesData))
-      localStorage.setItem('batteries_edited_by_admin', 'true')
-      // Disparar evento personalizado para actualizar otros componentes
-      window.dispatchEvent(new CustomEvent('batteriesUpdated'))
-
-      // Guardar en el servidor (para producción)
-      fetch('/api/batteries', {
+  // Save batteries to server — only called on explicit user actions
+  const saveBatteriesToServer = useCallback(async (batteries: Battery[]) => {
+    try {
+      const response = await fetch('/api/batteries', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ batteries: batteriesData }),
-      }).catch(error => {
-        console.error('Error saving batteries to server:', error)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batteries }),
       })
-
-      // IMPORTANTE: Guardar también en el archivo fuente para que se despliegue correctamente
-      fetch('/api/save-batteries-to-source', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ batteries: batteriesData }),
-      }).then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            console.log('✅ Baterías guardadas en el archivo fuente. Los cambios se reflejarán en el próximo despliegue.')
-          } else {
-            console.warn('⚠️ No se pudo guardar en el archivo fuente (normal en producción):', data.error)
-          }
-        })
-        .catch(error => {
-          console.warn('⚠️ Error guardando en archivo fuente (normal en producción):', error)
-        })
+      const data = await response.json()
+      if (data.success) {
+        console.log('Admin: saved', batteries.length, 'batteries to server')
+      } else {
+        console.error('Admin: server save failed:', data.error)
+      }
+    } catch (error) {
+      console.error('Admin: Error saving batteries:', error)
     }
+  }, [])
+
+  // Extract unique brands from loaded data
+  const availableBrands = useMemo(() => {
+    const brands = new Set<string>()
+    batteriesData.forEach(b => {
+      const brand = b.vehicle.split(' ')[0]
+      if (brand) brands.add(brand)
+    })
+    return Array.from(brands).sort()
   }, [batteriesData])
 
   // Filter batteries
   const filteredBatteries = useMemo(() => {
     return batteriesData.filter(battery => {
-      // Search term filter
       if (searchTerm && !battery.vehicle.toLowerCase().includes(searchTerm.toLowerCase())) {
         return false
       }
-      
-      // Brand filter
       if (filterBrand !== 'all' && !battery.vehicle.startsWith(filterBrand)) {
         return false
       }
-      
-      // Condition filter
       if (filterCondition !== 'all' && battery.condition !== filterCondition) {
         return false
       }
-      
       return true
     })
   }, [batteriesData, searchTerm, filterBrand, filterCondition])
@@ -178,6 +146,7 @@ export default function BatteriesAdminPage() {
     setFormData({
       vehicle: '',
       batteryType: '',
+      condition: 'refurbished' as 'new' | 'refurbished',
       price: 0,
       warranty: '',
       image: '',
@@ -193,9 +162,11 @@ export default function BatteriesAdminPage() {
     setIsAdding(false)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de eliminar esta batería?')) {
-      setBatteriesData(batteriesData.filter(b => b.id !== id))
+      const updated = batteriesData.filter(b => b.id !== id)
+      setBatteriesData(updated)
+      await saveBatteriesToServer(updated)
       setSavedMessage('Batería eliminada correctamente')
       setTimeout(() => setSavedMessage(''), 3000)
     }
@@ -203,13 +174,13 @@ export default function BatteriesAdminPage() {
 
   const handleImageUpload = async (file: File) => {
     setUploading(true)
-    
+
     try {
       const uploadFormData = new FormData()
       const fileExtension = file.name.split('.').pop()
       const timestamp = Date.now()
       const fileName = `battery-${timestamp}.${fileExtension}`
-      
+
       uploadFormData.append('file', file)
       uploadFormData.append('category', 'batteries')
       uploadFormData.append('fileName', fileName)
@@ -222,10 +193,7 @@ export default function BatteriesAdminPage() {
       const data = await response.json()
 
       if (data.success) {
-        console.log('Image uploaded successfully:', data.url)
-        const updatedFormData = { ...formData, image: data.url }
-        console.log('Updated formData:', updatedFormData)
-        setFormData(updatedFormData)
+        setFormData(prev => ({ ...prev, image: data.url }))
         setSavedMessage('Imagen subida correctamente')
         setTimeout(() => setSavedMessage(''), 3000)
       } else {
@@ -239,34 +207,46 @@ export default function BatteriesAdminPage() {
     }
   }
 
-  const handleSave = () => {
-    console.log('Current formData:', formData)
+  const handleSave = async () => {
     if (!formData.vehicle || !formData.batteryType || !formData.description || !formData.image) {
-      console.log('Missing fields:', {
-        vehicle: formData.vehicle,
-        batteryType: formData.batteryType,
-        description: formData.description,
-        image: formData.image
-      })
       alert('Por favor completa todos los campos')
       return
     }
 
+    let updated: Battery[]
+
     if (editingId) {
-      setBatteriesData(batteriesData.map(b => 
+      updated = batteriesData.map(b =>
         b.id === editingId ? { ...formData as Battery, id: editingId } : b
-      ))
+      )
       setSavedMessage('Batería actualizada correctamente')
     } else if (isAdding) {
-      const newId = (batteriesData.length + 1).toString()
-      setBatteriesData([...batteriesData, { ...formData as Battery, id: newId }])
+      const maxId = batteriesData.reduce((max, b) => Math.max(max, parseInt(b.id) || 0), 0)
+      const newId = (maxId + 1).toString()
+      updated = [...batteriesData, { ...formData as Battery, id: newId }]
       setSavedMessage('Batería agregada correctamente')
+    } else {
+      return
     }
-    
+
+    setBatteriesData(updated)
+    await saveBatteriesToServer(updated)
+
     setIsAdding(false)
     setEditingId(null)
     setFormData({ vehicle: '', batteryType: '', condition: 'refurbished' as 'new' | 'refurbished', price: 0, warranty: '', image: '', description: '' })
     setTimeout(() => setSavedMessage(''), 3000)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
+          <p className="text-gray-600">Cargando baterías...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -280,7 +260,9 @@ export default function BatteriesAdminPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-4xl font-bold mb-2">{t.admin.batteries}</h1>
-              <p className="text-xl text-blue-100">{t.admin.batteriesDesc}</p>
+              <p className="text-xl text-blue-100">
+                {batteriesData.length} baterías en la base de datos
+              </p>
             </div>
             {!isAdding && !editingId && (
               <button onClick={handleAdd} className="btn-secondary flex items-center space-x-2">
@@ -409,7 +391,7 @@ export default function BatteriesAdminPage() {
                     <Save className="w-5 h-5" />
                     <span>Guardar</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setIsAdding(false)
                       setEditingId(null)
@@ -442,10 +424,10 @@ export default function BatteriesAdminPage() {
                   />
                 </div>
               </div>
-              
+
               {/* Filters */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Brand Filter */}
+                {/* Brand Filter - dynamic from data */}
                 <div>
                   <label className="block text-sm font-medium mb-2">{t.batteries.filterBrand}</label>
                   <select
@@ -454,11 +436,12 @@ export default function BatteriesAdminPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="all">{t.batteries.allBrands}</option>
-                    <option value="Toyota">Toyota</option>
-                    <option value="Lexus">Lexus</option>
+                    {availableBrands.map(brand => (
+                      <option key={brand} value={brand}>{brand}</option>
+                    ))}
                   </select>
                 </div>
-                
+
                 {/* Condition Filter */}
                 <div>
                   <label className="block text-sm font-medium mb-2">{t.batteries.filterCondition}</label>
@@ -473,10 +456,10 @@ export default function BatteriesAdminPage() {
                   </select>
                 </div>
               </div>
-              
+
               {/* Results Counter */}
               <div className="mt-4 text-sm text-gray-600">
-                {filteredBatteries.length} {t.batteries.resultsFound}
+                {filteredBatteries.length} de {batteriesData.length} baterías
               </div>
             </div>
           </div>
@@ -485,48 +468,59 @@ export default function BatteriesAdminPage() {
 
       <section className="section-padding">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredBatteries.map((battery) => (
-              <div key={battery.id} className="card relative group">
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
-                  <button 
-                    onClick={() => handleEdit(battery)}
-                    className="bg-primary-500 text-white p-2 rounded" 
-                    title="Editar"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(battery.id)}
-                    className="bg-red-500 text-white p-2 rounded" 
-                    title="Eliminar"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+          {batteriesData.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              <p className="text-lg mb-2">No hay baterías en la base de datos</p>
+              <p className="text-sm">Agrega una nueva batería con el botón de arriba</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredBatteries.map((battery) => (
+                <div key={battery.id} className="card relative group">
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(battery)}
+                      className="bg-primary-500 text-white p-2 rounded"
+                      title="Editar"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(battery.id)}
+                      className="bg-red-500 text-white p-2 rounded"
+                      title="Eliminar"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="aspect-video bg-gray-200 rounded-lg mb-4 relative overflow-hidden">
+                    {battery.image && (
+                      <Image
+                        src={battery.image}
+                        alt={battery.vehicle}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+                  <h3 className="font-semibold mb-2">{battery.vehicle}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{battery.batteryType}</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <p className="text-3xl font-bold text-primary-500">${battery.price}</p>
+                    <span className={`text-xs px-2 py-1 rounded-full ${battery.condition === 'new' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                      {battery.condition === 'new' ? 'Nueva' : 'Refurbished'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{battery.description}</p>
+                  <span className="inline-block px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-sm">
+                    {battery.warranty}
+                  </span>
                 </div>
-                <div className="aspect-video bg-gray-200 rounded-lg mb-4 relative overflow-hidden">
-                  {battery.image && (
-                    <Image
-                      src={battery.image}
-                      alt={battery.vehicle}
-                      fill
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-                <h3 className="font-semibold mb-2">{battery.vehicle}</h3>
-                <p className="text-sm text-gray-600 mb-2">{battery.batteryType}</p>
-                <p className="text-3xl font-bold text-primary-500 mb-2">${battery.price}</p>
-                <p className="text-sm text-gray-600 mb-4">{battery.description}</p>
-                <span className="inline-block px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-sm">
-                  {battery.warranty}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
   )
 }
-
