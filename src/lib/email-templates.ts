@@ -5,9 +5,9 @@
 // ============================================================
 
 const BRAND = {
-  primary: '#00B4DB',
-  primaryDark: '#0083B0',
-  secondary: '#00D4AA',
+  primary: '#1F2937',
+  primaryDark: '#111827',
+  secondary: '#10B981',
   name: 'Hybrid Tech Auto',
   legalName: 'Hybrid Tech Automotive LLC',
   address: '24422 Starview Landing Ct, Spring, TX 77373',

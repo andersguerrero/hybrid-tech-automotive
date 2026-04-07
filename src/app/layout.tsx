@@ -79,7 +79,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#007BFF" />
+        <meta name="theme-color" content="#1F2937" />
       </head>
       <body className={inter.className}>
         <LocalBusinessJsonLd />
