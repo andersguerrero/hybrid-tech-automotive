@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -7,11 +8,19 @@ import CartProviderWrapper from '@/providers/CartProviderWrapper'
 import ThemeProviderWrapper from '@/providers/ThemeProviderWrapper'
 import { LocalBusinessJsonLd } from '@/components/JsonLd'
 import WhatsAppButton from '@/components/WhatsAppButton'
+import TawkTo from '@/components/TawkTo'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { blobGet } from '@/lib/storage'
 import { siteImages as defaultSiteImages } from '@/data/images'
 import type { SiteImages } from '@/data/images'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700'],
+})
 
 export async function generateMetadata(): Promise<Metadata> {
   let siteImages = defaultSiteImages
@@ -68,11 +77,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#007BFF" />
       </head>
-      <body>
+      <body className={inter.className}>
         <LocalBusinessJsonLd />
         <ThemeProviderWrapper>
           <LanguageProviderWrapper>
@@ -86,8 +95,12 @@ export default function RootLayout({
             </CartProviderWrapper>
           </LanguageProviderWrapper>
         </ThemeProviderWrapper>
+        <TawkTo />
         <Analytics />
         <SpeedInsights />
+        <script dangerouslySetInnerHTML={{
+          __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js')})}`
+        }} />
       </body>
     </html>
   )

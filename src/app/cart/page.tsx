@@ -148,9 +148,9 @@ export default function CartPage() {
                             <button
                               onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                               className="p-2 hover:bg-gray-100 transition-colors"
-                              aria-label="Decrease quantity"
+                              aria-label={`Decrease quantity of ${item.name}`}
                             >
-                              <Minus className="w-4 h-4" />
+                              <Minus className="w-4 h-4" aria-hidden="true" />
                             </button>
                             <span className="px-4 py-2 min-w-[3rem] text-center font-medium border-x border-gray-300">
                               {item.quantity}
@@ -158,9 +158,9 @@ export default function CartPage() {
                             <button
                               onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                               className="p-2 hover:bg-gray-100 transition-colors"
-                              aria-label="Increase quantity"
+                              aria-label={`Increase quantity of ${item.name}`}
                             >
-                              <Plus className="w-4 h-4" />
+                              <Plus className="w-4 h-4" aria-hidden="true" />
                             </button>
                           </div>
 
@@ -209,7 +209,7 @@ export default function CartPage() {
 
             {/* Order Summary & Checkout */}
             <div className="lg:col-span-1">
-              <div className="card sticky top-24">
+              <div className="card sticky top-24" aria-live="polite" aria-atomic="true">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   {t.cart?.orderSummary || 'Order Summary'}
                 </h2>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Calendar, Clock, User, Mail, Phone, MessageSquare, CreditCard } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useServices, useBatteries } from '@/hooks/useData'
+import BookingCalendar from '@/components/BookingCalendar'
 
 export default function BookingPage() {
   const { t } = useLanguage()
@@ -21,6 +22,8 @@ export default function BookingPage() {
     paymentMethod: 'stripe'
   })
 
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
@@ -29,13 +32,6 @@ export default function BookingPage() {
   const allServices = [
     ...services.map(s => ({ ...s, type: 'service' })),
     ...batteries.map(b => ({ ...b, type: 'battery', name: `${b.vehicle} - ${b.batteryType}` }))
-  ]
-
-  const timeSlots = [
-    '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
-    '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM',
-    '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
-    '5:00 PM', '5:30 PM'
   ]
 
   // Calculate price when service is selected
@@ -141,6 +137,8 @@ export default function BookingPage() {
           paymentMethod: 'stripe'
         })
         setSelectedServicePrice(null)
+        setSelectedDate(null)
+        setSelectedTime('')
       } else {
         setErrorMessage(result.error || t.booking.errorMessage)
       }
@@ -288,43 +286,20 @@ export default function BookingPage() {
                   <Clock className="w-6 h-6 mr-3 text-primary-500" />
                   {t.booking.dateTime}
                 </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
-                      {t.booking.preferredDate}
-                    </label>
-                    <input
-                      type="date"
-                      id="date"
-                      name="date"
-                      required
-                      value={formData.date}
-                      onChange={handleInputChange}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
-                      {t.booking.preferredTime}
-                    </label>
-                    <select
-                      id="time"
-                      name="time"
-                      required
-                      value={formData.time}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    >
-                      <option value="">{t.booking.preferredTime}</option>
-                      {timeSlots.map((time) => (
-                        <option key={time} value={time}>{time}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+
+                <BookingCalendar
+                  selectedDate={selectedDate}
+                  selectedTime={selectedTime}
+                  onDateSelect={(date) => {
+                    setSelectedDate(date)
+                    const formatted = date.toISOString().split('T')[0]
+                    setFormData(prev => ({ ...prev, date: formatted }))
+                  }}
+                  onTimeSelect={(time) => {
+                    setSelectedTime(time)
+                    setFormData(prev => ({ ...prev, time }))
+                  }}
+                />
               </div>
 
               {/* Payment Method */}

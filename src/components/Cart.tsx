@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { X, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react'
@@ -16,6 +16,20 @@ export default function Cart({ isOpen, onClose }: CartProps) {
   const { items, removeFromCart, updateQuantity, getTotalPrice, clearCart } = useCart()
   const { t } = useLanguage()
   const total = getTotalPrice()
+
+  // Close cart on Escape key
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose()
+    }
+  }, [onClose])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, handleKeyDown])
 
   if (!isOpen) return null
 

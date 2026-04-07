@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
@@ -43,7 +45,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'Roboto', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', ...defaultTheme.fontFamily.sans],
       },
       animation: {
         'bounce-slow': 'bounce 3s ease-in-out infinite',
