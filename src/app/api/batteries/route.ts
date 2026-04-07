@@ -59,6 +59,8 @@ export async function GET(request: NextRequest) {
     const condition = params.get('condition')?.trim() || ''
     const minPrice = parseFloat(params.get('minPrice') || '0') || 0
     const maxPrice = parseFloat(params.get('maxPrice') || '0') || 0
+    const minYear = parseInt(params.get('minYear') || '0') || 0
+    const maxYear = parseInt(params.get('maxYear') || '0') || 0
     const page = Math.max(1, parseInt(params.get('page') || '1') || 1)
     const limitStr = params.get('limit')
     const rawLimit = limitStr !== null ? parseInt(limitStr) : 12
@@ -103,6 +105,16 @@ export async function GET(request: NextRequest) {
         return false
       }
 
+      // Year range filter — parse year from vehicle name e.g. "Toyota Prius (2004)"
+      if (minYear > 0 || maxYear > 0) {
+        const yearMatch = battery.vehicle.match(/\((\d{4})\)/)
+        if (yearMatch) {
+          const year = parseInt(yearMatch[1])
+          if (minYear > 0 && year < minYear) return false
+          if (maxYear > 0 && year > maxYear) return false
+        }
+      }
+
       return true
     })
 
@@ -116,6 +128,12 @@ export async function GET(request: NextRequest) {
         case 'condition':
           cmp = a.condition.localeCompare(b.condition)
           break
+        case 'year': {
+          const yearA = parseInt(a.vehicle.match(/\((\d{4})\)/)?.[1] || '0')
+          const yearB = parseInt(b.vehicle.match(/\((\d{4})\)/)?.[1] || '0')
+          cmp = yearA - yearB
+          break
+        }
         default:
           cmp = a.vehicle.localeCompare(b.vehicle)
       }
@@ -143,6 +161,14 @@ export async function GET(request: NextRequest) {
       if (match) modelSet.add(match[1])
     })
 
+    // Extract years from all batteries
+    const years = allBatteries
+      .map((b) => {
+        const m = b.vehicle.match(/\((\d{4})\)/)
+        return m ? parseInt(m[1]) : null
+      })
+      .filter((y): y is number => y !== null)
+
     const facets = {
       brands: Array.from(brandSet).sort(),
       models: Array.from(modelSet).sort(),
@@ -150,6 +176,10 @@ export async function GET(request: NextRequest) {
       priceRange: {
         min: Math.min(...allBatteries.map((b) => b.price)),
         max: Math.max(...allBatteries.map((b) => b.price)),
+      },
+      yearRange: {
+        min: years.length > 0 ? Math.min(...years) : 2000,
+        max: years.length > 0 ? Math.max(...years) : 2025,
       },
     }
 

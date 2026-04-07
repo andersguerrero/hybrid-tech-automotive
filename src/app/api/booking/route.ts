@@ -1,103 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendBookingConfirmation, sendAdminNewOrderNotification } from '@/lib/email'
+import { sendBookingEmails } from '@/lib/email'
 import { createOrder } from '@/lib/orders'
-import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rateLimit'
-import { bookingFormSchema, formatZodError } from '@/lib/validations'
-import { sanitizeName, sanitizeEmail, sanitizePhone, sanitizeText, sanitizeMessage } from '@/lib/sanitize'
-import { validateOrigin } from '@/lib/csrf'
-import logger from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
-    // CSRF: Verify request comes from our domain
-    if (!validateOrigin(request)) {
-      return NextResponse.json(
-        { error: 'Invalid request origin' },
-        { status: 403 }
-      )
-    }
-
-    // Rate limiting: 5 requests per 15 minutes per IP
-    const ip = getClientIP(request)
-    const rateCheck = checkRateLimit(ip, RATE_LIMITS.booking)
-    if (!rateCheck.success) {
-      return NextResponse.json(
-        { error: 'Too many booking requests. Please try again later.' },
-        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
-      )
-    }
-
     const body = await request.json()
+    const { name, email, phone, service, date, time, comments, paymentMethod, cartItems, subtotal, tax, total } = body
 
-    // Zod validation
-    const parsed = bookingFormSchema.safeParse(body)
-    if (!parsed.success) {
+    // Validate required fields
+    if (!name || !email || !phone || !date || !time) {
       return NextResponse.json(
-        { error: formatZodError(parsed.error) },
+        { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Sanitize inputs
-    const name = sanitizeName(parsed.data.name)
-    const email = sanitizeEmail(parsed.data.email)
-    const phone = sanitizePhone(parsed.data.phone)
-    const service = parsed.data.service ? sanitizeText(parsed.data.service, 500) : undefined
-    const date = sanitizeText(parsed.data.date, 20)
-    const time = sanitizeText(parsed.data.time, 20)
-    const comments = sanitizeMessage(parsed.data.comments || '')
-    const paymentMethod = parsed.data.paymentMethod
-    const cartItems = parsed.data.cartItems
-    const subtotal = parsed.data.subtotal
-    const tax = parsed.data.tax
-    const total = parsed.data.total
-
     // Build service description from cart items or single service
     let serviceDescription = service
     if (cartItems && cartItems.length > 0) {
-      serviceDescription = cartItems.map((item) =>
-        `${item.quantity}x ${sanitizeText(item.name, 200)} - $${(item.price * item.quantity).toFixed(2)}`
+      serviceDescription = cartItems.map((item: any) =>
+        `${item.quantity}x ${item.name} - $${(item.price * item.quantity).toFixed(2)}`
       ).join(', ')
-    }
-
-    // Prepare booking data for email
-    const bookingData = {
-      service: serviceDescription || 'Service',
-      date,
-      time,
-      comments,
-      subtotal,
-      tax,
-      total,
-      paymentMethod,
-    }
-
-    // Send confirmation email to customer
-    const emailResult = await sendBookingConfirmation(email, name, bookingData)
-
-    if (!emailResult.success) {
-      logger.error('Failed to send confirmation email:', emailResult.error as Error)
-      const errorMsg = process.env.NODE_ENV === 'production'
-        ? 'No se pudo enviar el correo de confirmaci\u00f3n. Intenta nuevamente o cont\u00e1ctanos.'
-        : `SMTP error: ${(emailResult.error as Error)?.message || emailResult.error || 'Unknown error'}`
-      return NextResponse.json(
-        { success: false, error: errorMsg },
-        { status: 500 }
-      )
     }
 
     // Persist order
     const orderItems = cartItems && cartItems.length > 0
-      ? cartItems.map((item) => ({
-          id: item.id || sanitizeText(item.name, 200),
-          name: sanitizeText(item.name, 200),
+      ? cartItems.map((item: any) => ({
+          id: item.id || item.name,
+          name: item.name,
           price: item.price,
           quantity: item.quantity || 1,
-          type: item.type || 'service' as const,
+          type: item.type || 'service',
         }))
       : [{ id: service || 'booking', name: service || 'Service', price: total || 0, quantity: 1, type: 'service' as const }]
 
-    const order = await createOrder({
+    await createOrder({
       customerName: name,
       customerEmail: email,
       customerPhone: phone,
@@ -110,21 +47,23 @@ export async function POST(request: NextRequest) {
       orderStatus: 'pending',
       date,
       time,
-      comments,
+      comments: comments || '',
     })
 
-    // Send admin notification (fire-and-forget, don't block response)
-    sendAdminNewOrderNotification({
+    // Send emails (non-blocking: fires in background, never fails the response)
+    sendBookingEmails({
       customerName: name,
       customerEmail: email,
       customerPhone: phone,
-      items: orderItems.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
-      total: total || subtotal || 0,
-      paymentMethod: paymentMethod || 'cash',
+      service: serviceDescription,
       date,
       time,
-      orderId: order.id,
-    }).catch(err => logger.error('Admin notification failed:', err as Error))
+      comments: comments || '',
+      subtotal,
+      tax,
+      total,
+      paymentMethod,
+    }).catch((err) => console.error('[Booking] Email send error:', err))
 
     return NextResponse.json({
       success: true,
@@ -132,7 +71,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    logger.error('Booking error:', error as Error)
+    console.error('Booking error:', error)
     return NextResponse.json(
       { error: 'Failed to book appointment' },
       { status: 500 }

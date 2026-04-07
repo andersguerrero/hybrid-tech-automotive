@@ -47,7 +47,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   }
 
   return (
-    <div className="card hover:shadow-xl transition-shadow duration-300">
+    <div className="card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       <div className="relative h-48 mb-4 rounded-lg overflow-hidden">
         <Image
           src={service.image}

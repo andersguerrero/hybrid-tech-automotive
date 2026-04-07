@@ -1,55 +1,85 @@
-import nodemailer from 'nodemailer'
-import logger from '@/lib/logger'
+import { Resend } from 'resend'
+import {
+  bookingConfirmationSubject,
+  bookingConfirmationHtml,
+  bookingNotificationSubject,
+  bookingNotificationHtml,
+  contactAckSubject,
+  contactAckHtml,
+  contactNotificationSubject,
+  contactNotificationHtml,
+  orderConfirmationSubject,
+  orderConfirmationHtml,
+  orderStatusSubject,
+  orderStatusHtml,
+  newsletterWelcomeSubject,
+  newsletterWelcomeHtml,
+} from './email-templates'
 
-const smtpPort = parseInt(process.env.SMTP_PORT || '587')
-const envSecure = (process.env.SMTP_SECURE || '').toLowerCase()
-const smtpSecure = envSecure === 'true' || (envSecure === '' && smtpPort === 465)
-const requireTLS = (process.env.SMTP_REQUIRE_TLS || '').toLowerCase() === 'true'
-const ignoreTLS = (process.env.SMTP_IGNORE_TLS || '').toLowerCase() === 'true'
-const authMethod = process.env.SMTP_AUTH_METHOD
+// ── Resend client (lazy-initialised) ─────────────────────────
 
-function getMissingEnvVars(vars: string[]) {
-  return vars.filter((v) => !process.env[v] || process.env[v] === '')
+let _resend: Resend | null = null
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
+  return _resend
 }
 
-async function sendWithRetry(
-  mailOptions: nodemailer.SendMailOptions,
-  maxRetries = 3
-): Promise<{ success: boolean; error?: unknown }> {
-  const missing = getMissingEnvVars(['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'])
-  if (missing.length) {
-    return { success: false, error: new Error(`Missing SMTP vars: ${missing.join(', ')}`) }
-  }
+// Resend free-tier uses onboarding@resend.dev; custom domains use FROM_EMAIL.
+const FROM_EMAIL = process.env.FROM_EMAIL || 'Hybrid Tech Auto <onboarding@resend.dev>'
+const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || 'info@hybridtechauto.com'
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      await transporter.sendMail(mailOptions)
-      return { success: true }
-    } catch (error) {
-      logger.error(`Email send attempt ${attempt}/${maxRetries} failed:`, error as Error)
-      if (attempt < maxRetries) {
-        const delay = Math.pow(3, attempt - 1) * 1000 // 1s, 3s, 9s
-        await new Promise((resolve) => setTimeout(resolve, delay))
-      } else {
-        return { success: false, error }
-      }
-    }
-  }
-  return { success: false, error: new Error('Max retries reached') }
+// ── Low-level send helper ────────────────────────────────────
+
+interface EmailOptions {
+  to: string | string[]
+  subject: string
+  html: string
+  replyTo?: string
 }
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: smtpPort,
-  secure: smtpSecure,
-  requireTLS,
-  ignoreTLS,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  ...(authMethod ? { authMethod } : {}),
-})
 
+export async function sendEmail({ to, subject, html, replyTo }: EmailOptions): Promise<{ success: boolean; error?: unknown }> {
+  const resend = getResend()
+  if (!resend) {
+    console.log('[Email] No RESEND_API_KEY configured, skipping email:', subject)
+    return { success: false, error: 'No API key configured' }
+  }
+
+  try {
+    const data = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      html,
+      ...(replyTo ? { replyTo } : {}),
+    })
+    console.log('[Email] Sent successfully:', subject)
+    return { success: true, data } as { success: boolean; data?: unknown }
+  } catch (error) {
+    console.error('[Email] Failed to send:', subject, error)
+    return { success: false, error }
+  }
+}
+
+// ── Fire-and-forget helper (non-blocking) ────────────────────
+
+function fireAndForget(promise: Promise<unknown>): void {
+  promise.catch((err) => console.error('[Email] Background send error:', err))
+}
+
+// ── Type alias for locale ────────────────────────────────────
+
+type Locale = 'en' | 'es'
+
+// ============================================================
+// Public API — Booking
+// ============================================================
+
+/**
+ * Send booking confirmation to the customer AND a notification to the business.
+ * This is a backward-compatible replacement for the old nodemailer version.
+ * Email sending is non-blocking: failures are logged but never throw.
+ */
 export async function sendBookingConfirmation(
   customerEmail: string,
   customerName: string,
@@ -62,159 +92,119 @@ export async function sendBookingConfirmation(
     tax?: number
     total?: number
     paymentMethod?: string
-  }
+  },
+  locale: Locale = 'en',
 ) {
-  // Format payment method display name
-  const paymentMethodNames: { [key: string]: string } = {
-    'stripe': 'Credit Card (Paid)',
-    'zelle': 'Zelle (To be paid)',
-    'cash': 'Cash (Pay in person)'
-  }
-  const paymentDisplay = appointmentDetails.paymentMethod 
-    ? paymentMethodNames[appointmentDetails.paymentMethod] || appointmentDetails.paymentMethod
-    : ''
-
-  const mailOptions = {
-    from: process.env.BUSINESS_EMAIL || process.env.SMTP_USER,
+  // 1. Customer confirmation email
+  const customerResult = await sendEmail({
     to: customerEmail,
-    // Send a copy to the business so you receive the booking too
-    bcc: process.env.BUSINESS_EMAIL,
-    subject: 'Appointment Confirmation - Hybrid Tech Auto',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #007BFF;">Appointment Confirmed!</h2>
-        <p>Dear ${customerName},</p>
-        <p>Thank you for booking an appointment with Hybrid Tech Auto. Here are your appointment details:</p>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Appointment Details</h3>
-          <p><strong>Service:</strong> ${appointmentDetails.service}</p>
-          <p><strong>Date:</strong> ${appointmentDetails.date}</p>
-          <p><strong>Time:</strong> ${appointmentDetails.time}</p>
-          ${appointmentDetails.comments ? `<p><strong>Comments:</strong> ${appointmentDetails.comments}</p>` : ''}
-        </div>
+    subject: bookingConfirmationSubject(appointmentDetails.date, locale),
+    html: bookingConfirmationHtml({
+      customerName,
+      service: appointmentDetails.service,
+      date: appointmentDetails.date,
+      time: appointmentDetails.time,
+      comments: appointmentDetails.comments,
+      subtotal: appointmentDetails.subtotal,
+      tax: appointmentDetails.tax,
+      total: appointmentDetails.total,
+      paymentMethod: appointmentDetails.paymentMethod,
+    }, locale),
+  })
 
-        ${appointmentDetails.total !== undefined ? `
-        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Order Summary</h3>
-          ${appointmentDetails.subtotal !== undefined ? `<p><strong>Subtotal:</strong> $${appointmentDetails.subtotal.toFixed(2)}</p>` : ''}
-          ${appointmentDetails.tax !== undefined && appointmentDetails.tax > 0 ? `<p><strong>Tax:</strong> $${appointmentDetails.tax.toFixed(2)}</p>` : ''}
-          <p><strong>Total:</strong> $${appointmentDetails.total.toFixed(2)}</p>
-          ${paymentDisplay ? `<p><strong>Payment Method:</strong> ${paymentDisplay}</p>` : ''}
-        </div>
-        ` : ''}
-        
-        <p>If you need to reschedule or have any questions, please call us at ${process.env.NEXT_PUBLIC_BUSINESS_PHONE || '(832) 762-5299'}.</p>
-        
-        <p>We look forward to serving you!</p>
-        
-        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-        <p style="color: #666; font-size: 14px;">
-          Hybrid Tech Automotive LLC<br>
-          DBA: Hybrid Tech Auto<br>
-          24422 Starview Landing Ct, Spring, TX 77373<br>
-          ${process.env.NEXT_PUBLIC_BUSINESS_PHONE || '(832) 762-5299'}
-        </p>
-      </div>
-    `,
-  }
+  // 2. Business notification (fire-and-forget so it never slows the response)
+  fireAndForget(
+    sendEmail({
+      to: BUSINESS_EMAIL,
+      subject: bookingNotificationSubject(customerName, appointmentDetails.date),
+      html: bookingNotificationHtml({
+        customerName,
+        customerEmail,
+        customerPhone: '', // phone is not available in this signature
+        service: appointmentDetails.service,
+        date: appointmentDetails.date,
+        time: appointmentDetails.time,
+        comments: appointmentDetails.comments,
+        subtotal: appointmentDetails.subtotal,
+        tax: appointmentDetails.tax,
+        total: appointmentDetails.total,
+        paymentMethod: appointmentDetails.paymentMethod,
+      }),
+      replyTo: customerEmail,
+    }),
+  )
 
-  return sendWithRetry(mailOptions)
+  return customerResult
 }
 
 /**
- * Send notification to admin when a new order/booking arrives
+ * Extended version of sendBookingConfirmation that also includes customer phone
+ * for the business notification. Used when phone is available.
  */
-export async function sendAdminNewOrderNotification(
-  orderData: {
+export async function sendBookingEmails(
+  data: {
     customerName: string
     customerEmail: string
     customerPhone: string
-    items: Array<{ name: string; quantity: number; price: number }>
-    total: number
-    paymentMethod: string
+    service: string
     date: string
     time: string
-    orderId?: string
-  }
+    comments?: string
+    subtotal?: number
+    tax?: number
+    total?: number
+    paymentMethod?: string
+  },
+  locale: Locale = 'en',
 ) {
-  const adminEmail = process.env.BUSINESS_EMAIL
-  if (!adminEmail) {
-    logger.warn('BUSINESS_EMAIL not set, skipping admin notification')
-    return { success: false, error: 'No admin email configured' }
-  }
+  const customerPromise = sendEmail({
+    to: data.customerEmail,
+    subject: bookingConfirmationSubject(data.date, locale),
+    html: bookingConfirmationHtml({
+      customerName: data.customerName,
+      service: data.service,
+      date: data.date,
+      time: data.time,
+      comments: data.comments,
+      subtotal: data.subtotal,
+      tax: data.tax,
+      total: data.total,
+      paymentMethod: data.paymentMethod,
+    }, locale),
+  })
 
-  const itemsList = orderData.items
-    .map(item => `<tr>
-      <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
-      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
-    </tr>`)
-    .join('')
+  const businessPromise = sendEmail({
+    to: BUSINESS_EMAIL,
+    subject: bookingNotificationSubject(data.customerName, data.date),
+    html: bookingNotificationHtml({
+      customerName: data.customerName,
+      customerEmail: data.customerEmail,
+      customerPhone: data.customerPhone,
+      service: data.service,
+      date: data.date,
+      time: data.time,
+      comments: data.comments,
+      subtotal: data.subtotal,
+      tax: data.tax,
+      total: data.total,
+      paymentMethod: data.paymentMethod,
+    }),
+    replyTo: data.customerEmail,
+  })
 
-  const paymentLabels: Record<string, string> = {
-    stripe: 'Credit Card (Paid)',
-    zelle: 'Zelle (Pending)',
-    cash: 'Cash (In-person)',
-  }
-
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://hybridtechauto.com'
-
-  const mailOptions = {
-    from: adminEmail,
-    to: adminEmail,
-    subject: `New Order from ${orderData.customerName} - $${orderData.total.toFixed(2)}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #007BFF; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
-          <h2 style="margin: 0;">New Order Received!</h2>
-          ${orderData.orderId ? `<p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">${orderData.orderId}</p>` : ''}
-        </div>
-
-        <div style="border: 1px solid #ddd; border-top: none; padding: 20px; border-radius: 0 0 8px 8px;">
-          <h3 style="color: #333; margin-top: 0;">Customer Info</h3>
-          <p><strong>Name:</strong> ${orderData.customerName}</p>
-          <p><strong>Email:</strong> <a href="mailto:${orderData.customerEmail}">${orderData.customerEmail}</a></p>
-          <p><strong>Phone:</strong> <a href="tel:${orderData.customerPhone}">${orderData.customerPhone}</a></p>
-
-          <h3 style="color: #333;">Appointment</h3>
-          <p><strong>Date:</strong> ${orderData.date}</p>
-          <p><strong>Time:</strong> ${orderData.time}</p>
-          <p><strong>Payment:</strong> ${paymentLabels[orderData.paymentMethod] || orderData.paymentMethod}</p>
-
-          <h3 style="color: #333;">Items</h3>
-          <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-              <tr style="background: #f5f5f5;">
-                <th style="padding: 8px; text-align: left;">Item</th>
-                <th style="padding: 8px; text-align: center;">Qty</th>
-                <th style="padding: 8px; text-align: right;">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsList}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2" style="padding: 10px 8px; font-weight: bold; font-size: 16px;">Total</td>
-                <td style="padding: 10px 8px; font-weight: bold; font-size: 16px; text-align: right; color: #007BFF;">$${orderData.total.toFixed(2)}</td>
-              </tr>
-            </tfoot>
-          </table>
-
-          <div style="text-align: center; margin-top: 20px;">
-            <a href="${baseUrl}/admin/orders" style="background-color: #007BFF; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-              View in Admin Panel
-            </a>
-          </div>
-        </div>
-      </div>
-    `,
-  }
-
-  return sendWithRetry(mailOptions)
+  // Run both in parallel; neither should block the caller
+  const [customerResult] = await Promise.all([customerPromise, businessPromise.catch(() => null)])
+  return customerResult
 }
 
+// ============================================================
+// Public API — Contact Form
+// ============================================================
+
+/**
+ * Send the contact form to the business AND an acknowledgment to the customer.
+ * Backward-compatible with the old nodemailer `sendContactForm` signature.
+ */
 export async function sendContactForm(
   formData: {
     name: string
@@ -222,34 +212,83 @@ export async function sendContactForm(
     phone: string
     subject: string
     message: string
-  }
+  },
+  locale: Locale = 'en',
 ) {
-  const mailOptions = {
-    from: process.env.BUSINESS_EMAIL || process.env.SMTP_USER,
-    to: process.env.BUSINESS_EMAIL,
+  // 1. Business notification
+  const businessResult = await sendEmail({
+    to: BUSINESS_EMAIL,
+    subject: contactNotificationSubject(formData.name),
+    html: contactNotificationHtml(formData),
     replyTo: formData.email,
-    subject: `Contact Form: ${formData.subject}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #007BFF;">New Contact Form Submission</h2>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Contact Information</h3>
-          <p><strong>Name:</strong> ${formData.name}</p>
-          <p><strong>Email:</strong> ${formData.email}</p>
-          <p><strong>Phone:</strong> ${formData.phone}</p>
-          <p><strong>Subject:</strong> ${formData.subject}</p>
-        </div>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Message</h3>
-          <p style="white-space: pre-wrap;">${formData.message}</p>
-        </div>
-        
-        <p>Please respond to this inquiry as soon as possible.</p>
-      </div>
-    `,
-  }
+  })
 
-  return sendWithRetry(mailOptions)
+  // 2. Customer acknowledgment (fire-and-forget)
+  fireAndForget(
+    sendEmail({
+      to: formData.email,
+      subject: contactAckSubject(locale),
+      html: contactAckHtml({ customerName: formData.name }, locale),
+    }),
+  )
+
+  return businessResult
+}
+
+// ============================================================
+// Public API — Order Confirmation
+// ============================================================
+
+export async function sendOrderConfirmation(
+  data: {
+    customerEmail: string
+    customerName: string
+    orderId: string
+    items: Array<{ name: string; price: number; quantity: number }>
+    subtotal: number
+    tax: number
+    total: number
+    paymentMethod: string
+    date: string
+    time: string
+  },
+  locale: Locale = 'en',
+) {
+  return sendEmail({
+    to: data.customerEmail,
+    subject: orderConfirmationSubject(data.orderId, locale),
+    html: orderConfirmationHtml(data, locale),
+  })
+}
+
+// ============================================================
+// Public API — Order Status Update
+// ============================================================
+
+export async function sendOrderStatusUpdate(
+  data: {
+    customerEmail: string
+    customerName: string
+    orderId: string
+    newStatus: string
+  },
+  locale: Locale = 'en',
+) {
+  return sendEmail({
+    to: data.customerEmail,
+    subject: orderStatusSubject(data.orderId, data.newStatus, locale),
+    html: orderStatusHtml(data, locale),
+  })
+}
+
+// ============================================================
+// Public API — Newsletter Welcome
+// ============================================================
+
+export async function sendNewsletterWelcome(email: string, locale: Locale = 'en') {
+  return sendEmail({
+    to: email,
+    subject: newsletterWelcomeSubject(locale),
+    html: newsletterWelcomeHtml({ email }, locale),
+  })
 }

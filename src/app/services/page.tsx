@@ -1,6 +1,7 @@
 'use client'
 
 import ServiceCard from '@/components/ServiceCard'
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useServices, useContactInfo } from '@/hooks/useData'
 
@@ -21,25 +22,27 @@ export default function ServicesPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="bg-gray-50 section-padding">
-        <div className="container-custom text-center">
+        <FadeIn className="container-custom text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             {t.servicesPage.heroTitle}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             {t.servicesPage.heroDescription}
           </p>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Services Grid */}
       {services.length > 0 ? (
         <section className="section-padding">
           <div className="container-custom">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service) => (
-                <ServiceCard key={service.id} service={service} />
+                <StaggerItem key={service.id}>
+                  <ServiceCard service={service} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         </section>
       ) : (
@@ -52,7 +55,7 @@ export default function ServicesPage() {
 
       {/* CTA Section */}
       <section className="section-padding bg-primary-500 text-white">
-        <div className="container-custom text-center">
+        <FadeIn className="container-custom text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {t.servicesPage.ctaTitle}
           </h2>
@@ -67,7 +70,7 @@ export default function ServicesPage() {
               {t.servicesPage.callToAction}
             </a>
           </div>
-        </div>
+        </FadeIn>
       </section>
     </div>
   )

@@ -72,6 +72,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/faq" className="text-gray-300 hover:text-white transition-colors">
+                  {t.nav.faq}
+                </Link>
+              </li>
+              <li>
                 <Link href="/my-orders" className="text-gray-300 hover:text-white transition-colors">
                   My Orders
                 </Link>
