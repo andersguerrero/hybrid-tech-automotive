@@ -44,6 +44,7 @@ export default function Header() {
     { name: t.nav.services, href: '/services' },
     { name: t.nav.batteries, href: '/batteries' },
     { name: t.nav.reviews, href: '/reviews' },
+    { name: locale === 'es' ? 'Trabajos' : 'Our Work', href: '/gallery' },
     { name: t.nav.contact, href: '/contact' },
   ]
 

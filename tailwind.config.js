@@ -45,6 +45,9 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'Roboto', 'system-ui', 'sans-serif'],
       },
+      animation: {
+        'bounce-slow': 'bounce 3s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

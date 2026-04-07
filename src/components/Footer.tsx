@@ -67,6 +67,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/gallery" className="text-gray-300 hover:text-white transition-colors">
+                  {locale === 'es' ? 'Nuestro Trabajo' : 'Our Work'}
+                </Link>
+              </li>
+              <li>
                 <Link href="/my-orders" className="text-gray-300 hover:text-white transition-colors">
                   My Orders
                 </Link>
@@ -113,6 +118,24 @@ export default function Footer() {
               </div>
             </div>
             <NewsletterSignup />
+          </div>
+        </div>
+
+        {/* Service Areas */}
+        <div className="border-t border-gray-800 pt-8 mt-8">
+          <h4 className="text-sm font-semibold text-gray-400 mb-3 text-center">
+            {locale === 'es' ? 'Áreas de Servicio' : 'Service Areas'}
+          </h4>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+            {['Spring', 'Houston', 'The Woodlands', 'Tomball', 'Conroe', 'Humble', 'Cypress', 'Katy'].map((city) => (
+              <Link
+                key={city}
+                href={`/services/${city.toLowerCase().replace(/\s+/g, '-')}-tx`}
+                className="text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                {city}, TX
+              </Link>
+            ))}
           </div>
         </div>
 
