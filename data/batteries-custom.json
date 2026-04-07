@@ -1,772 +1,962 @@
 [
   {
-    "id": "67",
-    "vehicle": "Honda Accord Hybrid (2005-2007)",
+    "id": "1",
+    "vehicle": "Toyota Prius (2001-2003)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 949,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1766119262952.webp",
-    "description": "Professionally rebuilt NiMH hybrid battery for the first-generation Honda Accord Hybrid. This 144V pack with 120 cells and 10 modules powers Honda's IMA system paired with the Accord's V6 engine for a performance-oriented hybrid experience. Each module is individually tested and capacity-matched. The Accord Hybrid was unique in prioritizing power over fuel economy, and a healthy battery is essential for its electric assist system."
+    "price": 1399,
+    "warranty": "12 months",
+    "image": "/images/batteries/prius-2004-2009.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius (2001-2003). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "68",
-    "vehicle": "Honda Accord Hybrid (2005-2007)",
+    "id": "2",
+    "vehicle": "Toyota Prius (2001-2003)",
     "batteryType": "New NiMH",
     "condition": "new",
-    "price": 1799,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119262952.webp",
-    "description": "Factory-new NiMH hybrid battery for the Honda Accord Hybrid (2005-2007). This 144V, 6.5Ah battery delivers full IMA system performance for Honda's V6 hybrid sedan. All 120 cells are factory-fresh with maximum capacity. Complete direct replacement with all connectors and mounting hardware. 3-year comprehensive warranty."
+    "price": 2050,
+    "warranty": "36 months",
+    "image": "/images/batteries/prius-2004-2009.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius (2001-2003). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "69",
-    "vehicle": "Honda Accord Hybrid (2014-2017)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2799,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119272879.jpeg",
-    "description": "Brand new lithium-ion hybrid battery for the Honda Accord Hybrid (2014-2017). This 260V, 1.3 kWh Li-Ion pack powers Honda's innovative two-motor hybrid system with 72 advanced lithium cells. Produces up to 212 combined horsepower while achieving over 47 MPG combined. A significant leap from the previous IMA system, offering true electric-only driving capability. Direct OEM replacement with all hardware. 3-year warranty."
-  },
-  {
-    "id": "70",
-    "vehicle": "Honda Accord Hybrid (2018-2022)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2799,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119279247.jpeg",
-    "description": "Brand new lithium-ion hybrid battery for the Honda Accord Hybrid (2018-2022). This refined 259.2V, 1.3 kWh pack uses nickel-cobalt-manganese ternary lithium cells with 82 Wh/kg energy density. The IPU is 32% smaller than the previous generation while maintaining the same 1.3 kWh capacity. Powers the Accord's 212-hp two-motor hybrid system achieving up to 48 MPG combined. Direct OEM replacement. 3-year warranty."
-  },
-  {
-    "id": "71",
-    "vehicle": "Honda Accord Hybrid (2023-2025)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2899,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119288718.webp",
-    "description": "Brand new lithium-ion hybrid battery for the current-generation Honda Accord Hybrid (2023-2025). This latest e:HEV battery pack is 15% smaller than its predecessor with improved heat resistance rated to 140°F. Powers Honda's refined 4th-generation two-motor hybrid system for smooth, efficient driving. Direct OEM replacement with latest BMS technology. 3-year comprehensive warranty."
-  },
-  {
-    "id": "62",
-    "vehicle": "Honda Civic Hybrid (2003-2005)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 849,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1766119206510.webp",
-    "description": "Professionally rebuilt NiMH hybrid battery for the first-generation Honda Civic Hybrid. This 144V pack with 120 cells powers Honda's IMA system, providing electric assist during acceleration and regenerative braking during deceleration. Each cell is individually tested and capacity-matched to ensure balanced performance across the entire pack. A cost-effective solution for maintaining your Civic Hybrid's fuel-efficient operation."
-  },
-  {
-    "id": "63",
-    "vehicle": "Honda Civic Hybrid (2003-2005)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1599,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119206510.webp",
-    "description": "Factory-new NiMH hybrid battery for the Honda Civic Hybrid (2003-2005). This 144V, 6.5Ah battery delivers full IMA system capability with 120 brand new cells. Direct OEM replacement that restores electric assist, auto-stop, and regenerative braking. All cells are factory-fresh with maximum rated capacity. Complete kit with all hardware. 3-year warranty."
-  },
-  {
-    "id": "64",
-    "vehicle": "Honda Civic Hybrid (2006-2011)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 849,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1766119240013.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the second-generation Honda Civic Hybrid. This updated 158.4V pack delivers improved electric assist compared to the first generation. All modules are individually tested, capacity-matched, and balanced for reliable IMA system operation. Compatible with all 2006-2011 Civic Hybrid models. The most popular Honda hybrid of its era, with proven reliability when the battery is properly maintained."
-  },
-  {
-    "id": "65",
-    "vehicle": "Honda Civic Hybrid (2006-2011)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1699,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119240013.jpg",
-    "description": "Brand new NiMH hybrid battery for the Honda Civic Hybrid (2006-2011). This 158.4V, 6.5Ah battery is a direct OEM replacement for the second-generation Civic Hybrid's IMA system. All cells are factory-new with full capacity. Interchangeable across all 2006-2011 model years. Complete installation kit included. Protected by our 3-year comprehensive warranty."
-  },
-  {
-    "id": "66",
-    "vehicle": "Honda Civic Hybrid (2012-2015)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119252264.webp",
-    "description": "Brand new lithium-ion hybrid battery for the Honda Civic Hybrid (2012-2015). Honda transitioned from NiMH to Li-Ion for this generation, delivering improved energy density in a more compact package. This 144V Li-Ion battery uses 20 advanced lithium-ion modules for better efficiency and longer cycle life. Direct OEM replacement for the Civic's IMA hybrid system. 3-year warranty."
-  },
-  {
-    "id": "77",
-    "vehicle": "Honda Clarity PHEV (2018-2021)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 4499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119336389.webp",
-    "description": "Brand new lithium-ion plug-in hybrid battery for the Honda Clarity PHEV (2018-2021). This large-capacity 17.0 kWh Li-Ion pack delivers up to 47 miles of all-electric driving range, one of the longest PHEV ranges in its class. Features a 6.6kW onboard charger for Level 2 charging in just 2.5 hours. Powers the Clarity's two-motor PHEV system for seamless gas-electric driving. Complete assembly with all cooling and management components. 3-year warranty."
-  },
-  {
-    "id": "72",
-    "vehicle": "Honda CR-V Hybrid (2020-2022)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2899,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119298879.webp",
-    "description": "Brand new lithium-ion hybrid battery for the Honda CR-V Hybrid (2020-2022). This 1.3 kWh Li-Ion pack powers the CR-V's two-motor hybrid system producing 212 combined horsepower. The IPU weighs just 99.2 lbs, optimized for the CR-V's compact SUV platform. Delivers excellent fuel economy exceeding 38 MPG combined with smooth electric-to-gas transitions. Direct OEM replacement with all hardware. 3-year warranty."
-  },
-  {
-    "id": "73",
-    "vehicle": "Honda CR-V Hybrid (2023-2025)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2999,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119304247.jpeg",
-    "description": "Brand new lithium-ion hybrid battery for the current-generation Honda CR-V Hybrid (2023-2025). This compact 1.06 kWh Li-Ion pack is 24% smaller and 12% lighter than the previous generation while powering the CR-V's updated e:HEV system producing 204 combined horsepower. Honda's latest battery technology with improved thermal management. Direct OEM replacement. 3-year warranty."
-  },
-  {
-    "id": "74",
-    "vehicle": "Honda CR-Z (2010-2012)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 849,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1766119320174.webp",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Honda CR-Z sport hybrid coupe. This 100.8V pack powers the CR-Z's IMA system paired with a 6-speed manual or CVT transmission, making it the only hybrid sports car with a manual gearbox option. Each module is individually tested and balanced. Restores the CR-Z's electric assist for spirited driving and its Sport, Normal, and Econ driving modes."
-  },
-  {
-    "id": "75",
-    "vehicle": "Honda CR-Z (2010-2012)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119320174.webp",
-    "description": "Factory-new NiMH hybrid battery for the Honda CR-Z (2010-2012). This 100.8V, 6.5Ah battery delivers full IMA system performance for Honda's unique sport hybrid coupe. All cells are factory-fresh with maximum capacity. Restores the CR-Z's 10kW electric motor assist and Plus Sport boost system. Complete kit included. 3-year warranty."
-  },
-  {
-    "id": "76",
-    "vehicle": "Honda CR-Z (2013-2016)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2299,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119327424.webp",
-    "description": "Brand new lithium-ion hybrid battery for the Honda CR-Z (2013-2016). Honda upgraded the CR-Z to Li-Ion for the 2013+ models, boosting the electric motor from 10kW to 15kW for improved performance. This 144V Li-Ion pack delivers faster charge/discharge cycles and better power delivery than the previous NiMH version. Direct OEM replacement that restores the CR-Z's upgraded Plus Sport boost system. 3-year warranty."
-  },
-  {
-    "id": "57",
-    "vehicle": "Honda Insight (2000-2006)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 849,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1766119120618.webp",
-    "description": "Professionally rebuilt NiMH hybrid battery for the original Honda Insight, the first hybrid car sold in America. This 144V pack uses 120 \"D\"-sized cells with Honda's pioneering IMA (Integrated Motor Assist) system. Each cell is individually tested and capacity-matched to restore the Insight's legendary fuel efficiency. The original Insight achieved over 60 MPG, and a healthy battery is key to maintaining that performance. A smart choice for preserving this automotive icon."
-  },
-  {
-    "id": "58",
-    "vehicle": "Honda Insight (2000-2006)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1599,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119120618.webp",
-    "description": "Brand new NiMH hybrid battery for the first-generation Honda Insight (2000-2006). This 144V, 6.5Ah battery is a direct replacement for Honda's pioneering IMA hybrid system. All 120 cells are factory-new with maximum capacity. Restores the Insight's remarkable fuel efficiency and IMA assist functionality. Complete installation kit with all hardware. 3-year warranty."
-  },
-  {
-    "id": "59",
-    "vehicle": "Honda Insight (2009-2014)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 799,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1766119173707.webp",
-    "description": "Expertly rebuilt NiMH hybrid battery for the second-generation Honda Insight. This compact 100.8V pack with 5.75Ah capacity uses Honda's updated IMA system for efficient mild-hybrid operation. Each module is individually tested and balanced to ensure reliable auto-stop/start, electric assist, and regenerative braking. The Gen 2 Insight was Honda's most affordable hybrid, and this rebuild keeps it running economically."
-  },
-  {
-    "id": "60",
-    "vehicle": "Honda Insight (2009-2014)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119173707.webp",
-    "description": "Factory-new NiMH hybrid battery for the Honda Insight (2009-2014). This 100.8V, 5.75Ah battery delivers full IMA system performance for Honda's popular compact hybrid. All cells are factory-fresh with maximum charge capacity. Direct replacement that restores auto-stop, electric assist, and regenerative braking. Complete hardware kit included. 3-year warranty."
-  },
-  {
-    "id": "61",
-    "vehicle": "Honda Insight (2019-2022)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2699,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1766119188565.webp",
-    "description": "Brand new lithium-ion hybrid battery for the third-generation Honda Insight (2019-2022). This advanced 270V Li-Ion pack with 60 cells powers Honda's two-motor hybrid system, producing 151 combined horsepower. A major technological leap from previous Insight generations, this battery enables true EV driving at low speeds. Direct OEM replacement with integrated battery management system. 3-year warranty."
-  },
-  {
-    "id": "43",
-    "vehicle": "Lexus CT 200h (2011-2017)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 849,
-    "warranty": "6 months",
-    "image": "/images/batteries/lexus-ct-2011-2017.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Lexus CT 200h. This compact 201.6V pack uses the same 28-module, 168-cell architecture as the Toyota Prius, adapted for Lexus's premium compact hatchback. Every module is individually tested and balanced to ensure reliable hybrid operation. The CT 200h shares its hybrid system with the Prius, making parts readily available and this rebuild a proven, cost-effective solution for CT owners."
-  },
-  {
-    "id": "44",
-    "vehicle": "Lexus CT 200h (2011-2017)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1599,
-    "warranty": "3 years",
-    "image": "/images/batteries/lexus-ct-2011-2017.jpg",
-    "description": "Brand new NiMH hybrid battery for the Lexus CT 200h (2011-2017). This 201.6V, 6.5Ah battery is a direct OEM replacement with 28 factory-fresh modules. The CT 200h was Lexus's entry-level hybrid, and this battery restores its excellent fuel economy and smooth electric driving modes. Includes all connectors, mounting hardware, and sensors. Protected by our 3-year comprehensive warranty."
-  },
-  {
-    "id": "40",
-    "vehicle": "Lexus ES 300h (2013-2018)",
+    "id": "3",
+    "vehicle": "Toyota Prius (2004-2009)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
     "price": 999,
-    "warranty": "6 months",
-    "image": "/images/batteries/lexus-es-2011-2015.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the Lexus ES 300h (2013-2018). This 244.8V pack features 34 modules sharing the proven architecture of the Toyota Camry Hybrid, optimized for Lexus's premium sedan. Each module is individually tested, capacity-matched, and balanced for smooth, quiet hybrid operation. Restores the ES 300h's whisper-quiet EV mode cruising and seamless power transitions that define the Lexus luxury experience."
+    "warranty": "12 months",
+    "image": "/images/batteries/prius-2004-2009.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius (2004-2009). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "41",
-    "vehicle": "Lexus ES 300h (2013-2018)",
+    "id": "4",
+    "vehicle": "Toyota Prius (2004-2009)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2099,
+    "warranty": "48 months",
+    "image": "/images/batteries/prius-2004-2009.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius (2004-2009). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "5",
+    "vehicle": "Toyota Prius (2010-2015)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 999,
+    "warranty": "12 months",
+    "image": "/images/batteries/prius-2010-2015.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius (2010-2015). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "6",
+    "vehicle": "Toyota Prius (2010-2015)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2099,
+    "warranty": "48 months",
+    "image": "/images/batteries/prius-2010-2015.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius (2010-2015). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "7",
+    "vehicle": "Toyota Prius (2016-2022)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1250,
+    "warranty": "12 months",
+    "image": "/images/batteries/generic-prius-gen4.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius (2016-2022). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "8",
+    "vehicle": "Toyota Prius (2016-2022)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2250,
+    "warranty": "48 months",
+    "image": "/images/batteries/generic-prius-gen4.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius (2016-2022). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "9",
+    "vehicle": "Toyota Prius V (2012-2017)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 999,
+    "warranty": "12 months",
+    "image": "/images/batteries/prius-v-2012-2017.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius V (2012-2017). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "10",
+    "vehicle": "Toyota Prius V (2012-2017)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2099,
+    "warranty": "48 months",
+    "image": "/images/batteries/prius-v-2012-2017.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius V (2012-2017). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "11",
+    "vehicle": "Toyota Prius C (2012-2019)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1695,
+    "warranty": "18 months",
+    "image": "/images/batteries/prius-c-2012-2017.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius C (2012-2019). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "12",
+    "vehicle": "Toyota Prius C (2012-2019)",
     "batteryType": "New NiMH",
     "condition": "new",
     "price": 1999,
-    "warranty": "3 years",
-    "image": "/images/batteries/lexus-es-2011-2015.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus ES 300h (2013-2018). This 244.8V, 6.5Ah battery is a premium direct OEM replacement with 34 brand new modules. Delivers the full power output and efficiency the ES 300h was designed for. Engineered for the quiet, refined driving dynamics that Lexus sedan owners expect. Complete installation kit with all hardware. 3-year warranty."
+    "warranty": "36 months",
+    "image": "/images/batteries/prius-c-2012-2017.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius C (2012-2019). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "42",
-    "vehicle": "Lexus ES 300h (2019-2025)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2899,
-    "warranty": "3 years",
-    "image": "/images/batteries/generic-es300h.jpg",
-    "description": "Brand new lithium-ion hybrid battery for the current-generation Lexus ES 300h (2019-2025). This advanced Li-Ion pack is significantly smaller and lighter than the previous NiMH battery, relocated from the trunk to under the rear seats for improved trunk space and weight distribution. Delivers superior power density with faster charge and discharge rates. Direct OEM replacement for the ES's 2.5L hybrid system. 3-year warranty."
-  },
-  {
-    "id": "45",
-    "vehicle": "Lexus GS 450h (2007-2018)",
+    "id": "13",
+    "vehicle": "Toyota Prius Prime (2017-2022)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 1499,
-    "warranty": "6 months",
-    "image": "/images/batteries/lexus-gs-2007-2015.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the Lexus GS 450h performance hybrid sedan. This high-output 288V pack features 40 sealed modules designed to deliver massive power bursts through the GS's inverter system, boosting voltage to 650V for the electric motor. Each module is individually tested and capacity-matched for the demanding performance requirements of this sport sedan. Restores the GS 450h's thrilling acceleration and refined hybrid efficiency."
+    "price": 4995,
+    "warranty": "18 months",
+    "image": "/images/batteries/generic-prius-gen4.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Prius Prime (2017-2022). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "46",
-    "vehicle": "Lexus GS 450h (2007-2018)",
+    "id": "14",
+    "vehicle": "Toyota Prius Prime (2017-2022)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 7495,
+    "warranty": "36 months",
+    "image": "/images/batteries/generic-prius-gen4.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Prius Prime (2017-2022). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "15",
+    "vehicle": "Toyota Camry Hybrid (2007-2011)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1599,
+    "warranty": "18 months",
+    "image": "/images/batteries/camry-2007-2011.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Camry Hybrid (2007-2011). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "16",
+    "vehicle": "Toyota Camry Hybrid (2007-2011)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2199,
+    "warranty": "48 months",
+    "image": "/images/batteries/camry-2007-2011.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Camry Hybrid (2007-2011). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "17",
+    "vehicle": "Toyota Camry Hybrid (2012-2017)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1599,
+    "warranty": "18 months",
+    "image": "/images/batteries/camry-hybrid-2012-2017.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Camry Hybrid (2012-2017). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "18",
+    "vehicle": "Toyota Camry Hybrid (2012-2017)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2199,
+    "warranty": "36 months",
+    "image": "/images/batteries/camry-hybrid-2012-2017.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Camry Hybrid (2012-2017). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "19",
+    "vehicle": "Toyota Camry Hybrid (2018-2024)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1999,
+    "warranty": "18 months",
+    "image": "/images/batteries/camry-battery.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Camry Hybrid (2018-2024). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "20",
+    "vehicle": "Toyota Camry Hybrid (2018-2024)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2999,
+    "warranty": "36 months",
+    "image": "/images/batteries/camry-battery.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Camry Hybrid (2018-2024). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "21",
+    "vehicle": "Toyota Highlander Hybrid (2006-2010)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1999,
+    "warranty": "18 months",
+    "image": "/images/batteries/highlander-2006-2013.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Highlander Hybrid (2006-2010). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "22",
+    "vehicle": "Toyota Highlander Hybrid (2006-2010)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3299,
+    "warranty": "36 months",
+    "image": "/images/batteries/highlander-2006-2013.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Highlander Hybrid (2006-2010). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "23",
+    "vehicle": "Toyota Highlander Hybrid (2011-2019)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1999,
+    "warranty": "18 months",
+    "image": "/images/batteries/generic-highlander.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Highlander Hybrid (2011-2019). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "24",
+    "vehicle": "Toyota Highlander Hybrid (2011-2019)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3299,
+    "warranty": "36 months",
+    "image": "/images/batteries/generic-highlander.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Highlander Hybrid (2011-2019). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "25",
+    "vehicle": "Toyota Highlander Hybrid (2020-2024)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2299,
+    "warranty": "18 months",
+    "image": "/images/batteries/generic-highlander.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Highlander Hybrid (2020-2024). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "26",
+    "vehicle": "Toyota Highlander Hybrid (2020-2024)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3499,
+    "warranty": "36 months",
+    "image": "/images/batteries/generic-highlander.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Highlander Hybrid (2020-2024). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "27",
+    "vehicle": "Toyota Avalon Hybrid (2013-2018)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1599,
+    "warranty": "18 months",
+    "image": "/images/batteries/avalon-2013-2017.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Avalon Hybrid (2013-2018). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "28",
+    "vehicle": "Toyota Avalon Hybrid (2013-2018)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2199,
+    "warranty": "36 months",
+    "image": "/images/batteries/avalon-2013-2017.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Avalon Hybrid (2013-2018). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "29",
+    "vehicle": "Toyota RAV4 Hybrid (2016-2018)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1899,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770757849332.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota RAV4 Hybrid (2016-2018). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "30",
+    "vehicle": "Toyota RAV4 Hybrid (2016-2018)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2850,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770757849332.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota RAV4 Hybrid (2016-2018). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "31",
+    "vehicle": "Toyota RAV4 Hybrid (2019-2024)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1999,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770756383886.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota RAV4 Hybrid (2019-2024). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "32",
+    "vehicle": "Toyota RAV4 Hybrid (2019-2024)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2999,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770756383886.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota RAV4 Hybrid (2019-2024). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "33",
+    "vehicle": "Toyota Corolla Hybrid (2020-2025)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1299,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770756740987.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Corolla Hybrid (2020-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "34",
+    "vehicle": "Toyota Corolla Hybrid (2020-2025)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 1899,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770756740987.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Corolla Hybrid (2020-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "35",
+    "vehicle": "Toyota Venza Hybrid (2021-2024)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1999,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770756768251.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Venza Hybrid (2021-2024). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "36",
+    "vehicle": "Toyota Venza Hybrid (2021-2024)",
     "batteryType": "New NiMH",
     "condition": "new",
     "price": 2899,
-    "warranty": "3 years",
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770756768251.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Venza Hybrid (2021-2024). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "37",
+    "vehicle": "Toyota Sienna Hybrid (2021-2025)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2099,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770756772119.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Sienna Hybrid (2021-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "38",
+    "vehicle": "Toyota Sienna Hybrid (2021-2025)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2999,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770756772119.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Sienna Hybrid (2021-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "39",
+    "vehicle": "Toyota Tundra i-Force MAX (2022-2025)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2499,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770757765612.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Tundra i-Force MAX (2022-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "40",
+    "vehicle": "Toyota Tundra i-Force MAX (2022-2025)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3499,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770757765612.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Tundra i-Force MAX (2022-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "41",
+    "vehicle": "Toyota Sequoia i-Force MAX (2023-2025)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2499,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770757765612.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Sequoia i-Force MAX (2023-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "42",
+    "vehicle": "Toyota Sequoia i-Force MAX (2023-2025)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3499,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770757765612.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Sequoia i-Force MAX (2023-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "43",
+    "vehicle": "Toyota Crown Hybrid (2023-2025)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1799,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1770757865227.jpeg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Toyota Crown Hybrid (2023-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "44",
+    "vehicle": "Toyota Crown Hybrid (2023-2025)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2499,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1770757865227.jpeg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Toyota Crown Hybrid (2023-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "45",
+    "vehicle": "Lexus CT 200h (2011-2017)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1399,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-ct-2011-2017.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus CT 200h (2011-2017). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "46",
+    "vehicle": "Lexus CT 200h (2011-2017)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2099,
+    "warranty": "48 months",
+    "image": "/images/batteries/lexus-ct-2011-2017.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus CT 200h (2011-2017). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "47",
+    "vehicle": "Lexus ES 300h (2013-2018)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1950,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-es-2011-2015.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus ES 300h (2013-2018). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "48",
+    "vehicle": "Lexus ES 300h (2013-2018)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2395,
+    "warranty": "36 months",
+    "image": "/images/batteries/lexus-es-2011-2015.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus ES 300h (2013-2018). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "49",
+    "vehicle": "Lexus ES 300h (2019-2025)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2099,
+    "warranty": "18 months",
+    "image": "/images/batteries/generic-es300h.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus ES 300h (2019-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "50",
+    "vehicle": "Lexus ES 300h (2019-2025)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2899,
+    "warranty": "36 months",
+    "image": "/images/batteries/generic-es300h.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus ES 300h (2019-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "51",
+    "vehicle": "Lexus GS 450h (2007-2011)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2599,
+    "warranty": "18 months",
     "image": "/images/batteries/lexus-gs-2007-2015.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus GS 450h (2007-2018). This performance-grade 288V pack delivers the full power output needed for the GS's sport hybrid system. The GS 450h boosts battery voltage to 650V through its inverter for maximum electric motor performance. All modules are factory-fresh with full rated capacity. Complete assembly with all hardware. 3-year warranty."
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus GS 450h (2007-2011). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "52",
+    "vehicle": "Lexus GS 450h (2007-2011)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3099,
+    "warranty": "36 months",
+    "image": "/images/batteries/lexus-gs-2007-2015.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus GS 450h (2007-2011). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "53",
+    "vehicle": "Lexus GS 450h (2013-2018)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 3499,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-gs-2007-2015.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus GS 450h (2013-2018). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "54",
+    "vehicle": "Lexus GS 450h (2013-2018)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 4999,
+    "warranty": "36 months",
+    "image": "/images/batteries/lexus-gs-2007-2015.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus GS 450h (2013-2018). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
     "id": "55",
     "vehicle": "Lexus HS 250h (2010-2012)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 999,
-    "warranty": "6 months",
+    "price": 1795,
+    "warranty": "18 months",
     "image": "/images/batteries/generic-hs250h.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Lexus HS 250h dedicated hybrid sedan. This 244.8V pack features 34 modules with 6.5Ah capacity, sharing its architecture with the Camry Hybrid platform. The HS 250h was Lexus's only dedicated hybrid sedan (no non-hybrid version existed), making battery health essential. Each module is individually tested and balanced. A cost-effective way to extend the life of this unique Lexus model."
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus HS 250h (2010-2012). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
     "id": "56",
     "vehicle": "Lexus HS 250h (2010-2012)",
     "batteryType": "New NiMH",
     "condition": "new",
-    "price": 1899,
-    "warranty": "3 years",
+    "price": 2995,
+    "warranty": "36 months",
     "image": "/images/batteries/generic-hs250h.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus HS 250h (2010-2012). This 244.8V, 6.5Ah battery is a direct OEM replacement with 34 factory-fresh modules. Restores full hybrid capability to this unique Lexus dedicated hybrid sedan. Includes all connectors, sensors, and mounting hardware. 3-year comprehensive warranty."
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus HS 250h (2010-2012). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "53",
-    "vehicle": "Lexus LC 500h (2018-2025)",
-    "batteryType": "New Li-Ion",
+    "id": "57",
+    "vehicle": "Lexus RX 400h (2006-2008)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1999,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-rx-2006-2009.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus RX 400h (2006-2008). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "58",
+    "vehicle": "Lexus RX 400h (2006-2008)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3299,
+    "warranty": "36 months",
+    "image": "/images/batteries/lexus-rx-2006-2009.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus RX 400h (2006-2008). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "59",
+    "vehicle": "Lexus RX 450h (2010-2015)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2799,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-rx-2010-2015.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus RX 450h (2010-2015). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "60",
+    "vehicle": "Lexus RX 450h (2010-2015)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3599,
+    "warranty": "36 months",
+    "image": "/images/batteries/lexus-rx-2010-2015.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus RX 450h (2010-2015). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "61",
+    "vehicle": "Lexus RX 450h (2016-2022)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2899,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-rx-battery.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus RX 450h (2016-2022). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "62",
+    "vehicle": "Lexus RX 450h (2016-2022)",
+    "batteryType": "New NiMH",
     "condition": "new",
     "price": 3999,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1762317886548.webp",
-    "description": "Brand new lithium-ion hybrid battery for the Lexus LC 500h luxury grand tourer. This high-performance 310.8V Li-Ion pack with 84 cells powers the LC's Multi Stage Hybrid System, working with a 3.5L V6 to produce 354 combined horsepower. The system boosts voltage to 650V for maximum electric motor output. Designed for performance driving with rapid charge/discharge capability. Complete OEM replacement assembly. 3-year warranty."
+    "warranty": "36 months",
+    "image": "/images/batteries/lexus-rx-battery.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus RX 450h (2016-2022). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "54",
-    "vehicle": "Lexus LS 500h (2018-2025)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 3799,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1762317909161.jpg",
-    "description": "Brand new lithium-ion hybrid battery for the current-generation Lexus LS 500h (2018-2025). This advanced Li-Ion pack is 20% smaller than the previous NiMH unit while delivering higher power density. Works with the LS's Multi Stage Hybrid System pairing a 3.5L V6 with electric motors for 354 combined horsepower. Delivers the effortless, whisper-quiet luxury that defines the LS flagship. Direct OEM replacement. 3-year warranty."
-  },
-  {
-    "id": "47",
-    "vehicle": "Lexus LS 600h (2008-2016)",
+    "id": "63",
+    "vehicle": "Lexus RX 350h (2023-2025)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 1799,
-    "warranty": "6 months",
-    "image": "/images/batteries/generic-ls600h.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the flagship Lexus LS 600h/600hL luxury sedan. This premium 288V pack uses 20 high-capacity elements with 12 cells each, designed for the LS's sophisticated hybrid V8 powertrain. The LS 600h boosts battery voltage to 650V for its powerful electric motors, delivering seamless AWD performance. Each element is individually tested with advanced diagnostics. A significant savings over dealer replacement for this flagship sedan."
+    "price": 2199,
+    "warranty": "18 months",
+    "image": "/images/batteries/lexus-rx-battery.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus RX 350h (2023-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "48",
-    "vehicle": "Lexus LS 600h (2008-2016)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 3499,
-    "warranty": "3 years",
-    "image": "/images/batteries/generic-ls600h.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus LS 600h/600hL (2008-2016). This premium 288V battery pack delivers the full power and refinement expected from Lexus's flagship hybrid sedan. All cells are factory-fresh with maximum rated capacity, ensuring years of reliable luxury hybrid performance. Direct OEM replacement for the LS's hybrid V8 AWD system. Complete assembly with all components. 3-year warranty."
-  },
-  {
-    "id": "49",
-    "vehicle": "Lexus NX 300h (2015-2021)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 1199,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1762317775629.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the first-generation Lexus NX 300h compact luxury SUV. This 244.8V pack features 34 modules with 204 cells, sharing its architecture with the Toyota RAV4 Hybrid platform. Each module is individually tested and capacity-matched for reliable hybrid operation. The NX 300h's electronic AWD system depends on a healthy battery for optimal traction and performance. A smart, affordable alternative to dealer replacement."
-  },
-  {
-    "id": "50",
-    "vehicle": "Lexus NX 300h (2015-2021)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 2299,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1762317775629.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus NX 300h (2015-2021). This 244.8V, 6.5Ah battery is a direct OEM replacement with 34 factory-fresh modules. Designed for the NX's compact luxury SUV platform, delivering smooth hybrid transitions and reliable e-AWD performance. Complete installation kit with all hardware and connectors. 3-year comprehensive warranty."
-  },
-  {
-    "id": "51",
-    "vehicle": "Lexus NX 350h (2022-2025)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2999,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1762317811823.jpg",
-    "description": "Brand new lithium-ion hybrid battery for the current-generation Lexus NX 350h (2022-2025). This 259V Li-Ion pack with 70 cells represents Lexus's latest battery technology, offering superior energy density and faster charge/discharge cycles. Powers the NX's 239 combined horsepower hybrid system with electronic AWD. Direct OEM replacement with full BMS integration and all installation hardware. 3-year warranty."
-  },
-  {
-    "id": "39",
+    "id": "64",
     "vehicle": "Lexus RX 350h (2023-2025)",
     "batteryType": "New NiMH",
     "condition": "new",
     "price": 2999,
-    "warranty": "3 years",
+    "warranty": "36 months",
     "image": "/images/batteries/lexus-rx-battery.jpg",
-    "description": "Brand new NiMH hybrid battery for the latest Lexus RX 350h (2023-2025). This 259V pack uses low-resistance NiMH cells with 216 cells in an optimized configuration. Paired with the RX's 2.5L hybrid powertrain producing 246 combined horsepower, this battery delivers the smooth, refined driving experience Lexus is known for. Direct OEM replacement with full BMS integration. 3-year warranty."
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus RX 350h (2023-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "33",
-    "vehicle": "Lexus RX 400h (2006-2008)",
+    "id": "65",
+    "vehicle": "Lexus NX 300h (2015-2021)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 1299,
-    "warranty": "6 months",
-    "image": "/images/batteries/lexus-rx-2006-2009.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Lexus RX 400h, the first luxury hybrid SUV. This 288V pack features 30 modules with 6.5Ah capacity, engineered for the demanding power requirements of a luxury AWD hybrid SUV. Each module is individually tested, capacity-matched, and balanced using advanced diagnostic equipment. Restores your RX 400h's smooth, powerful hybrid drive that seamlessly blends electric and gasoline power."
+    "price": 2799,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1762317775629.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus NX 300h (2015-2021). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "34",
-    "vehicle": "Lexus RX 400h (2006-2008)",
+    "id": "66",
+    "vehicle": "Lexus NX 300h (2015-2021)",
     "batteryType": "New NiMH",
     "condition": "new",
-    "price": 2499,
-    "warranty": "3 years",
-    "image": "/images/batteries/lexus-rx-2006-2009.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus RX 400h (2006-2008). This 288V, 6.5Ah battery delivers maximum power output for the pioneering luxury hybrid SUV. All 30 modules are factory-fresh with full rated capacity. Direct OEM replacement maintaining the RX 400h's AWD hybrid system performance. Complete kit includes all mounting hardware, cooling components, and connectors. 3-year warranty included."
+    "price": 3999,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1762317775629.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus NX 300h (2015-2021). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "35",
-    "vehicle": "Lexus RX 450h (2010-2015)",
+    "id": "67",
+    "vehicle": "Lexus NX 350h (2022-2025)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 1399,
-    "warranty": "6 months",
-    "image": "/images/batteries/lexus-rx-2010-2015.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the second-generation Lexus RX 450h. This 288V pack powers one of the best-selling luxury hybrid SUVs ever made. All modules undergo rigorous testing including capacity measurement, internal resistance analysis, and thermal cycling to ensure reliable, long-lasting performance. The RX 450h battery is engineered for high-output applications, providing strong electric boost for the V6 hybrid powertrain."
+    "price": 2199,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1762317811823.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus NX 350h (2022-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "36",
-    "vehicle": "Lexus RX 450h (2010-2015)",
+    "id": "68",
+    "vehicle": "Lexus NX 350h (2022-2025)",
     "batteryType": "New NiMH",
     "condition": "new",
-    "price": 2699,
-    "warranty": "3 years",
-    "image": "/images/batteries/lexus-rx-2010-2015.jpg",
-    "description": "Brand new NiMH hybrid battery for the Lexus RX 450h (2010-2015). This premium 288V battery pack delivers the refined performance expected from Lexus's luxury hybrid SUV. Factory-fresh cells with maximum energy capacity ensure years of reliable hybrid operation. Direct OEM replacement with all sensors, connectors, and mounting hardware. Protected by our comprehensive 3-year warranty."
+    "price": 2999,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1762317811823.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus NX 350h (2022-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "37",
-    "vehicle": "Lexus RX 450h (2016-2022)",
+    "id": "69",
+    "vehicle": "Lexus LS 600h (2008-2016)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 1499,
-    "warranty": "6 months",
-    "image": "/images/batteries/lexus-rx-battery.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the third-generation Lexus RX 450h (2016-2022). This 288V pack features updated Panasonic NiMH cells with improved cycle life and thermal characteristics. Each module is individually tested and balanced using state-of-the-art equipment. Designed for the RX 450h's sophisticated AWD hybrid system that delivers 308 combined horsepower. A smart, cost-effective solution for maintaining your luxury SUV."
+    "price": 3695,
+    "warranty": "18 months",
+    "image": "/images/batteries/generic-ls600h.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus LS 600h (2008-2016). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "38",
-    "vehicle": "Lexus RX 450h (2016-2022)",
+    "id": "70",
+    "vehicle": "Lexus LS 600h (2008-2016)",
     "batteryType": "New NiMH",
     "condition": "new",
-    "price": 2899,
-    "warranty": "3 years",
-    "image": "/images/batteries/lexus-rx-battery.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Lexus RX 450h (2016-2022). This 288V battery pack uses the latest Panasonic NiMH cell technology, manufactured to the highest quality standards. All modules are brand new with full factory capacity. Direct OEM replacement for the RX 450h's hybrid powertrain. Includes battery management hardware, cooling system components, and all connectors. 3-year comprehensive warranty."
+    "price": 5495,
+    "warranty": "36 months",
+    "image": "/images/batteries/generic-ls600h.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus LS 600h (2008-2016). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "52",
+    "id": "71",
+    "vehicle": "Lexus UX 250h (2019-2024)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1599,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1762317871975.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus UX 250h (2019-2024). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "72",
     "vehicle": "Lexus UX 250h (2019-2024)",
     "batteryType": "New NiMH",
     "condition": "new",
     "price": 2299,
-    "warranty": "3 years",
+    "warranty": "36 months",
     "image": "/images/batteries/battery-1762317871975.webp",
-    "description": "Brand new NiMH hybrid battery for the Lexus UX 250h (2019-2024). This 216V, 1.4kWh pack uses steel prismatic NiMH cells optimized for the UX's subcompact crossover platform. Powers the UX's 181 combined horsepower hybrid system with electronic AWD for confident traction in all conditions. Direct OEM replacement with all mounting hardware and sensors. 3-year comprehensive warranty."
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus UX 250h (2019-2024). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "22",
-    "vehicle": "Toyota Avalon Hybrid (2013-2018)",
+    "id": "73",
+    "vehicle": "Lexus LC 500h (2018-2025)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 999,
-    "warranty": "6 months",
-    "image": "/images/batteries/avalon-2013-2017.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Toyota Avalon Hybrid. This 244.8V pack uses the same proven 34-module architecture found in the Camry Hybrid, optimized for the Avalon's premium full-size sedan platform. Each module is individually tested, capacity-matched, and balanced for seamless hybrid operation. Restores the Avalon Hybrid's smooth, quiet power delivery and excellent highway fuel economy that luxury sedan owners expect."
-  },
-  {
-    "id": "23",
-    "vehicle": "Toyota Avalon Hybrid (2013-2018)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1899,
-    "warranty": "3 years",
-    "image": "/images/batteries/avalon-2013-2017.jpg",
-    "description": "Factory-new NiMH hybrid battery pack for the Toyota Avalon Hybrid (2013-2018). This 244.8V, 6.5Ah battery is a direct OEM replacement with 34 factory-fresh modules delivering maximum capacity. Designed for Toyota's flagship sedan, this battery ensures the refined, powerful hybrid driving experience Avalon owners expect. Includes all connectors, hardware, and sensors. 3-year comprehensive warranty."
-  },
-  {
-    "id": "12",
-    "vehicle": "Toyota Camry Hybrid (2007-2011)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 999,
-    "warranty": "6 months",
-    "image": "/images/batteries/camry-2007-2011.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the first-generation Toyota Camry Hybrid. This 244.8V pack features 34 individually tested modules with 204 cells, a larger and more powerful configuration than the Prius battery. Each module is capacity-tested, resistance-checked, and balanced for optimal performance across the entire pack. Restores your Camry Hybrid's smooth power delivery, regenerative braking, and impressive fuel economy."
-  },
-  {
-    "id": "13",
-    "vehicle": "Toyota Camry Hybrid (2007-2011)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1899,
-    "warranty": "3 years",
-    "image": "/images/batteries/camry-2007-2011.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Toyota Camry Hybrid (2007-2011). This 244.8V, 6.5Ah pack is a direct OEM-spec replacement with 34 brand new modules. Delivers full factory power output for seamless hybrid operation. Complete installation kit includes all bus bars, connectors, temperature sensors, and mounting hardware. Our 3-year warranty ensures long-term peace of mind for Camry Hybrid owners."
-  },
-  {
-    "id": "14",
-    "vehicle": "Toyota Camry Hybrid (2012-2017)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 999,
-    "warranty": "6 months",
-    "image": "/images/batteries/camry-hybrid-2012-2017.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the second-generation Toyota Camry Hybrid. This 244.8V pack uses an updated 34-module design with improved cell chemistry for better longevity. Each module undergoes comprehensive testing including capacity measurement, internal resistance analysis, and self-discharge monitoring over 72 hours. A reliable, cost-effective solution for keeping your Camry Hybrid running at peak efficiency."
-  },
-  {
-    "id": "15",
-    "vehicle": "Toyota Camry Hybrid (2012-2017)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1899,
-    "warranty": "3 years",
-    "image": "/images/batteries/camry-hybrid-2012-2017.jpg",
-    "description": "Brand new NiMH hybrid battery pack for the Toyota Camry Hybrid (2012-2017). This 244.8V battery delivers maximum capacity with 34 factory-fresh modules. Designed as a perfect direct replacement for the second-generation Camry Hybrid's power system. All new cells, connectors, and temperature monitoring hardware included. Backed by our comprehensive 3-year warranty with nationwide coverage."
-  },
-  {
-    "id": "16",
-    "vehicle": "Toyota Camry Hybrid (2018-2024)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
     "price": 2799,
-    "warranty": "3 years",
-    "image": "/images/batteries/camry-battery.jpg",
-    "description": "Brand new lithium-ion hybrid battery for the Toyota Camry Hybrid (2018-2024). This 259V Li-Ion pack represents Toyota's shift to lighter, more energy-dense battery technology. Significantly smaller and lighter than the previous NiMH packs while delivering superior power output and faster charging cycles. Direct OEM replacement that maintains the Camry Hybrid's excellent 51+ MPG combined fuel economy. Includes complete BMS module and all installation hardware. 3-year warranty included."
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1762317886548.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus LC 500h (2018-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "27",
-    "vehicle": "Toyota Corolla Hybrid (2020-2025)",
+    "id": "74",
+    "vehicle": "Lexus LC 500h (2018-2025)",
     "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1899,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770756740987.webp",
-    "description": "Brand new NiMH hybrid battery for the Toyota Corolla Hybrid (2020-2025). This 201.6V battery pack uses the same proven module design as the Prius Gen 4, adapted for the Corolla's compact sedan platform. Delivers excellent fuel economy exceeding 50 MPG combined. Direct OEM replacement that integrates seamlessly with the Corolla's 1.8L Atkinson-cycle hybrid powertrain. Complete hardware kit and 3-year warranty included."
-  },
-  {
-    "id": "32",
-    "vehicle": "Toyota Crown Hybrid (2023-2025)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 2499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770757865227.jpeg",
-    "description": "Brand new NiMH hybrid battery for the Toyota Crown (2023-2025). This modern sedan uses Toyota's latest NiMH cell technology paired with a 2.5L Atkinson-cycle hybrid engine. Despite being a newer model, Toyota chose NiMH for its proven reliability and cost-effectiveness. Direct OEM replacement with battery management system, all sensors, and mounting hardware. 3-year comprehensive warranty for complete peace of mind."
-  },
-  {
-    "id": "17",
-    "vehicle": "Toyota Highlander Hybrid (2006-2010)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 1399,
-    "warranty": "6 months",
-    "image": "/images/batteries/highlander-2006-2013.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the first-generation Toyota Highlander Hybrid. This powerful 288V pack is significantly larger than sedan batteries, featuring 240 cells designed to handle the SUV's greater weight and power demands. Each cell is individually tested and matched for capacity and internal resistance. The Highlander Hybrid battery is engineered for high-current applications, providing strong electric assist for acceleration and hill climbing. Ideal for owners who want to restore their SUV's hybrid capability."
-  },
-  {
-    "id": "18",
-    "vehicle": "Toyota Highlander Hybrid (2006-2010)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 2699,
-    "warranty": "3 years",
-    "image": "/images/batteries/highlander-2006-2013.jpg",
-    "description": "Factory-new NiMH hybrid battery for the Toyota Highlander Hybrid (2006-2010). This 288V, 6.5Ah battery pack delivers the full power output needed for this popular hybrid SUV. All cells are factory-fresh with maximum rated capacity. Complete assembly includes cooling fan, temperature sensors, battery ECU connector, and all mounting hardware. Protected by our comprehensive 3-year warranty. Restores your Highlander Hybrid to factory-spec performance."
-  },
-  {
-    "id": "19",
-    "vehicle": "Toyota Highlander Hybrid (2011-2019)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 1499,
-    "warranty": "6 months",
-    "image": "/images/batteries/generic-highlander.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the Toyota Highlander Hybrid (2011-2019). This 288V pack features improved cooling channels and updated cell chemistry compared to the first generation. Each module is individually tested using advanced diagnostic equipment, capacity-matched within 3% tolerance, and balanced for optimal pack performance. The improved thermal management in this generation helps extend battery life. A proven, cost-effective alternative to dealer replacement."
-  },
-  {
-    "id": "20",
-    "vehicle": "Toyota Highlander Hybrid (2011-2019)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 2899,
-    "warranty": "3 years",
-    "image": "/images/batteries/generic-highlander.jpg",
-    "description": "Brand new NiMH hybrid battery pack for the Toyota Highlander Hybrid (2011-2019). This 288V battery delivers full factory-spec power for Toyota's best-selling hybrid SUV. Features improved cell chemistry with better cycle life and thermal stability compared to earlier generations. Complete kit includes all mounting hardware, connectors, cooling system components, and temperature sensors. Comprehensive 3-year warranty ensures worry-free ownership."
-  },
-  {
-    "id": "21",
-    "vehicle": "Toyota Highlander Hybrid (2020-2024)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 2999,
-    "warranty": "3 years",
-    "image": "/images/batteries/generic-highlander.jpg",
-    "description": "Brand new NiMH hybrid battery for the latest Toyota Highlander Hybrid (2020-2024). Built on Toyota's TNGA-K platform, this 288V battery pack uses the newest generation NiMH cells with improved energy density and longevity. Designed to work seamlessly with the Highlander's 2.5L hybrid powertrain delivering 243 combined horsepower. Direct OEM replacement with all hardware and connectors included. 3-year comprehensive warranty."
-  },
-  {
-    "id": "1",
-    "vehicle": "Toyota Prius (2004-2009)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 899,
-    "warranty": "6 months",
-    "image": "/images/batteries/prius-2004-2009.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery pack for the Toyota Prius Gen 2. This 201.6V battery features 28 individually tested and balanced modules with 168 cells total. Every cell undergoes rigorous capacity and internal resistance testing to ensure reliable performance. Restores full hybrid functionality including EV mode, regenerative braking, and optimal fuel economy. A proven, cost-effective alternative to dealer replacement that gets your Prius back on the road."
-  },
-  {
-    "id": "2",
-    "vehicle": "Toyota Prius (2004-2009)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1699,
-    "warranty": "3 years",
-    "image": "/images/batteries/prius-2004-2009.jpg",
-    "description": "Brand new factory-grade NiMH hybrid battery pack for the Toyota Prius Gen 2 (2004-2009). This 201.6V, 6.5Ah battery is a direct OEM-spec replacement featuring 28 brand new modules. Comes complete with all mounting hardware, bus bars, and wiring harness. Backed by our comprehensive 3-year warranty for total peace of mind. Delivers maximum capacity and peak hybrid performance right out of the box."
-  },
-  {
-    "id": "3",
-    "vehicle": "Toyota Prius (2010-2015)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 899,
-    "warranty": "6 months",
-    "image": "/images/batteries/prius-2010-2015.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the Toyota Prius Gen 3. This 201.6V pack uses the same proven 28-module architecture as the Gen 2 but with improved thermal management. Each module is individually load-tested, capacity-matched, and balanced to within 2% of each other. Includes new temperature sensors and fresh thermal paste on all connections. Perfect for Prius owners who want reliable hybrid performance without the dealer price tag."
-  },
-  {
-    "id": "4",
-    "vehicle": "Toyota Prius (2010-2015)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1699,
-    "warranty": "3 years",
-    "image": "/images/batteries/prius-2010-2015.jpg",
-    "description": "Factory-fresh NiMH hybrid battery pack designed for the Toyota Prius Gen 3 (2010-2015). This 201.6V, 6.5Ah battery delivers the same capacity and power as the day your Prius rolled off the assembly line. All 28 modules are factory-new with maximum charge capacity. Includes complete installation kit with new bus bar covers, ventilation fan filter, and all necessary connectors. Comprehensive 3-year warranty included."
-  },
-  {
-    "id": "5",
-    "vehicle": "Toyota Prius (2016-2022)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 999,
-    "warranty": "6 months",
-    "image": "/images/batteries/generic-prius-gen4.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Toyota Prius Gen 4 (2016-2022). This 201.6V pack features the latest NiMH cell technology with improved energy density and longevity compared to earlier generations. All 28 modules are individually tested using advanced diagnostic equipment, capacity-matched, and balanced for optimal performance. Restores your Prius to peak efficiency with excellent fuel economy numbers."
-  },
-  {
-    "id": "6",
-    "vehicle": "Toyota Prius (2016-2022)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1899,
-    "warranty": "3 years",
-    "image": "/images/batteries/generic-prius-gen4.jpg",
-    "description": "Brand new NiMH hybrid battery pack for the Toyota Prius Gen 4. Compatible with all 2016-2022 Prius models including LE, XLE, and AWD-e variants. This 201.6V battery uses Toyota's latest NiMH technology with enhanced cycle life and thermal stability. Every cell is factory-fresh with full rated capacity. Includes all mounting brackets, wiring harness, and hardware for a straightforward swap. Protected by our 3-year comprehensive warranty."
-  },
-  {
-    "id": "9",
-    "vehicle": "Toyota Prius C (2012-2019)",
-    "batteryType": "Rebuilt NiMH",
-    "condition": "refurbished",
-    "price": 799,
-    "warranty": "6 months",
-    "image": "/images/batteries/prius-c-2012-2017.jpg",
-    "description": "Professionally rebuilt NiMH hybrid battery for the Toyota Prius C (Aqua). This compact 144V pack uses 20 prismatic modules specifically designed for the Prius C's smaller chassis. Each module is individually tested, capacity-checked, and balanced to ensure smooth hybrid operation. The Prius C battery is smaller and lighter than the standard Prius pack, and this rebuild restores it to full operational capacity at a fraction of dealer cost."
-  },
-  {
-    "id": "10",
-    "vehicle": "Toyota Prius C (2012-2019)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 1499,
-    "warranty": "3 years",
-    "image": "/images/batteries/prius-c-2012-2017.jpg",
-    "description": "Brand new NiMH hybrid battery pack for the Toyota Prius C (2012-2019). This 144V, 6.5Ah battery is a direct OEM replacement with 20 factory-fresh prismatic modules. Engineered for the Prius C's unique compact hybrid system, this battery delivers full EV mode capability and optimal fuel economy ratings. Includes all mounting hardware and connectors for a clean installation. Backed by our 3-year warranty."
-  },
-  {
-    "id": "11",
-    "vehicle": "Toyota Prius Prime (2017-2022)",
-    "batteryType": "New Li-Ion",
     "condition": "new",
     "price": 3999,
-    "warranty": "3 years",
-    "image": "/images/batteries/generic-prius-gen4.jpg",
-    "description": "Brand new lithium-ion plug-in hybrid battery pack for the Toyota Prius Prime (2017-2022). This high-capacity 8.8 kWh, 351.5V battery pack delivers up to 25 miles of all-electric driving range. Features advanced lithium-ion cell technology with built-in battery management system for safe, reliable charging and discharging. Includes the complete battery assembly with cooling system components and all wiring. Covered by our comprehensive 3-year warranty."
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1762317886548.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus LC 500h (2018-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "7",
-    "vehicle": "Toyota Prius V (2012-2017)",
+    "id": "75",
+    "vehicle": "Lexus LS 500h (2018-2025)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 949,
-    "warranty": "6 months",
-    "image": "/images/batteries/prius-v-2012-2017.jpg",
-    "description": "Expertly rebuilt NiMH hybrid battery for the Toyota Prius V wagon. This 201.6V pack shares its core architecture with the standard Prius Gen 3 but is specifically configured for the larger, heavier Prius V. All 28 modules are individually tested and capacity-matched to ensure balanced charging and discharging across the entire pack. Ideal for Prius V owners who depend on their vehicle's spacious cargo area and excellent fuel economy."
+    "price": 2699,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1762317909161.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Lexus LS 500h (2018-2025). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "8",
-    "vehicle": "Toyota Prius V (2012-2017)",
+    "id": "76",
+    "vehicle": "Lexus LS 500h (2018-2025)",
     "batteryType": "New NiMH",
     "condition": "new",
-    "price": 1799,
-    "warranty": "3 years",
-    "image": "/images/batteries/prius-v-2012-2017.jpg",
-    "description": "Factory-new NiMH hybrid battery pack for the Toyota Prius V (2012-2017). This 201.6V, 6.5Ah battery delivers maximum performance for Toyota's hybrid wagon. All modules are brand new with full factory capacity, ensuring years of reliable service. Includes all connectors, mounting hardware, and ECU-compatible sensors. Perfect direct replacement backed by a comprehensive 3-year warranty."
+    "price": 3799,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1762317909161.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Lexus LS 500h (2018-2025). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   },
   {
-    "id": "24",
-    "vehicle": "Toyota RAV4 Hybrid (2016-2018)",
+    "id": "77",
+    "vehicle": "Honda Civic Hybrid (2003-2005)",
     "batteryType": "Rebuilt NiMH",
     "condition": "refurbished",
-    "price": 1299,
-    "warranty": "6 months",
-    "image": "/images/batteries/battery-1770757849332.webp",
-    "description": "Expertly rebuilt NiMH hybrid battery for the first-generation Toyota RAV4 Hybrid. This 244.8V pack is specifically designed for the RAV4's compact SUV platform, providing reliable electric assist for city driving and regenerative braking on highway descents. Each of the 34 modules is individually tested, capacity-matched, and thermally balanced. An excellent value option for RAV4 Hybrid owners looking to restore their vehicle's hybrid functionality."
+    "price": 999,
+    "warranty": "12 months",
+    "image": "/images/batteries/battery-1766119206510.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Civic Hybrid (2003-2005). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
   },
   {
-    "id": "25",
-    "vehicle": "Toyota RAV4 Hybrid (2016-2018)",
+    "id": "78",
+    "vehicle": "Honda Civic Hybrid (2003-2005)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 1195,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119206510.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Civic Hybrid (2003-2005). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "79",
+    "vehicle": "Honda Civic Hybrid (2006-2011)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 999,
+    "warranty": "12 months",
+    "image": "/images/batteries/battery-1766119240013.jpg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Civic Hybrid (2006-2011). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "80",
+    "vehicle": "Honda Civic Hybrid (2006-2011)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 1499,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119240013.jpg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Civic Hybrid (2006-2011). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "81",
+    "vehicle": "Honda Civic Hybrid (2012-2015)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1395,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1766119252264.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Civic Hybrid (2012-2015). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "82",
+    "vehicle": "Honda Civic Hybrid (2012-2015)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 1749,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119252264.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Civic Hybrid (2012-2015). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "83",
+    "vehicle": "Honda Accord Hybrid (2005-2007)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 999,
+    "warranty": "12 months",
+    "image": "/images/batteries/battery-1766119262952.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Accord Hybrid (2005-2007). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "84",
+    "vehicle": "Honda Accord Hybrid (2005-2007)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 1495,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119262952.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Accord Hybrid (2005-2007). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "85",
+    "vehicle": "Honda Accord Hybrid (2014-2017)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2850,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1766119272879.jpeg",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Accord Hybrid (2014-2017). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "86",
+    "vehicle": "Honda Accord Hybrid (2014-2017)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 3550,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119272879.jpeg",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Accord Hybrid (2014-2017). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "87",
+    "vehicle": "Honda CR-Z (2010-2012)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1795,
+    "warranty": "12 months",
+    "image": "/images/batteries/battery-1766119320174.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda CR-Z (2010-2012). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "88",
+    "vehicle": "Honda CR-Z (2010-2012)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2095,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119320174.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda CR-Z (2010-2012). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "89",
+    "vehicle": "Honda CR-Z (2013-2016)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 2099,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1766119327424.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda CR-Z (2013-2016). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "90",
+    "vehicle": "Honda CR-Z (2013-2016)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2999,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119327424.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda CR-Z (2013-2016). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "91",
+    "vehicle": "Honda Insight (2000-2006)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1395,
+    "warranty": "12 months",
+    "image": "/images/batteries/battery-1766119120618.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Insight (2000-2006). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "92",
+    "vehicle": "Honda Insight (2000-2006)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2095,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119120618.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Insight (2000-2006). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "93",
+    "vehicle": "Honda Insight (2010-2014)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1795,
+    "warranty": "12 months",
+    "image": "/images/batteries/battery-1766119173707.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Insight (2010-2014). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "94",
+    "vehicle": "Honda Insight (2010-2014)",
+    "batteryType": "New NiMH",
+    "condition": "new",
+    "price": 2095,
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119173707.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Insight (2010-2014). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
+  },
+  {
+    "id": "95",
+    "vehicle": "Honda Insight (2019-2022)",
+    "batteryType": "Rebuilt NiMH",
+    "condition": "refurbished",
+    "price": 1799,
+    "warranty": "18 months",
+    "image": "/images/batteries/battery-1766119188565.webp",
+    "description": "Professionally remanufactured and tested NiMH hybrid battery for Honda Insight (2019-2022). All cells individually tested and balanced. Backed by our comprehensive warranty. Restores full hybrid function at a fraction of dealer cost."
+  },
+  {
+    "id": "96",
+    "vehicle": "Honda Insight (2019-2022)",
     "batteryType": "New NiMH",
     "condition": "new",
     "price": 2499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770757849332.webp",
-    "description": "Brand new NiMH hybrid battery for the Toyota RAV4 Hybrid (2016-2018). This 244.8V, 6.5Ah battery delivers full factory performance for Toyota's most popular hybrid SUV. All 34 modules are factory-new with maximum charge capacity. Direct OEM replacement that works seamlessly with the RAV4's electronic AWD system. Complete kit with all mounting hardware and connectors. 3-year warranty included."
-  },
-  {
-    "id": "26",
-    "vehicle": "Toyota RAV4 Hybrid (2019-2024)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2999,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770756383886.webp",
-    "description": "Brand new lithium-ion hybrid battery for the Toyota RAV4 Hybrid (2019-2024). This 259V Li-Ion pack represents Toyota's latest hybrid battery technology, offering superior energy density in a more compact package. Works with the RAV4 Hybrid's advanced 2.5L Dynamic Force engine and electric motor combination delivering 219 combined horsepower. Includes battery management system and all installation hardware. 3-year comprehensive warranty."
-  },
-  {
-    "id": "31",
-    "vehicle": "Toyota Sequoia i-Force MAX (2023-2025)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 3499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770757765612.webp",
-    "description": "Brand new NiMH hybrid battery for the Toyota Sequoia i-Force MAX (2023-2025). Shares the same 288V, 1.87 kWh battery architecture as the Tundra i-Force MAX. Powers the 48-hp electric motor in the full-size SUV's hybrid powertrain, delivering 437 hp and 583 lb-ft combined. The Sequoia is exclusively hybrid, making this battery essential for the vehicle's operation. Includes all mounting hardware and connectors. 3-year comprehensive warranty."
-  },
-  {
-    "id": "29",
-    "vehicle": "Toyota Sienna Hybrid (2021-2025)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 2999,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770756772119.webp",
-    "description": "Brand new NiMH hybrid battery for the Toyota Sienna (2021-2025). The Sienna is exclusively hybrid-powered, and this 288V pack is designed to handle the demands of a full-size minivan. Located under the seats for optimal weight distribution, this battery works with the Sienna's 2.5L hybrid system producing 245 combined horsepower. Supports the optional electronic AWD system. Complete installation kit with all hardware. 3-year warranty."
-  },
-  {
-    "id": "30",
-    "vehicle": "Toyota Tundra i-Force MAX (2022-2025)",
-    "batteryType": "New NiMH",
-    "condition": "new",
-    "price": 3499,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770757765612.webp",
-    "description": "Brand new NiMH hybrid battery for the Toyota Tundra i-Force MAX (2022-2025). This 288V, 1.87 kWh battery pack powers the 48-hp electric motor that works alongside the 3.5L twin-turbo V6 engine, producing a combined 437 horsepower and 583 lb-ft of torque. Located under the rear seats, this pack is designed for heavy-duty truck applications. Direct OEM replacement with all mounting hardware and cooling components. 3-year warranty."
-  },
-  {
-    "id": "28",
-    "vehicle": "Toyota Venza Hybrid (2021-2024)",
-    "batteryType": "New Li-Ion",
-    "condition": "new",
-    "price": 2899,
-    "warranty": "3 years",
-    "image": "/images/batteries/battery-1770756768251.webp",
-    "description": "Brand new lithium-ion hybrid battery for the Toyota Venza (2021-2024). The Venza is exclusively hybrid, and this 259V Li-Ion pack is engineered for its refined crossover platform. Lighter and more energy-dense than NiMH alternatives, it delivers smooth, quiet power transitions. Works with the Venza's electronic AWD system and 2.5L hybrid powertrain producing 219 hp combined. Direct OEM replacement with all components. 3-year warranty."
+    "warranty": "36 months",
+    "image": "/images/batteries/battery-1766119188565.webp",
+    "description": "Brand new factory-fresh NiMH hybrid battery pack for Honda Insight (2019-2022). Direct OEM replacement with full warranty. Includes all modules, bus bars, and mounting hardware. Tested and ready for installation."
   }
 ]
