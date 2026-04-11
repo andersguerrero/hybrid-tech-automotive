@@ -7,7 +7,7 @@ import logger from '@/lib/logger'
 
 // Railway persistent volume path
 const UPLOADS_DIR = process.env.RAILWAY_ENVIRONMENT
-  ? '/app/public/uploads'
+  ? '/app/uploads'
   : join(process.cwd(), 'public', 'uploads')
 
 export async function POST(request: NextRequest) {

@@ -4,7 +4,7 @@ import { join } from 'path'
 import { existsSync } from 'fs'
 
 const UPLOADS_DIR = process.env.RAILWAY_ENVIRONMENT
-  ? '/app/public/uploads'
+  ? '/app/uploads'
   : join(process.cwd(), 'public', 'uploads')
 
 const MIME_TYPES: Record<string, string> = {
