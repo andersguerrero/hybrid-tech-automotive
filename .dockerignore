@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.github
+.claude
+__tests__
+*.md
+.env.local
+.env.development

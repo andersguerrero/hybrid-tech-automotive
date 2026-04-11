@@ -14,6 +14,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Railway injects service env vars as build args
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_BUSINESS_PHONE
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_SENTRY_DSN
+
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -22,6 +28,9 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
+# su-exec: lightweight tool to drop root privileges (like gosu for Alpine)
+RUN apk add --no-cache su-exec
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -29,14 +38,18 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Create uploads directory with correct permissions for Railway volume mount
+# Create uploads directory (Railway volume will mount here at runtime)
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 
-USER nextjs
+# Entrypoint fixes volume permissions then drops to nextjs user
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
+# Do NOT set USER nextjs here — entrypoint starts as root to fix
+# Railway volume permissions, then drops to nextjs via su-exec
 EXPOSE 3000
 
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
