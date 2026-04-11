@@ -3,7 +3,15 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 
-const UPLOADS_DIR = process.env.RAILWAY_ENVIRONMENT
+// Detect Railway environment reliably
+const isRailway = !!(
+  process.env.RAILWAY_ENVIRONMENT ||
+  process.env.RAILWAY_ENVIRONMENT_NAME ||
+  process.env.RAILWAY_SERVICE_NAME ||
+  process.env.RAILWAY_PROJECT_ID
+)
+
+const UPLOADS_DIR = isRailway
   ? '/app/uploads'
   : join(process.cwd(), 'public', 'uploads')
 

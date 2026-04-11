@@ -5,8 +5,16 @@ import { join } from 'path'
 import { existsSync } from 'fs'
 import logger from '@/lib/logger'
 
-// Railway persistent volume path
-const UPLOADS_DIR = process.env.RAILWAY_ENVIRONMENT
+// Detect Railway environment reliably (Railway sets several env vars automatically)
+const isRailway = !!(
+  process.env.RAILWAY_ENVIRONMENT ||
+  process.env.RAILWAY_ENVIRONMENT_NAME ||
+  process.env.RAILWAY_SERVICE_NAME ||
+  process.env.RAILWAY_PROJECT_ID
+)
+
+// Railway persistent volume path vs local dev
+const UPLOADS_DIR = isRailway
   ? '/app/uploads'
   : join(process.cwd(), 'public', 'uploads')
 
@@ -20,6 +28,21 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { success: false, error: 'No se proporcionó ningún archivo' },
+        { status: 400 }
+      )
+    }
+
+    if (!category || !fileName) {
+      return NextResponse.json(
+        { success: false, error: 'Faltan campos: category y fileName son requeridos' },
+        { status: 400 }
+      )
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json(
+        { success: false, error: 'El archivo es demasiado grande. Máximo 10MB.' },
         { status: 400 }
       )
     }
@@ -44,15 +67,25 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
     const uploadPath = join(UPLOADS_DIR, category)
 
+    // Create directory if it doesn't exist
     if (!existsSync(uploadPath)) {
-      await mkdir(uploadPath, { recursive: true })
+      try {
+        await mkdir(uploadPath, { recursive: true })
+      } catch (mkdirError) {
+        const msg = mkdirError instanceof Error ? mkdirError.message : String(mkdirError)
+        logger.error(`Cannot create upload directory ${uploadPath}: ${msg}`, mkdirError as Error)
+        return NextResponse.json(
+          { success: false, error: `No se pudo crear el directorio de uploads: ${msg}` },
+          { status: 500 }
+        )
+      }
     }
 
     const finalPath = join(uploadPath, fileName)
     await writeFile(finalPath, buffer)
 
     // En Railway, servir via API route; en local, servir desde public/
-    const publicUrl = process.env.RAILWAY_ENVIRONMENT
+    const publicUrl = isRailway
       ? `/api/uploads/${category}/${fileName}`
       : `/uploads/${category}/${fileName}`
 
@@ -62,9 +95,10 @@ export async function POST(request: NextRequest) {
       message: 'Imagen subida correctamente',
     })
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error)
     logger.error('Error uploading image:', error as Error)
     return NextResponse.json(
-      { success: false, error: 'Error al subir la imagen' },
+      { success: false, error: `Error al subir la imagen: ${errorMsg}` },
       { status: 500 }
     )
   }
