@@ -10,14 +10,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
-  // Login page renders without the admin layout wrapper
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
+  const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
-    // Clean up legacy localStorage auth
+    if (isLoginPage) {
+      setIsLoading(false)
+      return
+    }
+
     localStorage.removeItem('admin_authenticated')
 
     const checkAuth = async () => {
@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     checkAuth()
-  }, [router])
+  }, [router, isLoginPage])
 
   const handleLogout = async () => {
     try {
@@ -45,6 +45,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     } finally {
       router.push('/admin/login')
     }
+  }
+
+  // Login page renders without the admin layout wrapper
+  if (isLoginPage) {
+    return <>{children}</>
   }
 
   if (isLoading) {
@@ -64,7 +69,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Admin Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="container-custom flex items-center justify-between py-4">
           <Link href="/admin" className="flex items-center space-x-3">
