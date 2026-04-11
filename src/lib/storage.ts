@@ -74,9 +74,20 @@ async function pgPut(blobPath: string, data: unknown): Promise<void> {
 
   switch (blobPath) {
     case 'config/batteries-custom.json': {
+      // Sanitize: only include fields from the Battery model to prevent createMany errors
+      const sanitized = (data as any[]).map(b => ({
+        id: String(b.id),
+        vehicle: String(b.vehicle || ''),
+        batteryType: String(b.batteryType || ''),
+        condition: String(b.condition || 'refurbished'),
+        price: Number(b.price) || 0,
+        warranty: String(b.warranty || ''),
+        image: String(b.image || '/logo.png'),
+        description: String(b.description || ''),
+      }))
       await prisma.$transaction([
         prisma.battery.deleteMany(),
-        prisma.battery.createMany({ data: data as any[] }),
+        prisma.battery.createMany({ data: sanitized }),
       ])
       return
     }

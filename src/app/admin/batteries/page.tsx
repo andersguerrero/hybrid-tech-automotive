@@ -66,6 +66,8 @@ export default function BatteriesAdminPage() {
     description: ''
   })
   const [savedMessage, setSavedMessage] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
 
   // Filter states
@@ -98,21 +100,42 @@ export default function BatteriesAdminPage() {
   }, [])
 
   // Save batteries to server — only called on explicit user actions
-  const saveBatteriesToServer = useCallback(async (batteries: Battery[]) => {
+  const saveBatteriesToServer = useCallback(async (batteries: Battery[]): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch('/api/batteries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ batteries }),
       })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        let errorMsg = `Error del servidor (${response.status})`
+        try {
+          const errorData = JSON.parse(errorText)
+          errorMsg = errorData.error || errorMsg
+        } catch {
+          // response wasn't JSON
+        }
+        if (response.status === 401) {
+          errorMsg = 'Sesión expirada. Por favor, vuelve a iniciar sesión.'
+        }
+        console.error('Admin: server save failed:', errorMsg)
+        return { success: false, error: errorMsg }
+      }
+
       const data = await response.json()
       if (data.success) {
         console.log('Admin: saved', batteries.length, 'batteries to server')
+        return { success: true }
       } else {
         console.error('Admin: server save failed:', data.error)
+        return { success: false, error: data.error || 'Error desconocido al guardar' }
       }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Error de conexión'
       console.error('Admin: Error saving batteries:', error)
+      return { success: false, error: msg }
     }
   }, [])
 
@@ -164,11 +187,23 @@ export default function BatteriesAdminPage() {
 
   const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de eliminar esta batería?')) {
+      const previous = batteriesData
       const updated = batteriesData.filter(b => b.id !== id)
       setBatteriesData(updated)
-      await saveBatteriesToServer(updated)
-      setSavedMessage('Batería eliminada correctamente')
-      setTimeout(() => setSavedMessage(''), 3000)
+      setErrorMessage('')
+      setSaving(true)
+
+      const result = await saveBatteriesToServer(updated)
+      setSaving(false)
+
+      if (result.success) {
+        setSavedMessage('Batería eliminada correctamente')
+        setTimeout(() => setSavedMessage(''), 3000)
+      } else {
+        setBatteriesData(previous) // rollback
+        setErrorMessage(`Error al eliminar: ${result.error}`)
+        setTimeout(() => setErrorMessage(''), 5000)
+      }
     }
   }
 
@@ -208,34 +243,50 @@ export default function BatteriesAdminPage() {
   }
 
   const handleSave = async () => {
-    if (!formData.vehicle || !formData.batteryType || !formData.description || !formData.image) {
-      alert('Por favor completa todos los campos')
+    if (!formData.vehicle || !formData.batteryType || !formData.description) {
+      alert('Por favor completa los campos: Vehículo, Tipo de Batería y Descripción')
       return
     }
 
+    // Default image to logo if not provided
+    const batteryData = {
+      ...formData,
+      image: formData.image || '/logo.png',
+    }
+
+    const previous = batteriesData
     let updated: Battery[]
 
     if (editingId) {
       updated = batteriesData.map(b =>
-        b.id === editingId ? { ...formData as Battery, id: editingId } : b
+        b.id === editingId ? { ...batteryData as Battery, id: editingId } : b
       )
-      setSavedMessage('Batería actualizada correctamente')
     } else if (isAdding) {
       const maxId = batteriesData.reduce((max, b) => Math.max(max, parseInt(b.id) || 0), 0)
       const newId = (maxId + 1).toString()
-      updated = [...batteriesData, { ...formData as Battery, id: newId }]
-      setSavedMessage('Batería agregada correctamente')
+      updated = [...batteriesData, { ...batteryData as Battery, id: newId }]
     } else {
       return
     }
 
     setBatteriesData(updated)
-    await saveBatteriesToServer(updated)
+    setErrorMessage('')
+    setSaving(true)
 
-    setIsAdding(false)
-    setEditingId(null)
-    setFormData({ vehicle: '', batteryType: '', condition: 'refurbished' as 'new' | 'refurbished', price: 0, warranty: '', image: '', description: '' })
-    setTimeout(() => setSavedMessage(''), 3000)
+    const result = await saveBatteriesToServer(updated)
+    setSaving(false)
+
+    if (result.success) {
+      setSavedMessage(editingId ? 'Batería actualizada correctamente' : 'Batería agregada correctamente')
+      setIsAdding(false)
+      setEditingId(null)
+      setFormData({ vehicle: '', batteryType: '', condition: 'refurbished' as 'new' | 'refurbished', price: 0, warranty: '', image: '', description: '' })
+      setTimeout(() => setSavedMessage(''), 3000)
+    } else {
+      setBatteriesData(previous) // rollback
+      setErrorMessage(`Error al guardar: ${result.error}`)
+      setTimeout(() => setErrorMessage(''), 5000)
+    }
   }
 
   if (loading) {
@@ -279,6 +330,16 @@ export default function BatteriesAdminPage() {
           <div className="container-custom">
             <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800">
               {savedMessage}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {errorMessage && (
+        <section className="section-padding pt-8">
+          <div className="container-custom">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+              {errorMessage}
             </div>
           </div>
         </section>
@@ -387,16 +448,22 @@ export default function BatteriesAdminPage() {
                   />
                 </div>
                 <div className="flex space-x-4">
-                  <button onClick={handleSave} className="btn-primary flex items-center space-x-2">
-                    <Save className="w-5 h-5" />
-                    <span>Guardar</span>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="btn-primary flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                    <span>{saving ? 'Guardando...' : 'Guardar'}</span>
                   </button>
                   <button
                     onClick={() => {
                       setIsAdding(false)
                       setEditingId(null)
+                      setErrorMessage('')
                     }}
                     className="btn-outline"
+                    disabled={saving}
                   >
                     Cancelar
                   </button>
