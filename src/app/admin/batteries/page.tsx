@@ -544,20 +544,20 @@ export default function BatteriesAdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredBatteries.map((battery) => (
                 <div key={battery.id} className="card relative group">
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+                  <div className="absolute top-4 right-4 z-10 flex space-x-2">
                     <button
                       onClick={() => handleEdit(battery)}
-                      className="bg-primary-500 text-white p-2 rounded"
+                      className="bg-white/90 backdrop-blur-sm text-primary-600 hover:bg-primary-500 hover:text-white p-2.5 rounded-lg shadow-md transition-all"
                       title="Editar"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleDelete(battery.id)}
-                      className="bg-red-500 text-white p-2 rounded"
+                      className="bg-white/90 backdrop-blur-sm text-red-500 hover:bg-red-500 hover:text-white p-2.5 rounded-lg shadow-md transition-all"
                       title="Eliminar"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
                   <div className="aspect-video bg-gray-100 rounded-lg mb-4 relative overflow-hidden flex items-center justify-center">
