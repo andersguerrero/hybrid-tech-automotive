@@ -56,14 +56,20 @@ export default function BatteriesAdminPage() {
   const [loading, setLoading] = useState(true)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [formData, setFormData] = useState<Partial<Battery>>({
+  const [editingPairId, setEditingPairId] = useState<string | null>(null) // paired condition entry
+  const [formData, setFormData] = useState({
     vehicle: '',
     batteryType: '',
-    condition: 'refurbished' as 'new' | 'refurbished',
-    price: 0,
-    warranty: '',
     image: '',
-    description: ''
+    description: '',
+    // Refurbished condition
+    offerRefurbished: true,
+    priceRefurbished: 0,
+    warrantyRefurbished: '',
+    // New condition
+    offerNew: false,
+    priceNew: 0,
+    warrantyNew: '',
   })
   const [savedMessage, setSavedMessage] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
@@ -165,30 +171,68 @@ export default function BatteriesAdminPage() {
     })
   }, [batteriesData, searchTerm, filterBrand, filterCondition])
 
+  // Find the paired entry (same vehicle+batteryType, different condition)
+  const findPair = useCallback((battery: Battery): Battery | undefined => {
+    return batteriesData.find(b =>
+      b.id !== battery.id &&
+      b.vehicle === battery.vehicle &&
+      b.batteryType.replace('New ', '').replace('Rebuilt ', '') === battery.batteryType.replace('New ', '').replace('Rebuilt ', '') &&
+      b.condition !== battery.condition
+    )
+  }, [batteriesData])
+
   const handleAdd = () => {
     setFormData({
       vehicle: '',
       batteryType: '',
-      condition: 'refurbished' as 'new' | 'refurbished',
-      price: 0,
-      warranty: '',
       image: '',
-      description: ''
+      description: '',
+      offerRefurbished: true,
+      priceRefurbished: 899,
+      warrantyRefurbished: '6 months',
+      offerNew: true,
+      priceNew: 1699,
+      warrantyNew: '3 years',
     })
     setIsAdding(true)
     setEditingId(null)
+    setEditingPairId(null)
   }
 
   const handleEdit = (battery: Battery) => {
-    setFormData(battery)
+    const pair = findPair(battery)
+
+    const refurbishedEntry = battery.condition === 'refurbished' ? battery : pair
+    const newEntry = battery.condition === 'new' ? battery : pair
+
+    setFormData({
+      vehicle: battery.vehicle,
+      batteryType: battery.batteryType.replace('New ', '').replace('Rebuilt ', ''),
+      image: battery.image,
+      description: battery.description,
+      offerRefurbished: !!refurbishedEntry,
+      priceRefurbished: refurbishedEntry?.price || 899,
+      warrantyRefurbished: refurbishedEntry?.warranty || '6 months',
+      offerNew: !!newEntry,
+      priceNew: newEntry?.price || 1699,
+      warrantyNew: newEntry?.warranty || '3 years',
+    })
     setEditingId(battery.id)
+    setEditingPairId(pair?.id || null)
     setIsAdding(false)
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('¿Estás seguro de eliminar esta batería?')) {
+    const battery = batteriesData.find(b => b.id === id)
+    if (!battery) return
+
+    const pair = findPair(battery)
+    const pairInfo = pair ? `\n(También se eliminará la versión ${pair.condition === 'new' ? 'Nueva' : 'Refurbished'})` : ''
+
+    if (confirm(`¿Eliminar ${battery.vehicle}?${pairInfo}`)) {
       const previous = batteriesData
-      const updated = batteriesData.filter(b => b.id !== id)
+      const idsToDelete = pair ? [id, pair.id] : [id]
+      const updated = batteriesData.filter(b => !idsToDelete.includes(b.id))
       setBatteriesData(updated)
       setErrorMessage('')
       setSaving(true)
@@ -200,7 +244,7 @@ export default function BatteriesAdminPage() {
         setSavedMessage('Batería eliminada correctamente')
         setTimeout(() => setSavedMessage(''), 3000)
       } else {
-        setBatteriesData(previous) // rollback
+        setBatteriesData(previous)
         setErrorMessage(`Error al eliminar: ${result.error}`)
         setTimeout(() => setErrorMessage(''), 5000)
       }
@@ -247,26 +291,71 @@ export default function BatteriesAdminPage() {
       alert('Por favor completa los campos: Vehículo, Tipo de Batería y Descripción')
       return
     }
-
-    // Default image to logo if not provided
-    const batteryData = {
-      ...formData,
-      image: formData.image || '/logo.png',
+    if (!formData.offerRefurbished && !formData.offerNew) {
+      alert('Debes ofrecer al menos una condición (Refurbished o Nueva)')
+      return
     }
 
+    const image = formData.image || '/logo.png'
     const previous = batteriesData
-    let updated: Battery[]
+    let updated = [...batteriesData]
+
+    // Get the next available ID
+    const getNextId = () => {
+      const maxId = updated.reduce((max, b) => Math.max(max, parseInt(b.id) || 0), 0)
+      return (maxId + 1).toString()
+    }
+
+    // Build refurbished entry
+    const refurbishedEntry: Battery = {
+      id: '',
+      vehicle: formData.vehicle,
+      batteryType: `Rebuilt ${formData.batteryType}`,
+      condition: 'refurbished',
+      price: formData.priceRefurbished,
+      warranty: formData.warrantyRefurbished,
+      image,
+      description: formData.description,
+    }
+
+    // Build new entry
+    const newEntry: Battery = {
+      id: '',
+      vehicle: formData.vehicle,
+      batteryType: `New ${formData.batteryType}`,
+      condition: 'new',
+      price: formData.priceNew,
+      warranty: formData.warrantyNew,
+      image,
+      description: formData.description,
+    }
 
     if (editingId) {
-      updated = batteriesData.map(b =>
-        b.id === editingId ? { ...batteryData as Battery, id: editingId } : b
-      )
-    } else if (isAdding) {
-      const maxId = batteriesData.reduce((max, b) => Math.max(max, parseInt(b.id) || 0), 0)
-      const newId = (maxId + 1).toString()
-      updated = [...batteriesData, { ...batteryData as Battery, id: newId }]
-    } else {
-      return
+      // Remove old entries (main + pair)
+      const idsToRemove = editingPairId ? [editingId, editingPairId] : [editingId]
+      updated = updated.filter(b => !idsToRemove.includes(b.id))
+    }
+
+    // Add entries based on toggles
+    if (formData.offerRefurbished) {
+      refurbishedEntry.id = editingId && batteriesData.find(b => b.id === editingId)?.condition === 'refurbished'
+        ? editingId
+        : editingPairId && batteriesData.find(b => b.id === editingPairId)?.condition === 'refurbished'
+          ? editingPairId
+          : getNextId()
+      updated.push(refurbishedEntry)
+    }
+    if (formData.offerNew) {
+      newEntry.id = editingId && batteriesData.find(b => b.id === editingId)?.condition === 'new'
+        ? editingId
+        : editingPairId && batteriesData.find(b => b.id === editingPairId)?.condition === 'new'
+          ? editingPairId
+          : getNextId()
+      // Avoid duplicate ID if both are new
+      if (formData.offerRefurbished && newEntry.id === refurbishedEntry.id) {
+        newEntry.id = (parseInt(newEntry.id) + 1).toString()
+      }
+      updated.push(newEntry)
     }
 
     setBatteriesData(updated)
@@ -280,10 +369,11 @@ export default function BatteriesAdminPage() {
       setSavedMessage(editingId ? 'Batería actualizada correctamente' : 'Batería agregada correctamente')
       setIsAdding(false)
       setEditingId(null)
-      setFormData({ vehicle: '', batteryType: '', condition: 'refurbished' as 'new' | 'refurbished', price: 0, warranty: '', image: '', description: '' })
+      setEditingPairId(null)
+      setFormData({ vehicle: '', batteryType: '', image: '', description: '', offerRefurbished: true, priceRefurbished: 0, warrantyRefurbished: '', offerNew: false, priceNew: 0, warrantyNew: '' })
       setTimeout(() => setSavedMessage(''), 3000)
     } else {
-      setBatteriesData(previous) // rollback
+      setBatteriesData(previous)
       setErrorMessage(`Error al guardar: ${result.error}`)
       setTimeout(() => setErrorMessage(''), 5000)
     }
@@ -349,7 +439,7 @@ export default function BatteriesAdminPage() {
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => { if (!saving) { setIsAdding(false); setEditingId(null); setErrorMessage('') } }}
+            onClick={() => { if (!saving) { setIsAdding(false); setEditingId(null); setEditingPairId(null); setErrorMessage('') } }}
           />
           {/* Modal Content */}
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -359,7 +449,7 @@ export default function BatteriesAdminPage() {
                 {editingId ? 'Editar Batería' : 'Nueva Batería'}
               </h2>
               <button
-                onClick={() => { if (!saving) { setIsAdding(false); setEditingId(null); setErrorMessage('') } }}
+                onClick={() => { if (!saving) { setIsAdding(false); setEditingId(null); setEditingPairId(null); setErrorMessage('') } }}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <X className="w-6 h-6" />
@@ -367,6 +457,7 @@ export default function BatteriesAdminPage() {
             </div>
             {/* Modal Body */}
             <div className="px-6 py-6 space-y-5">
+              {/* Shared fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-medium mb-1.5">Vehículo</label>
@@ -385,42 +476,87 @@ export default function BatteriesAdminPage() {
                     value={formData.batteryType}
                     onChange={(e) => setFormData({ ...formData, batteryType: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Rebuilt NiMH"
+                    placeholder="NiMH"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Condición</label>
-                  <select
-                    value={formData.condition || 'refurbished'}
-                    onChange={(e) => setFormData({ ...formData, condition: e.target.value as 'new' | 'refurbished' })}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  >
-                    <option value="new">Nueva</option>
-                    <option value="refurbished">Refurbished</option>
-                  </select>
+
+              {/* Condition sections side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Refurbished */}
+                <div className={`border rounded-xl p-4 transition-colors ${formData.offerRefurbished ? 'border-blue-300 bg-blue-50/50' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                  <label className="flex items-center space-x-3 mb-4 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.offerRefurbished}
+                      onChange={(e) => setFormData({ ...formData, offerRefurbished: e.target.checked })}
+                      className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="font-semibold text-blue-800">Refurbished</span>
+                  </label>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Precio ($)</label>
+                      <input
+                        type="number"
+                        value={formData.priceRefurbished}
+                        onChange={(e) => setFormData({ ...formData, priceRefurbished: Number(e.target.value) })}
+                        disabled={!formData.offerRefurbished}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Garantía</label>
+                      <input
+                        type="text"
+                        value={formData.warrantyRefurbished}
+                        onChange={(e) => setFormData({ ...formData, warrantyRefurbished: e.target.value })}
+                        disabled={!formData.offerRefurbished}
+                        placeholder="6 months"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-400"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Precio ($)</label>
-                  <input
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Garantía</label>
-                  <input
-                    type="text"
-                    value={formData.warranty}
-                    onChange={(e) => setFormData({ ...formData, warranty: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="1 year"
-                  />
+
+                {/* New */}
+                <div className={`border rounded-xl p-4 transition-colors ${formData.offerNew ? 'border-green-300 bg-green-50/50' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                  <label className="flex items-center space-x-3 mb-4 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.offerNew}
+                      onChange={(e) => setFormData({ ...formData, offerNew: e.target.checked })}
+                      className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                    <span className="font-semibold text-green-800">Nueva</span>
+                  </label>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Precio ($)</label>
+                      <input
+                        type="number"
+                        value={formData.priceNew}
+                        onChange={(e) => setFormData({ ...formData, priceNew: Number(e.target.value) })}
+                        disabled={!formData.offerNew}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Garantía</label>
+                      <input
+                        type="text"
+                        value={formData.warrantyNew}
+                        onChange={(e) => setFormData({ ...formData, warrantyNew: e.target.value })}
+                        disabled={!formData.offerNew}
+                        placeholder="3 years"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-400"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Image upload */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
                   <ImageUploadButton
@@ -449,6 +585,8 @@ export default function BatteriesAdminPage() {
                   </div>
                 )}
               </div>
+
+              {/* Description */}
               <div>
                 <label className="block text-sm font-medium mb-1.5">Descripción</label>
                 <textarea
@@ -465,6 +603,7 @@ export default function BatteriesAdminPage() {
                 onClick={() => {
                   setIsAdding(false)
                   setEditingId(null)
+                  setEditingPairId(null)
                   setErrorMessage('')
                 }}
                 className="px-5 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
