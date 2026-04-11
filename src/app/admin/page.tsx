@@ -63,13 +63,6 @@ export default function AdminPage() {
       color: 'bg-pink-500 hover:bg-pink-600'
     },
     {
-      title: 'Battery Images',
-      description: 'Manage 17 unique battery images shared across all models',
-      icon: ImageIcon,
-      href: '/admin/battery-images',
-      color: 'bg-cyan-500 hover:bg-cyan-600'
-    },
-    {
       title: t.admin.images,
       description: t.admin.imagesDesc,
       icon: ImageIcon,
