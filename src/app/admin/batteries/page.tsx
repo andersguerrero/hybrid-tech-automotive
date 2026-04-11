@@ -561,14 +561,23 @@ export default function BatteriesAdminPage() {
                     </button>
                   </div>
                   <div className="aspect-video bg-gray-100 rounded-lg mb-4 relative overflow-hidden flex items-center justify-center">
-                    <Image
-                      src={battery.image || '/logo.png'}
-                      alt={battery.vehicle}
-                      width={200}
-                      height={120}
-                      className="object-contain p-4"
-                      onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png' }}
-                    />
+                    {battery.image && battery.image !== '/logo.png' ? (
+                      <Image
+                        src={battery.image}
+                        alt={battery.vehicle}
+                        fill
+                        className="object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; (e.target as HTMLImageElement).className = 'object-contain p-6' }}
+                      />
+                    ) : (
+                      <Image
+                        src="/logo.png"
+                        alt={battery.vehicle}
+                        width={200}
+                        height={120}
+                        className="object-contain p-4"
+                      />
+                    )}
                   </div>
                   <h3 className="font-semibold mb-2">{battery.vehicle}</h3>
                   <p className="text-sm text-gray-600 mb-2">{battery.batteryType}</p>

@@ -40,6 +40,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# sharp is required for Next.js image optimization in standalone mode
+RUN npm install --os=linux --cpu=x64 sharp@0.33.2
+
 # Create uploads directory (Railway volume will mount here at runtime)
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 
