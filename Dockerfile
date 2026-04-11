@@ -15,7 +15,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Railway injects service env vars as build args
-ARG DATABASE_URL
+# NOTE: DATABASE_URL is intentionally NOT included here — the DB is on
+# Railway's internal network which is unreachable during Docker build.
+# prisma db push runs at container startup instead (see entrypoint).
 ARG NEXT_PUBLIC_BUSINESS_PHONE
 ARG NEXT_PUBLIC_BASE_URL
 ARG NEXT_PUBLIC_SENTRY_DSN
