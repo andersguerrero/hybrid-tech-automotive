@@ -240,7 +240,7 @@ export default function BatteryComparePage() {
                       <td key={battery.id} className="p-3 border-b border-gray-100">
                         <div className="relative h-36 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
                           <Image
-                            src="/logo.png"
+                            src={battery.image || '/logo.png'}
                             alt={battery.vehicle}
                             width={160}
                             height={96}
@@ -418,7 +418,7 @@ export default function BatteryComparePage() {
                     </button>
                     <div className="relative h-44 bg-gray-100 flex items-center justify-center">
                       <Image
-                        src="/logo.png"
+                        src={battery.image || '/logo.png'}
                         alt={battery.vehicle}
                         width={160}
                         height={96}
@@ -539,7 +539,7 @@ export default function BatteryComparePage() {
                           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                         >
                           <div className="w-12 h-12 relative rounded overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center">
-                            <Image src="/logo.png" alt={battery.vehicle} width={40} height={40} className="object-contain" />
+                            <Image src={battery.image || '/logo.png'} alt={battery.vehicle} width={40} height={40} className="object-contain" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{battery.vehicle}</p>

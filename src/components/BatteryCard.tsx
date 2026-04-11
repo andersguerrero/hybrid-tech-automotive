@@ -21,12 +21,13 @@ export default function BatteryCard({ battery, previousPrice }: BatteryCardProps
     <div className="card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       <div className="relative h-48 mb-4 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
         <Image
-          src="/logo.png"
+          src={battery.image || '/logo.png'}
           alt={battery.vehicle}
           width={200}
           height={120}
           className="object-contain p-4"
           loading="lazy"
+          onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png' }}
         />
       </div>
 
