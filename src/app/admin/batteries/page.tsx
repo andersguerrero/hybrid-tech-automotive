@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Save, Plus, Edit, Trash2, ArrowLeft, Upload, Search, Loader2 } from 'lucide-react'
+import { Save, Plus, Edit, Trash2, ArrowLeft, Upload, Search, Loader2, X } from 'lucide-react'
 import type { Battery } from '@/types'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -315,12 +315,10 @@ export default function BatteriesAdminPage() {
                 {batteriesData.length} baterías en la base de datos
               </p>
             </div>
-            {!isAdding && !editingId && (
-              <button onClick={handleAdd} className="btn-secondary flex items-center space-x-2">
-                <Plus className="w-5 h-5" />
-                <span>{t.admin.addNew} {t.admin.batteries}</span>
-              </button>
-            )}
+            <button onClick={handleAdd} className="btn-secondary flex items-center space-x-2">
+              <Plus className="w-5 h-5" />
+              <span>{t.admin.addNew} {t.admin.batteries}</span>
+            </button>
           </div>
         </div>
       </section>
@@ -345,136 +343,149 @@ export default function BatteriesAdminPage() {
         </section>
       )}
 
+      {/* Modal for Add/Edit Battery */}
       {(isAdding || editingId) && (
-        <section className="section-padding pt-8">
-          <div className="container-custom max-w-4xl">
-            <div className="card">
-              <h2 className="text-2xl font-bold mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => { if (!saving) { setIsAdding(false); setEditingId(null); setErrorMessage('') } }}
+          />
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
+              <h2 className="text-xl font-bold text-gray-900">
                 {editingId ? 'Editar Batería' : 'Nueva Batería'}
               </h2>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Vehículo</label>
-                    <input
-                      type="text"
-                      value={formData.vehicle}
-                      onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
-                      className="w-full px-4 py-2 border rounded-lg"
-                      placeholder="Toyota Prius (2010–2015)"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Tipo de Batería</label>
-                    <input
-                      type="text"
-                      value={formData.batteryType}
-                      onChange={(e) => setFormData({ ...formData, batteryType: e.target.value })}
-                      className="w-full px-4 py-2 border rounded-lg"
-                      placeholder="Rebuilt NiMH"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Condición</label>
-                    <select
-                      value={formData.condition || 'refurbished'}
-                      onChange={(e) => setFormData({ ...formData, condition: e.target.value as 'new' | 'refurbished' })}
-                      className="w-full px-4 py-2 border rounded-lg"
-                    >
-                      <option value="new">Nueva</option>
-                      <option value="refurbished">Refurbished</option>
-                    </select>
-                  </div>
-                  <div></div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Precio ($)</label>
-                    <input
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                      className="w-full px-4 py-2 border rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Garantía</label>
-                    <input
-                      type="text"
-                      value={formData.warranty}
-                      onChange={(e) => setFormData({ ...formData, warranty: e.target.value })}
-                      className="w-full px-4 py-2 border rounded-lg"
-                      placeholder="1 year"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <ImageUploadButton
-                      id="battery-image-upload"
-                      uploading={uploading}
-                      onUpload={handleImageUpload}
-                      uploadingText="Subiendo imagen..."
-                      selectFileText="Seleccionar Imagen"
-                    />
-                    {formData.image && (
-                      <div className="text-sm text-gray-600">
-                        <p>Imagen cargada: {formData.image}</p>
-                      </div>
-                    )}
-                  </div>
-                  {formData.image && (
-                    <div className="flex items-center justify-center">
-                      <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                        <Image
-                          src={formData.image}
-                          alt="Battery preview"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+              <button
+                onClick={() => { if (!saving) { setIsAdding(false); setEditingId(null); setErrorMessage('') } }}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            {/* Modal Body */}
+            <div className="px-6 py-6 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Descripción</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-lg"
-                    rows={4}
+                  <label className="block text-sm font-medium mb-1.5">Vehículo</label>
+                  <input
+                    type="text"
+                    value={formData.vehicle}
+                    onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Toyota Prius (2010–2015)"
                   />
                 </div>
-                <div className="flex space-x-4">
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="btn-primary flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                    <span>{saving ? 'Guardando...' : 'Guardar'}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsAdding(false)
-                      setEditingId(null)
-                      setErrorMessage('')
-                    }}
-                    className="btn-outline"
-                    disabled={saving}
-                  >
-                    Cancelar
-                  </button>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">Tipo de Batería</label>
+                  <input
+                    type="text"
+                    value={formData.batteryType}
+                    onChange={(e) => setFormData({ ...formData, batteryType: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Rebuilt NiMH"
+                  />
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">Condición</label>
+                  <select
+                    value={formData.condition || 'refurbished'}
+                    onChange={(e) => setFormData({ ...formData, condition: e.target.value as 'new' | 'refurbished' })}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  >
+                    <option value="new">Nueva</option>
+                    <option value="refurbished">Refurbished</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">Precio ($)</label>
+                  <input
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">Garantía</label>
+                  <input
+                    type="text"
+                    value={formData.warranty}
+                    onChange={(e) => setFormData({ ...formData, warranty: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="1 year"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-3">
+                  <ImageUploadButton
+                    id="battery-image-upload"
+                    uploading={uploading}
+                    onUpload={handleImageUpload}
+                    uploadingText="Subiendo imagen..."
+                    selectFileText="Seleccionar Imagen"
+                  />
+                  {formData.image && (
+                    <p className="text-xs text-gray-500 truncate">
+                      {formData.image}
+                    </p>
+                  )}
+                </div>
+                {formData.image && (
+                  <div className="flex items-center justify-center">
+                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={formData.image}
+                        alt="Battery preview"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5">Descripción</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  rows={3}
+                />
+              </div>
+            </div>
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-2xl flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setIsAdding(false)
+                  setEditingId(null)
+                  setErrorMessage('')
+                }}
+                className="px-5 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                disabled={saving}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                <span>{saving ? 'Guardando...' : 'Guardar'}</span>
+              </button>
             </div>
           </div>
-        </section>
+        </div>
       )}
 
-      {!isAdding && !editingId && (
+      {(
         <section className="section-padding bg-white border-b">
           <div className="container-custom">
             <div className="max-w-5xl mx-auto">
