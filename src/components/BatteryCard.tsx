@@ -7,7 +7,6 @@ import { Shield, ShoppingCart, Check, GitCompareArrows, Phone } from 'lucide-rea
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useAddToCart } from '@/hooks/useAddToCart'
 import { getWhatsAppUrl, getWhatsAppBatteryMessage } from '@/lib/whatsapp'
-import { BLUR_DATA_URL } from '@/lib/imageUtils'
 
 interface BatteryCardProps {
   battery: Battery
@@ -20,16 +19,14 @@ export default function BatteryCard({ battery, previousPrice }: BatteryCardProps
 
   return (
     <div className="card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-      <div className="relative h-48 mb-4 rounded-lg overflow-hidden">
+      <div className="relative h-48 mb-4 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
         <Image
-          src={battery.image}
+          src="/logo.png"
           alt={battery.vehicle}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover"
+          width={200}
+          height={120}
+          className="object-contain p-4"
           loading="lazy"
-          placeholder="blur"
-          blurDataURL={BLUR_DATA_URL}
         />
       </div>
 
@@ -76,7 +73,7 @@ export default function BatteryCard({ battery, previousPrice }: BatteryCardProps
               name: battery.vehicle,
               price: battery.price,
               type: 'battery',
-              image: battery.image,
+              image: '/logo.png',
               description: battery.description,
             })}
             className={`w-full flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-colors ${

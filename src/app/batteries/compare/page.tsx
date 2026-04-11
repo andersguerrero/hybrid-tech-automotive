@@ -238,14 +238,13 @@ export default function BatteryComparePage() {
                     </td>
                     {batteries.map(battery => (
                       <td key={battery.id} className="p-3 border-b border-gray-100">
-                        <div className="relative h-36 rounded-xl overflow-hidden">
+                        <div className="relative h-36 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
                           <Image
-                            src={battery.image}
+                            src="/logo.png"
                             alt={battery.vehicle}
-                            fill
-                            className="object-cover"
-                            placeholder="blur"
-                            blurDataURL={BLUR_DATA_URL}
+                            width={160}
+                            height={96}
+                            className="object-contain p-3"
                           />
                         </div>
                       </td>
@@ -376,7 +375,7 @@ export default function BatteryComparePage() {
                             name: battery.vehicle,
                             price: battery.price,
                             type: 'battery',
-                            image: battery.image,
+                            image: '/logo.png',
                             description: battery.description,
                           })}
                           className={`w-full flex items-center justify-center px-4 py-2.5 rounded-lg font-medium transition-colors ${
@@ -417,14 +416,13 @@ export default function BatteryComparePage() {
                     >
                       <X className="w-4 h-4" />
                     </button>
-                    <div className="relative h-44">
+                    <div className="relative h-44 bg-gray-100 flex items-center justify-center">
                       <Image
-                        src={battery.image}
+                        src="/logo.png"
                         alt={battery.vehicle}
-                        fill
-                        className="object-cover"
-                        placeholder="blur"
-                        blurDataURL={BLUR_DATA_URL}
+                        width={160}
+                        height={96}
+                        className="object-contain p-3"
                       />
                     </div>
                   </div>
@@ -473,7 +471,7 @@ export default function BatteryComparePage() {
                         name: battery.vehicle,
                         price: battery.price,
                         type: 'battery',
-                        image: battery.image,
+                        image: '/logo.png',
                         description: battery.description,
                       })}
                       className={`w-full flex items-center justify-center px-4 py-2.5 rounded-lg font-medium transition-colors ${
@@ -540,8 +538,8 @@ export default function BatteryComparePage() {
                           onClick={() => addBattery(battery)}
                           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                         >
-                          <div className="w-12 h-12 relative rounded overflow-hidden flex-shrink-0">
-                            <Image src={battery.image} alt={battery.vehicle} fill className="object-cover" />
+                          <div className="w-12 h-12 relative rounded overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center">
+                            <Image src="/logo.png" alt={battery.vehicle} width={40} height={40} className="object-contain" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{battery.vehicle}</p>
