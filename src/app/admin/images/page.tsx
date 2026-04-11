@@ -5,10 +5,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Save, ArrowLeft, ImageIcon, Upload, X } from 'lucide-react'
 import { siteImages as initialImages, type SiteImages } from '@/data'
-import { batteries as initialBatteries } from '@/data'
 import { services as initialServices } from '@/data'
 import { blogPosts as initialBlogPosts } from '@/data'
-import type { Battery, Service, BlogPost } from '@/types'
+import type { Service, BlogPost } from '@/types'
 
 // Componente auxiliar para botón de carga
 function UploadButton({ 
@@ -104,7 +103,6 @@ function SimpleUploadButton({
 
 export default function ImagesAdminPage() {
   const [imagesData, setImagesData] = useState<SiteImages>(initialImages)
-  const [batteriesData, setBatteriesData] = useState<Battery[]>(initialBatteries)
   const [servicesData, setServicesData] = useState<Service[]>(initialServices)
   const [blogPostsData, setBlogPostsData] = useState<BlogPost[]>(initialBlogPosts)
   const [savedMessage, setSavedMessage] = useState<string>('')
@@ -121,20 +119,6 @@ export default function ImagesAdminPage() {
       } catch (error) {
         console.error('Error loading saved site images:', error)
       }
-    }
-
-    // Cargar baterías guardadas desde localStorage
-    const savedBatteries = localStorage.getItem('admin_batteries')
-    if (savedBatteries) {
-      try {
-        const parsed = JSON.parse(savedBatteries)
-        setBatteriesData(parsed)
-      } catch (error) {
-        console.error('Error loading saved batteries:', error)
-        setBatteriesData(initialBatteries)
-      }
-    } else {
-      setBatteriesData(initialBatteries)
     }
 
     // Cargar servicios y blog posts desde localStorage si existen
@@ -245,12 +229,6 @@ export default function ImagesAdminPage() {
     }
     window.dispatchEvent(new Event('siteImagesUpdated'))
     
-    // Guardar baterías con sus imágenes actualizadas
-    if (batteriesData.length > 0) {
-      localStorage.setItem('admin_batteries', JSON.stringify(batteriesData))
-      window.dispatchEvent(new Event('batteriesUpdated'))
-    }
-    
     // Guardar servicios con sus imágenes actualizadas
     if (servicesData.length > 0) {
       localStorage.setItem('admin_services', JSON.stringify(servicesData))
@@ -281,48 +259,6 @@ export default function ImagesAdminPage() {
         ...imagesData,
         [section]: value
       })
-    }
-  }
-
-  // Función para actualizar imagen individual de batería
-  const handleBatteryImageUpload = async (batteryId: string, file: File) => {
-    const uploadKey = `battery-${batteryId}`
-    setUploading(uploadKey)
-    
-    try {
-      const uploadFormData = new FormData()
-      const fileExtension = file.name.split('.').pop()
-      const timestamp = Date.now()
-      const fileName = `battery-${batteryId}-${timestamp}.${fileExtension}`
-      
-      uploadFormData.append('file', file)
-      uploadFormData.append('category', 'batteries')
-      uploadFormData.append('fileName', fileName)
-
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: uploadFormData,
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        const updatedBatteries = batteriesData.map(b => 
-          b.id === batteryId ? { ...b, image: data.url } : b
-        )
-        setBatteriesData(updatedBatteries)
-        localStorage.setItem('admin_batteries', JSON.stringify(updatedBatteries))
-        window.dispatchEvent(new Event('batteriesUpdated'))
-        setSavedMessage('Imagen de batería subida correctamente')
-        setTimeout(() => setSavedMessage(''), 3000)
-      } else {
-        alert('Error al subir la imagen: ' + data.error)
-      }
-    } catch (error) {
-      console.error('Error uploading battery image:', error)
-      alert('Error al subir la imagen')
-    } finally {
-      setUploading(null)
     }
   }
 
@@ -698,132 +634,6 @@ export default function ImagesAdminPage() {
             </div>
           </div>
 
-          {/* Batteries Images */}
-          <div className="card mb-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <ImageIcon className="w-6 h-6 text-primary-500" />
-              <h2 className="text-2xl font-bold">Imágenes de Baterías</h2>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Toyota Prius</label>
-                  </div>
-                  <UploadButton
-                    id="batteries-prius-upload"
-                    category="batteries"
-                    section="batteries"
-                    subKey="prius"
-                    uploading={uploading}
-                    onUpload={handleFileUpload}
-                    recommendedSize="16:9 ratio (~192px altura)"
-                  />
-                </div>
-                <div className="flex items-center justify-center">
-                  {imagesData.batteries.prius && (
-                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={imagesData.batteries.prius}
-                        alt="Prius battery preview"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Toyota Camry</label>
-                  </div>
-                  <UploadButton
-                    id="batteries-camry-upload"
-                    category="batteries"
-                    section="batteries"
-                    subKey="camry"
-                    uploading={uploading}
-                    onUpload={handleFileUpload}
-                    recommendedSize="16:9 ratio (~192px altura)"
-                  />
-                </div>
-                <div className="flex items-center justify-center">
-                  {imagesData.batteries.camry && (
-                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={imagesData.batteries.camry}
-                        alt="Camry battery preview"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Lexus RX</label>
-                  </div>
-                  <UploadButton
-                    id="batteries-lexusRx-upload"
-                    category="batteries"
-                    section="batteries"
-                    subKey="lexusRx"
-                    uploading={uploading}
-                    onUpload={handleFileUpload}
-                    recommendedSize="16:9 ratio (~192px altura)"
-                  />
-                </div>
-                <div className="flex items-center justify-center">
-                  {imagesData.batteries.lexusRx && (
-                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={imagesData.batteries.lexusRx}
-                        alt="Lexus RX battery preview"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Lexus CT</label>
-                  </div>
-                  <UploadButton
-                    id="batteries-lexusCt-upload"
-                    category="batteries"
-                    section="batteries"
-                    subKey="lexusCt"
-                    uploading={uploading}
-                    onUpload={handleFileUpload}
-                    recommendedSize="16:9 ratio (~192px altura)"
-                  />
-                </div>
-                <div className="flex items-center justify-center">
-                  {imagesData.batteries.lexusCt && (
-                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={imagesData.batteries.lexusCt}
-                        alt="Lexus CT battery preview"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Blog Images */}
           <div className="card mb-8">
             <div className="flex items-center space-x-3 mb-6">
@@ -1005,49 +815,6 @@ export default function ImagesAdminPage() {
                   )}
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Individual Battery Images */}
-          <div className="card mb-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <ImageIcon className="w-6 h-6 text-primary-500" />
-              <h2 className="text-2xl font-bold">Imágenes Individuales de Baterías</h2>
-            </div>
-            
-            <div className="space-y-6">
-              {batteriesData.map((battery) => (
-                <div key={battery.id} className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 border border-gray-200 rounded-lg">
-                  <div className="md:col-span-1">
-                    <h3 className="font-semibold text-gray-900 mb-2">{battery.vehicle}</h3>
-                    <p className="text-sm text-gray-600">{battery.batteryType}</p>
-                  </div>
-                  <div className="md:col-span-1 space-y-4">
-                    <SimpleUploadButton
-                      id={`battery-individual-${battery.id}`}
-                      uploading={uploading}
-                      uploadKey={`battery-${battery.id}`}
-                      onUpload={(file) => handleBatteryImageUpload(battery.id, file)}
-                      recommendedSize="16:9 ratio"
-                    />
-                    {battery.image && (
-                      <p className="text-xs text-gray-500 truncate">{battery.image}</p>
-                    )}
-                  </div>
-                  <div className="md:col-span-1 flex items-center justify-center">
-                    {battery.image && (
-                      <div className="relative w-full h-24 bg-gray-100 rounded-lg overflow-hidden">
-                        <Image
-                          src={battery.image}
-                          alt={battery.vehicle}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
