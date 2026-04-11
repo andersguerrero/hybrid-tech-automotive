@@ -3,8 +3,12 @@ import { put } from '@vercel/blob'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
-import { execSync } from 'child_process'
 import logger from '@/lib/logger'
+
+// Railway persistent volume path
+const UPLOADS_DIR = process.env.RAILWAY_ENVIRONMENT
+  ? '/app/public/uploads'
+  : join(process.cwd(), 'public', 'uploads')
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +24,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Usar Vercel Blob si está configurado (producción / Vercel)
+    // Usar Vercel Blob si está configurado
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       const pathname = `images/${category}/${fileName}`
       const blob = await put(pathname, file, {
@@ -35,10 +39,10 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Fallback: guardar en disco (solo localhost, sin BLOB_READ_WRITE_TOKEN)
+    // Guardar en disco (Railway volume o local)
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const uploadPath = join(process.cwd(), 'public', 'images', category)
+    const uploadPath = join(UPLOADS_DIR, category)
 
     if (!existsSync(uploadPath)) {
       await mkdir(uploadPath, { recursive: true })
@@ -47,26 +51,15 @@ export async function POST(request: NextRequest) {
     const finalPath = join(uploadPath, fileName)
     await writeFile(finalPath, buffer)
 
-    // Intentar agregar a Git (solo en desarrollo local)
-    try {
-      if (!process.env.VERCEL) {
-        const relativePath = `public/images/${category}/${fileName}`
-        execSync(`git add "${relativePath}"`, {
-          cwd: process.cwd(),
-          stdio: 'ignore',
-          timeout: 5000,
-        })
-      }
-    } catch {
-      // Ignorar errores de Git
-    }
-
-    const publicUrl = `/images/${category}/${fileName}`
+    // En Railway, servir via API route; en local, servir desde public/
+    const publicUrl = process.env.RAILWAY_ENVIRONMENT
+      ? `/api/uploads/${category}/${fileName}`
+      : `/uploads/${category}/${fileName}`
 
     return NextResponse.json({
       success: true,
       url: publicUrl,
-      message: 'Imagen subida correctamente (local)',
+      message: 'Imagen subida correctamente',
     })
   } catch (error) {
     logger.error('Error uploading image:', error as Error)
