@@ -20,6 +20,16 @@ const PROTECTED_API_ROUTES = [
   '/api/seed',
 ]
 
+// Exact paths that require admin auth on every method (including GET) because
+// they expose PII or admin-only data. Subroutes (e.g. /api/orders/lookup,
+// /api/orders/verify, /api/coupons/validate) handle their own auth.
+const ADMIN_GET_PROTECTED = new Set([
+  '/api/orders',
+  '/api/subscribers',
+  '/api/coupons',
+  '/api/seed',
+])
+
 /**
  * Security headers added to all responses
  */
@@ -57,9 +67,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // For protected API routes, only protect write operations (POST/PUT/DELETE)
+  // For protected API routes, protect write operations (POST/PUT/DELETE) and
+  // also protect GET on routes that expose PII or admin-only data.
   if (PROTECTED_API_ROUTES.some(route => pathname.startsWith(route))) {
-    if (request.method === 'GET') {
+    const requireAuth =
+      request.method !== 'GET' || ADMIN_GET_PROTECTED.has(pathname)
+
+    if (!requireAuth) {
       const response = NextResponse.next()
       applySecurityHeaders(response)
       return response
