@@ -149,13 +149,37 @@ export type StripeCheckoutInput = z.infer<typeof stripeCheckoutSchema>
 // ==========================================
 
 export const loginSchema = z.object({
+  email: emailField,
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .max(128, 'Password too long'),
+  totpCode: z
+    .string()
+    .regex(/^\d{6}$/, 'TOTP code must be 6 digits')
+    .optional(),
+})
+
+export type LoginInput = z.infer<typeof loginSchema>
+
+// ==========================================
+// 2FA
+// ==========================================
+
+export const totpVerifySchema = z.object({
+  code: z.string().regex(/^\d{6}$/, 'TOTP code must be 6 digits'),
+})
+
+export type TotpVerifyInput = z.infer<typeof totpVerifySchema>
+
+export const totpDisableSchema = z.object({
   password: z
     .string()
     .min(1, 'Password is required')
     .max(128, 'Password too long'),
 })
 
-export type LoginInput = z.infer<typeof loginSchema>
+export type TotpDisableInput = z.infer<typeof totpDisableSchema>
 
 // ==========================================
 // Save Batteries

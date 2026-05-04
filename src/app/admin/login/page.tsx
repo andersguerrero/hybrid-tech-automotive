@@ -7,7 +7,10 @@ import { Lock } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [totpCode, setTotpCode] = useState('')
+  const [needsTotp, setNeedsTotp] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -17,21 +20,30 @@ export default function AdminLoginPage() {
     setError('')
 
     try {
+      const body: Record<string, string> = { email, password }
+      if (needsTotp && totpCode) body.totpCode = totpCode
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify(body),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        // Clean up legacy localStorage auth
         localStorage.removeItem('admin_authenticated')
         router.push('/admin')
-      } else {
-        setError(data.error || 'Invalid password')
+        return
       }
+
+      if (data.totpRequired) {
+        setNeedsTotp(true)
+        setError(needsTotp ? data.error || 'Invalid code' : '')
+        return
+      }
+
+      setError(data.error || 'Invalid credentials')
     } catch {
       setError('Connection error. Please try again.')
     } finally {
@@ -51,11 +63,30 @@ export default function AdminLoginPage() {
               Admin Panel
             </h1>
             <p className="text-gray-600">
-              Enter your password to access the admin panel
+              {needsTotp
+                ? 'Enter the 6-digit code from your authenticator app'
+                : 'Sign in with your admin email and password'}
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="admin@example.com"
+                required
+                autoComplete="email"
+                disabled={isLoading || needsTotp}
+              />
+            </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
@@ -68,20 +99,59 @@ export default function AdminLoginPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="Enter admin password"
                 required
-                disabled={isLoading}
+                autoComplete="current-password"
+                disabled={isLoading || needsTotp}
               />
-              {error && (
-                <p className="mt-2 text-sm text-red-600" role="alert">{error}</p>
-              )}
             </div>
+
+            {needsTotp && (
+              <div>
+                <label htmlFor="totpCode" className="block text-sm font-medium text-gray-700 mb-2">
+                  Authenticator code
+                </label>
+                <input
+                  type="text"
+                  id="totpCode"
+                  inputMode="numeric"
+                  pattern="\d{6}"
+                  maxLength={6}
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent tracking-widest text-center"
+                  placeholder="123456"
+                  autoComplete="one-time-code"
+                  required
+                  autoFocus
+                  disabled={isLoading}
+                />
+              </div>
+            )}
+
+            {error && (
+              <p className="text-sm text-red-600" role="alert">{error}</p>
+            )}
 
             <button
               type="submit"
               disabled={isLoading}
               className="w-full btn-primary disabled:opacity-50"
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? 'Signing in...' : needsTotp ? 'Verify' : 'Sign In'}
             </button>
+
+            {needsTotp && (
+              <button
+                type="button"
+                onClick={() => {
+                  setNeedsTotp(false)
+                  setTotpCode('')
+                  setError('')
+                }}
+                className="w-full text-sm text-gray-600 hover:text-primary-500"
+              >
+                ← Use a different account
+              </button>
+            )}
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-200">

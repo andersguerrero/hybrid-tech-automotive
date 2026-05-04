@@ -161,18 +161,47 @@ describe('orderUpdateSchema', () => {
 })
 
 describe('loginSchema', () => {
-  it('should accept valid password', () => {
-    const result = loginSchema.safeParse({ password: 'MyPassword123' })
+  it('should accept valid email + password', () => {
+    const result = loginSchema.safeParse({
+      email: 'admin@example.com',
+      password: 'MyPassword123',
+    })
     expect(result.success).toBe(true)
   })
 
+  it('should accept email + password + 6-digit TOTP code', () => {
+    const result = loginSchema.safeParse({
+      email: 'admin@example.com',
+      password: 'MyPassword123',
+      totpCode: '123456',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should reject missing email', () => {
+    const result = loginSchema.safeParse({ password: 'MyPassword123' })
+    expect(result.success).toBe(false)
+  })
+
   it('should reject empty password', () => {
-    const result = loginSchema.safeParse({ password: '' })
+    const result = loginSchema.safeParse({ email: 'admin@example.com', password: '' })
     expect(result.success).toBe(false)
   })
 
   it('should reject too-long password', () => {
-    const result = loginSchema.safeParse({ password: 'x'.repeat(129) })
+    const result = loginSchema.safeParse({
+      email: 'admin@example.com',
+      password: 'x'.repeat(129),
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('should reject non-numeric TOTP code', () => {
+    const result = loginSchema.safeParse({
+      email: 'admin@example.com',
+      password: 'MyPassword123',
+      totpCode: 'abcdef',
+    })
     expect(result.success).toBe(false)
   })
 })
