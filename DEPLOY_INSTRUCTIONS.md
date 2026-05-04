@@ -73,8 +73,9 @@ NEXTAUTH_SECRET=tu-secret-random
 NEXT_PUBLIC_BASE_URL=https://tu-dominio.vercel.app
 
 # Admin (server-side only, NO usar NEXT_PUBLIC_)
-# Genera el hash con: node scripts/hash-password.js "your-password"
-ADMIN_PASSWORD_HASH=your_bcrypt_hash_here
+# Admin accounts viven en la BD. Crea el primero con:
+#   node scripts/create-admin.js <email> <password>
+# Opcionalmente activa 2FA desde /admin/security después del primer login.
 JWT_SECRET=your_jwt_secret_min_32_chars
 ```
 
