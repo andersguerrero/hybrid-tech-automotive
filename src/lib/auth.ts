@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose'
 import bcrypt from 'bcryptjs'
-import { timingSafeEqual } from 'crypto'
 import logger from '@/lib/logger'
 
 export const AUTH_COOKIE_NAME = 'admin_token'
@@ -31,46 +30,21 @@ export async function verifyToken(token: string): Promise<{ role: string } | nul
 }
 
 /**
- * Verify admin password with bcrypt hash or constant-time plain text comparison
- *
- * Priority:
- * 1. If ADMIN_PASSWORD_HASH is set → use bcrypt.compare (most secure)
- * 2. If only ADMIN_PASSWORD is set → use timing-safe comparison (backward compatible)
+ * Verify admin password against the bcrypt hash in ADMIN_PASSWORD_HASH.
  *
  * To generate a hash: node scripts/hash-password.js "YourPassword"
  */
 export async function verifyPassword(password: string): Promise<boolean> {
-  // Option 1: bcrypt hash (preferred, most secure)
   const passwordHash = process.env.ADMIN_PASSWORD_HASH
-  if (passwordHash) {
-    try {
-      return await bcrypt.compare(password, passwordHash)
-    } catch {
-      logger.error('Error comparing bcrypt hash — check ADMIN_PASSWORD_HASH format')
-      return false
-    }
-  }
-
-  // Option 2: Plain text with constant-time comparison (backward compatible)
-  const adminPassword = process.env.ADMIN_PASSWORD
-  if (!adminPassword) {
-    logger.error('Neither ADMIN_PASSWORD_HASH nor ADMIN_PASSWORD is set')
+  if (!passwordHash) {
+    logger.error('ADMIN_PASSWORD_HASH is not set')
     return false
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    logger.warn(
-      '⚠️  Using plain-text ADMIN_PASSWORD. For better security, set ADMIN_PASSWORD_HASH instead. ' +
-      'Run: node scripts/hash-password.js "your-password"'
-    )
-  }
-
-  // Constant-time comparison prevents timing attacks
   try {
-    const inputBuf = Buffer.from(password.padEnd(256, '\0'))
-    const storedBuf = Buffer.from(adminPassword.padEnd(256, '\0'))
-    return timingSafeEqual(inputBuf, storedBuf) && password.length === adminPassword.length
+    return await bcrypt.compare(password, passwordHash)
   } catch {
+    logger.error('Error comparing bcrypt hash — check ADMIN_PASSWORD_HASH format')
     return false
   }
 }

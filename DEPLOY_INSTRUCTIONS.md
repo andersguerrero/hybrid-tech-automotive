@@ -73,7 +73,8 @@ NEXTAUTH_SECRET=tu-secret-random
 NEXT_PUBLIC_BASE_URL=https://tu-dominio.vercel.app
 
 # Admin (server-side only, NO usar NEXT_PUBLIC_)
-ADMIN_PASSWORD=your_admin_password_here
+# Genera el hash con: node scripts/hash-password.js "your-password"
+ADMIN_PASSWORD_HASH=your_bcrypt_hash_here
 JWT_SECRET=your_jwt_secret_min_32_chars
 ```
 
