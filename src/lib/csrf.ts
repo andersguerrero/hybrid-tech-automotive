@@ -1,13 +1,14 @@
 /**
  * CSRF Protection using Origin/Referer header validation
  *
- * This uses the OWASP-recommended "Origin Header Check" approach:
- * - Verifies that POST requests come from our own domain
- * - No tokens needed (simpler, equally effective for modern browsers)
- * - Skips validation for:
- *   - Stripe webhooks (authenticated via signature)
- *   - Admin API routes (authenticated via JWT + SameSite cookie)
- *   - Non-browser clients (mobile apps, server-to-server)
+ * OWASP-recommended "Origin Header Check" approach:
+ * - Verifies that unsafe-method requests come from our own domain
+ * - No tokens needed; complements SameSite=Lax cookies for defense in depth
+ *
+ * As of the security middleware refactor, validateOrigin is enforced for
+ * every non-GET request that flows through middleware (see middleware.ts).
+ * The /api/stripe/webhook handler bypasses middleware entirely because it
+ * authenticates via Stripe's HMAC signature.
  */
 
 import { NextRequest } from 'next/server'

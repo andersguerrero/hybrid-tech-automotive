@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
+import { validateOrigin } from '@/lib/csrf'
 
 const AUTH_COOKIE_NAME = 'admin_token'
 
@@ -30,14 +31,35 @@ const ADMIN_GET_PROTECTED = new Set([
   '/api/seed',
 ])
 
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
+
 /**
- * Security headers added to all responses
+ * Content Security Policy. Permissive enough for Stripe + Sentry +
+ * Vercel Analytics/Blob, strict enough to block off-origin script loads
+ * and clickjacking. Inline + eval are allowed to keep Next.js working
+ * without a per-request nonce; revisit if/when we add nonce-based CSP.
  */
+const CSP_DIRECTIVES = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://m.stripe.network https://*.vercel-scripts.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.stripe.com https://m.stripe.com https://m.stripe.network https://*.ingest.sentry.io https://*.sentry.io https://*.public.blob.vercel-storage.com https://vitals.vercel-insights.com",
+  "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  'upgrade-insecure-requests',
+].join('; ')
+
 const SECURITY_HEADERS: Record<string, string> = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+  'Content-Security-Policy': CSP_DIRECTIVES,
 }
 
 async function verifyTokenEdge(token: string): Promise<boolean> {
@@ -55,16 +77,26 @@ async function verifyTokenEdge(token: string): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow the login page and auth API routes without auth
+  // Stripe webhooks: signature-verified inside the handler. Skip middleware
+  // entirely so we don't disturb the raw body or add headers Stripe doesn't
+  // expect.
+  if (pathname === '/api/stripe/webhook') {
+    return NextResponse.next()
+  }
+
+  // CSRF defense-in-depth: reject unsafe-method requests whose Origin/Referer
+  // doesn't match our allow-list. SameSite=Lax cookies already block most
+  // cross-site CSRF; this catches the remaining edge cases (e.g. pre-flighted
+  // requests from foreign origins, mis-set SameSite on legacy clients).
+  if (!SAFE_METHODS.has(request.method) && !validateOrigin(request)) {
+    return NextResponse.json({ error: 'Invalid request origin' }, { status: 403 })
+  }
+
+  // Allow the login page and auth API routes without an admin cookie.
   if (pathname === '/admin/login' || pathname.startsWith('/api/auth/')) {
     const response = NextResponse.next()
     applySecurityHeaders(response)
     return response
-  }
-
-  // Allow Stripe webhooks without auth (verified by Stripe signature in handler)
-  if (pathname === '/api/stripe/webhook') {
-    return NextResponse.next()
   }
 
   // For protected API routes, protect write operations (POST/PUT/DELETE) and
@@ -112,11 +144,19 @@ function applySecurityHeaders(response: NextResponse) {
   for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
     response.headers.set(key, value)
   }
+  // HSTS only in production (over HTTPS); 1 year, include subdomains.
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains'
+    )
+  }
 }
 
 export const config = {
   matcher: [
     '/admin/:path*',
+    '/api/auth/:path*',
     '/api/batteries/:path*',
     '/api/save-batteries-to-source/:path*',
     '/api/upload-image/:path*',
