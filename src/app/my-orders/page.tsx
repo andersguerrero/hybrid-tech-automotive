@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
   Mail, Package, Clock, CheckCircle, XCircle, Loader2,
@@ -114,6 +114,14 @@ function getMaintenanceRecommendations(
 type TabId = 'orders' | 'warranties' | 'appointments' | 'maintenance'
 
 export default function MyOrdersPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <MyOrdersPageInner />
+    </Suspense>
+  )
+}
+
+function MyOrdersPageInner() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   const { t } = useLanguage()

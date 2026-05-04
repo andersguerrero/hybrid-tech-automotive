@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { Suspense, useState, useEffect, useCallback } from 'react'
 import { ArrowLeft, Plus, X, ShoppingCart, Check, Shield, Zap, Link2, Share2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,6 +13,14 @@ import type { Battery } from '@/types'
 const MAX_COMPARE = 4
 
 export default function BatteryComparePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <BatteryComparePageInner />
+    </Suspense>
+  )
+}
+
+function BatteryComparePageInner() {
   const searchParams = useSearchParams()
   const { t, locale } = useLanguage()
   const [batteries, setBatteries] = useState<Battery[]>([])
