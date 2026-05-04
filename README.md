@@ -161,18 +161,28 @@ The current implementation shows Zelle as a payment option with instructions. Fo
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically on every push
+See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for the full deployment guide.
 
-### Other Platforms
-The app can be deployed to any platform that supports Next.js:
-- Netlify
-- AWS Amplify
-- DigitalOcean App Platform
-- Self-hosted VPS
+Additional reference docs live in [`docs/`](./docs/):
+
+- `docs/DEPLOY_INSTRUCTIONS.md` — environment variables checklist
+- `docs/DEPLOY_NOW.md` — quick deploy notes
+- `docs/STRIPE_INTEGRATION.md`, `docs/STRIPE_SETUP_PRODUCCION.md`,
+  `docs/STRIPE_TESTING_GUIDE.md` — Stripe configuration and testing
+- `docs/SYNC_BATTERIES.md`, `docs/SYNC_IMAGES.md`,
+  `docs/SOLUCION_SYNC.md`, `docs/VERIFY_SYNC.md`,
+  `docs/VERIFICACION_SYNC.md` — content/data sync workflows
+
+### Admin bootstrap
+
+After the first deploy, create an admin account:
+
+```bash
+node scripts/create-admin.js <email> <password>
+```
+
+Then log in at `/admin/login` and (recommended) enable 2FA at
+`/admin/security`.
 
 ## 📱 Mobile Optimization
 

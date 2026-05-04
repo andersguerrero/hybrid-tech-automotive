@@ -12,7 +12,7 @@ vercel --prod
 ### Método 2: Usa el script automático:
 ```bash
 cd /Users/adrianguerrero/Desktop/hybrid-tech-automotive
-./deploy.sh
+./scripts/deploy.sh
 ```
 
 ## ✅ El proyecto está 100% listo para desplegar

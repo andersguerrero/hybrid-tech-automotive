@@ -10,7 +10,7 @@ Tu proyecto está configurado para desplegarse en múltiples plataformas. Aquí 
 
 2. **Despliega directamente desde tu terminal:**
    ```bash
-   ./deploy.sh
+   ./scripts/deploy.sh
    ```
    
    O manualmente:
