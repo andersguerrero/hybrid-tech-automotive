@@ -12,7 +12,8 @@ import {
   Package,
   Ticket,
   BarChart3,
-  Users
+  Users,
+  ShieldCheck
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -96,6 +97,13 @@ export default function AdminPage() {
       icon: Users,
       href: '/admin/subscribers',
       color: 'bg-rose-500 hover:bg-rose-600'
+    },
+    {
+      title: 'Security',
+      description: 'Manage two-factor authentication',
+      icon: ShieldCheck,
+      href: '/admin/security',
+      color: 'bg-slate-600 hover:bg-slate-700'
     },
   ]
 
