@@ -37,3 +37,8 @@ next-env.d.ts
 
 # prisma
 prisma/migrations/
+
+# build artifacts (never commit these)
+*.tar.gz
+*.tgz
+deploy-output.log
